@@ -57,10 +57,9 @@ def import_dicts():
 
 
 def import_stems():
-    data = []
+    data = dict()
     with open('data/STEMLIST.GEN') as f:
         for line in f:
-
             if len(line[26:30].strip()) > 0:
                 n = line[26:30].strip().split(" ")
                 for i, v in enumerate(n):
@@ -68,19 +67,23 @@ def import_stems():
                         n[i] = int(v)
                     except ValueError:
                         pass
-
-            data.append({
-                'orth': line[0:19].strip(),
-                'pos': line[19:26].strip(),
-                'form': line[26:45].strip(),
-                'n': n,
-                'wid': int(line[50:].strip())
-            })
+            orth = line[0:19].strip()
+            item = {
+                    'orth': orth,
+                    'pos': line[19:26].strip(),
+                    'form': line[26:45].strip(),
+                    'n': n,
+                    'wid': int(line[50:].strip())
+                }
+            if orth in data:
+                items = data[orth]
+                items.append(item)
+                data[orth] = items
+            else:
+                data[orth] = [item]
 
     with open('data/data.json', 'w') as out:
         json.dump(data, out)
-
-    return
 
 
 def import_suffixes():

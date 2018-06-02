@@ -35,9 +35,6 @@ class Parse:
         # Useful for sanitizing string for parsing
         self.punctuation_transtable = {ord(c): " " for c in string.punctuation}
 
-        # Sort by length
-        self.stems.sort(key=len)
-
         # Sort by length of ending
         self.inflects.sort(key=lambda x: len(x['ending']))
 
@@ -151,8 +148,9 @@ class Parse:
         for infl in infls:
             w = re.sub(infl['ending'] + "$", "", s)
 
-            for stem in self.stems:
-                if w == stem['orth']:
+            if w in self.stems:
+                stem_list = self.stems[w]
+                for stem in stem_list:
 
                     # If the inflection and stem identify as the same part of speech
                     if (
