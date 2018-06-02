@@ -9,20 +9,20 @@ Small helper function to get a list of unique stems from the inflects data
 import re
 from open_words.inflects import Inflects
 
+
 def get_stems(word, inflects=Inflects):
+    stems = [word]
 
-	stems = [ word ]
+    # Sort by length of ending
+    inflects.sort(key=lambda x: len(x['ending']))
 
-	# Sort by length of ending
-	inflects.sort(key=lambda x: len(x['ending']))
+    if not inflects:
+        print("Error importing inflects")
 
-	if not inflects:
-		print("Error importing inflects")
+    for inflect in inflects:
+        if word.endswith(inflect['ending']):
+            stem = re.sub(inflect['ending'] + "$", "", word)
+            if word != stem and stem not in stems:
+                stems.append(stem)
 
-	for inflect in inflects:
-		if word.endswith( inflect['ending'] ):
-			stem = re.sub( inflect['ending'] + "$", "", word )
-			if word != stem and stem not in stems:
-				stems.append( stem )
-
-	return stems
+    return stems

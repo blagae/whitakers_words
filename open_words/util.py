@@ -10,33 +10,32 @@ Largely taken from Whitaker's tricks_package.ad[b,s]
 
 
 def is_a_vowel(char):
+    return
 
-	return
 
 def a_roman_digit(char):
+    return
 
-	return
 
 def value(char):
+    return
 
-	return
 
 def only_roman_digits(s):
+    return
 
-	return
 
 def roman_number(s):
+    return
 
-	return
 
 def bad_roman_number(s):
+    return
 
-	return
 
 def roman_numerals(word):
+    return
 
-	return
 
 def syncope(word):
-
-	return
+    return
