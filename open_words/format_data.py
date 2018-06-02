@@ -149,7 +149,7 @@ def import_prefixes():
 
 
 def import_uniques():
-    with open('UNIQUES.LAT') as f:
+    with open('data/UNIQUES.LAT') as f:
 
         i = 0
         obj = {}
@@ -173,14 +173,14 @@ def import_uniques():
                 obj = {}
                 i = 0
 
-    with open('data.json', 'w') as out:
+    with open('data/uniques.json', 'w') as out:
         json.dump(data, out)
 
     return
 
 
 def import_inflects():
-    with open('INFLECTS.LAT') as f:
+    with open('data/INFLECTS.LAT') as f:
 
         i = 0
         obj = {}
@@ -800,10 +800,32 @@ def import_inflects():
                         'form': line[11:19].strip()
                     })
 
-    with open('data.json', 'w') as out:
-        json.dump(data, out)
+    reordered = reorder_inflects(data)
+
+    with open('data/inflects.json', 'w') as out:
+        json.dump(reordered, out)
 
     return
+
+
+def reorder_inflects(data):
+    keys = (x for x in range(8))  # assuming all endings are between 0 and 7 in length
+    result = {key: dict() for key in keys}
+    for item in data:
+        end = item['ending']
+        try:
+            store = result[len(end)]
+        except KeyError as e:
+            print(item)
+            continue
+        if end in store:
+            items = store[end]
+            items.append(item)
+            store[end] = items
+        else:
+            store[end] = [item]
+    return result
+
 
 
 def parse_infl_type(s):
