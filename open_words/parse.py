@@ -35,9 +35,6 @@ class Parse:
         # Useful for sanitizing string for parsing
         self.punctuation_transtable = {ord(c): " " for c in string.punctuation}
 
-        # Sort by length of ending
-        self.inflects.sort(key=lambda x: len(x['ending']))
-
         return
 
     def parse_line(self, line):
@@ -105,25 +102,20 @@ class Parse:
         out = []
 
         # Check against inflection list
-        for infl in self.inflects:
-            if s.endswith(infl['ending']):
+        max_inflect_length = min(7, len(s))
+        # range does not include the parameter number
+        for length in reversed(range(max_inflect_length)):
+            ending = s[-length:]
+            if ending in self.inflects[str(length)]:
+                infl = self.inflects[str(length)][ending]
 
-                # If we've already found the longest inflection
-                if len(infls) > 0 and (len(infls[0]['ending']) > len(infl['ending'])):
-                    break
-                else:
-                    infls.append(infl)
+                infls.append(infl)
 
         # Run against stems
         stems = self._check_stems(s, infls)
 
         # Lookup dict info
-        if reduced:
-            # If it is reduced, we don't need to lookup the word ends
-            # (or we'll end up with some pretty wonky words)
-            out = self._lookup_stems(stems, out, False)
-        else:
-            out = self._lookup_stems(stems, out)
+        out = self._lookup_stems(stems, out, not reduced)
 
         # If not already reduced, reduce the word and recurse
         if len(out) == 0 and not reduced:
@@ -145,44 +137,44 @@ class Parse:
 
         # For each of the inflections that is a match, strip the inflection from the end of the word
         # and look up the stripped word (w) in the stems
-        for infl in infls:
-            w = re.sub(infl['ending'] + "$", "", s)
+        for infl_list in infls:
+            w = s[:-len(infl_list[0]['ending'])]
 
             if w in self.stems:
                 stem_list = self.stems[w]
                 for stem in stem_list:
+                    for infl in infl_list:
+                        # If the inflection and stem identify as the same part of speech
+                        if (
+                                infl['pos'] == stem['pos']
+                                or (
+                                infl['pos'] == "VPAR"
+                                and stem['pos'] == "V"
+                        )
+                        ):
 
-                    # If the inflection and stem identify as the same part of speech
-                    if (
-                            infl['pos'] == stem['pos']
-                            or (
-                            infl['pos'] == "VPAR"
-                            and stem['pos'] == "V"
-                    )
-                    ):
+                            # Ensure the inflections apply to the correct stem decl/conj/etc
+                            if infl['n'][0] == stem['n'][0]:
+                                is_in_match_stems = False
 
-                        # Ensure the inflections apply to the correct stem decl/conj/etc
-                        if infl['n'][0] == stem['n'][0]:
-                            is_in_match_stems = False
+                                # If this stem is already in the match_stems list, add infl to that stem (if not already an infl in that stem list)
+                                for i, mst in enumerate(match_stems):
+                                    if stem == mst['st']:
+                                        is_in_match_stems = True
 
-                            # If this stem is already in the match_stems list, add infl to that stem (if not already an infl in that stem list)
-                            for i, mst in enumerate(match_stems):
-                                if stem == mst['st']:
-                                    is_in_match_stems = True
+                                        # So the matches a stem in the match_stems.  Is it unique to that stem's infls. If so, append it to that stem's infls.
+                                        is_in_stem_infls = False
+                                        for stem_infl in mst['infls']:
+                                            if stem_infl['form'] == infl['form']:
+                                                is_in_stem_infls = True
+                                                # we found a match, stop looking
+                                                break
 
-                                    # So the matches a stem in the match_stems.  Is it unique to that stem's infls. If so, append it to that stem's infls.
-                                    is_in_stem_infls = False
-                                    for stem_infl in mst['infls']:
-                                        if stem_infl['form'] == infl['form']:
-                                            is_in_stem_infls = True
-                                            # we found a match, stop looking
-                                            break
+                                        if not is_in_stem_infls:
+                                            mst['infls'].append(infl)
 
-                                    if not is_in_stem_infls:
-                                        mst['infls'].append(infl)
-
-                            if not is_in_match_stems:
-                                match_stems.append({'st': stem, 'infls': [infl]})
+                                if not is_in_match_stems:
+                                    match_stems.append({'st': stem, 'infls': [infl]})
 
         return match_stems
 
@@ -292,59 +284,61 @@ class Parse:
 
         len_w_p = len(word['parts'])
 
-        for infl in self.inflects:
-            # If the conjugation/declesion is a match AND the part of speech is a match (regularize V/VPAR)
-            if (
-                    infl['n'] == word['n']
-                    and (
-                    infl['pos'] == word['pos']
-                    or (
-                            infl['pos'] in ["V", "VPAR"]
-                            and word['pos'] in ["V", "VPAR"]
+        for key, infl_set in self.inflects.items():
+            for ke, infl_list in self.inflects[key].items():
+                for infl in infl_list:
+                    # If the conjugation/declesion is a match AND the part of speech is a match (regularize V/VPAR)
+                    if (
+                            infl['n'] == word['n']
+                            and (
+                            infl['pos'] == word['pos']
+                            or (
+                                    infl['pos'] in ["V", "VPAR"]
+                                    and word['pos'] in ["V", "VPAR"]
+                            )
                     )
-            )
-            ):
+                    ):
 
-                # If the word is a verb, get the 4 principle parts
-                if word['pos'] in ["V", "VPAR"]:
-                    # Pres act ind first singular
-                    if len_w_p > 0 and not end_one and (len(word['parts'][0]) > 0 and word['parts'][0] != "-"):
-                        if infl['form'] == "PRES  ACTIVE  IND  1 S":
-                            word['parts'][0] = word['parts'][0] + infl['ending']
-                            end_one = True
+                        # If the word is a verb, get the 4 principle parts
+                        if word['pos'] in ["V", "VPAR"]:
+                            # Pres act ind first singular
+                            if len_w_p > 0 and not end_one and (len(word['parts'][0]) > 0 and word['parts'][0] != "-"):
+                                if infl['form'] == "PRES  ACTIVE  IND  1 S":
+                                    word['parts'][0] = word['parts'][0] + infl['ending']
+                                    end_one = True
 
-                    # Pres act inf
-                    if len_w_p > 1 and not end_two and (len(word['parts'][1]) > 0 and word['parts'][1] != "-"):
-                        if infl['form'] == "PRES  ACTIVE  INF  0 X":
-                            word['parts'][1] = word['parts'][1] + infl['ending']
-                            end_two = True
+                            # Pres act inf
+                            if len_w_p > 1 and not end_two and (len(word['parts'][1]) > 0 and word['parts'][1] != "-"):
+                                if infl['form'] == "PRES  ACTIVE  INF  0 X":
+                                    word['parts'][1] = word['parts'][1] + infl['ending']
+                                    end_two = True
 
-                    # Perf act ind first singular
-                    if len_w_p > 2 and not end_three and (len(word['parts'][2]) > 0 and word['parts'][2] != "-"):
-                        if infl['form'] == "PERF  ACTIVE  IND  1 S":
-                            word['parts'][2] = word['parts'][2] + infl['ending']
-                            end_three = True
+                            # Perf act ind first singular
+                            if len_w_p > 2 and not end_three and (len(word['parts'][2]) > 0 and word['parts'][2] != "-"):
+                                if infl['form'] == "PERF  ACTIVE  IND  1 S":
+                                    word['parts'][2] = word['parts'][2] + infl['ending']
+                                    end_three = True
 
-                    # Perfect passive participle
-                    if len_w_p > 3 and not end_four and (len(word['parts'][3]) > 0 and word['parts'][3] != "-"):
-                        if infl['form'] == "NOM S M PRES PASSIVE PPL":
-                            word['parts'][3] = word['parts'][3] + infl['ending']
-                            end_four = True
+                            # Perfect passive participle
+                            if len_w_p > 3 and not end_four and (len(word['parts'][3]) > 0 and word['parts'][3] != "-"):
+                                if infl['form'] == "NOM S M PRES PASSIVE PPL":
+                                    word['parts'][3] = word['parts'][3] + infl['ending']
+                                    end_four = True
 
 
-                # If the word is a noun or adjective, get the nominative and genetive singular forms
-                elif word['pos'] in ["N", "ADJ", "PRON"]:
-                    # Nominative singular
-                    if len_w_p > 0 and not end_one:
-                        if infl['form'].startswith("NOM S") and (len(word['parts'][0]) > 0 and word['parts'][0] != "-"):
-                            word['parts'][0] = word['parts'][0] + infl['ending']
-                            end_one = True
+                        # If the word is a noun or adjective, get the nominative and genetive singular forms
+                        elif word['pos'] in ["N", "ADJ", "PRON"]:
+                            # Nominative singular
+                            if len_w_p > 0 and not end_one:
+                                if infl['form'].startswith("NOM S") and (len(word['parts'][0]) > 0 and word['parts'][0] != "-"):
+                                    word['parts'][0] = word['parts'][0] + infl['ending']
+                                    end_one = True
 
-                    # Genitive singular
-                    if len_w_p > 1 and not end_two:
-                        if infl['form'].startswith("GEN S") and (len(word['parts'][1]) > 0 and word['parts'][1] != "-"):
-                            word['parts'][1] = word['parts'][1] + infl['ending']
-                            end_two = True
+                            # Genitive singular
+                            if len_w_p > 1 and not end_two:
+                                if infl['form'].startswith("GEN S") and (len(word['parts'][1]) > 0 and word['parts'][1] != "-"):
+                                    word['parts'][1] = word['parts'][1] + infl['ending']
+                                    end_two = True
 
         # Finish up a little bit of standardization for forms
         # For Verbs
