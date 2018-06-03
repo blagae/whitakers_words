@@ -524,7 +524,7 @@ def import_inflects():
 
                     n = parse_infl_type(line[6:9])
                     data.append({
-                        'ending': line[23:33].strip(),
+                        'ending': line[28:34].strip(),
                         'n': n,
                         'note': "",
                         'pos': line[0:6].strip(),
@@ -534,7 +534,7 @@ def import_inflects():
 
                     n = parse_infl_type(line[6:9])
                     data.append({
-                        'ending': line[23:33].strip(),
+                        'ending': line[28:34].strip(),
                         'n': n,
                         'note': "",
                         'pos': line[0:6].strip(),
@@ -544,7 +544,7 @@ def import_inflects():
 
                     n = parse_infl_type(line[6:9])
                     data.append({
-                        'ending': line[23:33].strip(),
+                        'ending': line[28:34].strip(),
                         'n': n,
                         'note': "",
                         'pos': line[0:6].strip(),
@@ -554,7 +554,7 @@ def import_inflects():
 
                     n = parse_infl_type(line[6:9])
                     data.append({
-                        'ending': line[23:33].strip(),
+                        'ending': line[28:34].strip(),
                         'n': n,
                         'note': "first_and_second",
                         'pos': line[0:6].strip(),
@@ -564,13 +564,13 @@ def import_inflects():
 
                     n = parse_infl_type(line[6:9])
                     data.append({
-                        'ending': line[23:33].strip(),
+                        'ending': line[28:34].strip(),
                         'n': n,
                         'note': "nullus_alius",
                         'pos': line[0:6].strip(),
                         'form': line[10:17].strip()
                     })
-                elif i in range(701, 765):
+                elif i in range(701, 708) or i in range(716, 765):
 
                     n = parse_infl_type(line[6:9])
                     data.append({
@@ -582,11 +582,11 @@ def import_inflects():
                     })
 
                 # Third declension adj
-                elif i in range(701, 765):
+                elif i in range(709, 715):
 
                     n = parse_infl_type(line[6:9])
                     data.append({
-                        'ending': line[23:33].strip(),
+                        'ending': line[28:33].strip(),
                         'n': n,
                         'note': "",
                         'pos': line[0:6].strip(),
@@ -710,7 +710,7 @@ def import_inflects():
 
                     n = parse_infl_type(line[6:9])
                     data.append({
-                        'ending': line[38:52].strip(),
+                        'ending': line[38:50].strip(),
                         'n': n,
                         'note': "eo_ire",
                         'pos': line[0:6].strip(),
@@ -790,10 +790,19 @@ def import_inflects():
                     })
 
                 # Numerals
-                elif i in range(2971, 3941):
+                elif i in range(2971, 3128):
                     n = parse_infl_type(line[7:10])
                     data.append({
-                        'ending': line[32:52].strip(),
+                        'ending': line[32:42].strip(),
+                        'n': n,
+                        'note': "numeral",
+                        'pos': line[0:7].strip(),
+                        'form': line[11:19].strip()
+                    })
+                elif i in range(3132, 3140):
+                    n = parse_infl_type(line[7:10])
+                    data.append({
+                        'ending': line[36:42].strip(),
                         'n': n,
                         'note': "numeral",
                         'pos': line[0:7].strip(),
@@ -813,11 +822,7 @@ def reorder_inflects(data):
     result = {key: dict() for key in keys}
     for item in data:
         end = item['ending']
-        try:
-            store = result[len(end)]
-        except KeyError as e:
-            print(item)
-            continue
+        store = result[len(end)]
         if end in store:
             items = store[end]
             items.append(item)
