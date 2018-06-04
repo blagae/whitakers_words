@@ -487,6 +487,7 @@ class Parse:
 
                         if not is_in_formatted_infls:
                             to_add_infls.append({
+                                'stem': stem['st']['orth'],
                                 'ending': infl['ending'],
                                 'pos': infl['pos'],
                                 'form': infl['form']
