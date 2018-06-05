@@ -11,13 +11,22 @@ __license__ = "MIT License. See LICENSE."
 
 import string
 import re
-import pdb
 from copy import deepcopy
-from open_words.dict_line import WordsDict
-from open_words.addons import LatinAddons
-from open_words.stem_list import Stems
-from open_words.uniques import Uniques
-from open_words.inflects import Inflects
+
+try:
+    from open_words.dict_line import WordsDict
+    from open_words.addons import LatinAddons
+    from open_words.stem_list import Stems
+    from open_words.uniques import Uniques
+    from open_words.inflects import Inflects
+except ImportError:
+    from open_words.format_data import reimport_all_dicts
+    reimport_all_dicts()
+    from open_words.dict_line import WordsDict
+    from open_words.addons import LatinAddons
+    from open_words.stem_list import Stems
+    from open_words.uniques import Uniques
+    from open_words.inflects import Inflects
 
 
 class Parse:

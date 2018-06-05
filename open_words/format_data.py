@@ -8,6 +8,12 @@ Format the data from the input files from Whitaker's Words
 import json
 
 
+def dump_file(name, obj):
+    with open(name, 'w') as out:
+        out.write("value = ")
+        json.dump(obj, out)
+
+
 def import_dicts():
     keys = dict()
     ids = []
@@ -61,12 +67,8 @@ def import_dicts():
             else:
                 keys[orth] = [item]
 
-    with open('files/dict_keys.files', 'w') as out:
-        json.dump(keys, out)
-    with open('files/dict_ids.files', 'w') as out:
-        json.dump(ids, out)
-
-    return
+    dump_file('files/dict_keys.py', keys)
+    dump_file('files/dict_ids.py', ids)
 
 
 def import_stems():
@@ -95,8 +97,7 @@ def import_stems():
             else:
                 data[orth] = [item]
 
-    with open('files/stems.files', 'w') as out:
-        json.dump(data, out)
+    dump_file('files/stems.py', data)
 
 
 def import_suffixes():
@@ -124,10 +125,7 @@ def import_suffixes():
                 obj = {}
                 i = 0
 
-    with open('files/suffixes.files', 'w') as out:
-        json.dump(data, out)
-
-    return
+    dump_file('files/suffixes.py', data)
 
 
 def import_prefixes():
@@ -155,10 +153,7 @@ def import_prefixes():
                 obj = {}
                 i = 0
 
-    with open('files/prefixes.files', 'w') as out:
-        json.dump(data, out)
-
-    return
+    dump_file('files/prefixes.py', data)
 
 
 def import_uniques():
@@ -186,10 +181,7 @@ def import_uniques():
                 obj = {}
                 i = 0
 
-    with open('files/uniques.files', 'w') as out:
-        json.dump(data, out)
-
-    return
+    dump_file('files/uniques.py', data)
 
 
 def import_inflects():
@@ -823,11 +815,7 @@ def import_inflects():
                     })
 
     reordered = reorder_inflects(data)
-
-    with open('files/inflects.files', 'w') as out:
-        json.dump(reordered, out)
-
-    return
+    dump_file('files/inflects.py', reordered)
 
 
 def reorder_inflects(data):
@@ -855,6 +843,7 @@ def parse_infl_type(s):
                 pass
 
     return n
+
 
 def reimport_all_dicts():
     import_dicts()
