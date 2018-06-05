@@ -26,3 +26,4 @@ pypyenv/
 env*/
 venv/
 __pycache__
+open_words/files/

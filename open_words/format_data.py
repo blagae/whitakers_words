@@ -9,7 +9,8 @@ import json
 
 
 def import_dicts():
-    data = []
+    keys = dict()
+    ids = []
     with open('data/DICTLINE.GEN', encoding="ISO-8859-1") as f:
         for i, line in enumerate(f):
 
@@ -39,8 +40,7 @@ def import_dicts():
                 sense = sense.strip()
                 if len(sense):
                     new_senses.append(sense)
-
-            data.append({
+            item = {
                 'id': i + 1,
                 'orth': orth,
                 'parts': parts,
@@ -48,10 +48,23 @@ def import_dicts():
                 'form': line[83:100].strip(),
                 'n': n,
                 'senses': new_senses
-            })
+            }
 
-    with open('data/data.json', 'w') as out:
-        json.dump(data, out)
+            if len(ids) == 0:
+                ids.append(item)
+            ids.append(item)
+
+            if orth in keys:
+                items = keys[orth]
+                items.append(item)
+                keys[orth] = items
+            else:
+                keys[orth] = [item]
+
+    with open('files/dict_keys.files', 'w') as out:
+        json.dump(keys, out)
+    with open('files/dict_ids.files', 'w') as out:
+        json.dump(ids, out)
 
     return
 
@@ -82,7 +95,7 @@ def import_stems():
             else:
                 data[orth] = [item]
 
-    with open('data/data.json', 'w') as out:
+    with open('files/stems.files', 'w') as out:
         json.dump(data, out)
 
 
@@ -111,7 +124,7 @@ def import_suffixes():
                 obj = {}
                 i = 0
 
-    with open('data/data.json', 'w') as out:
+    with open('files/suffixes.files', 'w') as out:
         json.dump(data, out)
 
     return
@@ -142,7 +155,7 @@ def import_prefixes():
                 obj = {}
                 i = 0
 
-    with open('data/data.json', 'w') as out:
+    with open('files/prefixes.files', 'w') as out:
         json.dump(data, out)
 
     return
@@ -173,7 +186,7 @@ def import_uniques():
                 obj = {}
                 i = 0
 
-    with open('data/uniques.json', 'w') as out:
+    with open('files/uniques.files', 'w') as out:
         json.dump(data, out)
 
     return
@@ -811,7 +824,7 @@ def import_inflects():
 
     reordered = reorder_inflects(data)
 
-    with open('data/inflects.json', 'w') as out:
+    with open('files/inflects.files', 'w') as out:
         json.dump(reordered, out)
 
     return
@@ -832,7 +845,6 @@ def reorder_inflects(data):
     return result
 
 
-
 def parse_infl_type(s):
     if len(s.strip()) > 0:
         n = s.strip().split(" ")
@@ -843,3 +855,11 @@ def parse_infl_type(s):
                 pass
 
     return n
+
+def reimport_all_dicts():
+    import_dicts()
+    import_stems()
+    import_suffixes()
+    import_prefixes()
+    import_uniques()
+    import_inflects()
