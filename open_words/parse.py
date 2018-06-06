@@ -14,7 +14,7 @@ import re
 from copy import deepcopy
 
 try:
-    from open_words.dict_line import WordsDict
+    from open_words.dict_id import WordsIds
     from open_words.addons import LatinAddons
     from open_words.stem_list import Stems
     from open_words.uniques import Uniques
@@ -22,7 +22,7 @@ try:
 except ImportError:
     from open_words.format_data import reimport_all_dicts
     reimport_all_dicts()
-    from open_words.dict_line import WordsDict
+    from open_words.dict_id import WordsIds
     from open_words.addons import LatinAddons
     from open_words.stem_list import Stems
     from open_words.uniques import Uniques
@@ -31,11 +31,11 @@ except ImportError:
 
 class Parse:
 
-    def __init__(self, words_dict=WordsDict, addons=LatinAddons, stems=Stems, uniques=Uniques, inflects=Inflects):
+    def __init__(self, words_list=WordsIds, addons=LatinAddons, stems=Stems, uniques=Uniques, inflects=Inflects):
         """Provide a modular structure for loading the parser data"""
 
         # Parser data
-        self.dict = words_dict
+        self.dict = words_list
         self.addons = addons
         self.stems = stems
         self.uniques = uniques
@@ -43,8 +43,6 @@ class Parse:
 
         # Useful for sanitizing string for parsing
         self.punctuation_transtable = {ord(c): " " for c in string.punctuation}
-
-        return
 
     def parse_line(self, line):
         """Parse a line of words delimited by spaces"""
@@ -191,59 +189,59 @@ class Parse:
         """Find the word id mentioned in the stem in the dictionary"""
 
         for stem in match_stems:
-            for word in self.dict:
-                # Lookup by id
-                if stem['st']['wid'] == word['id']:
+            word = self.dict[int(stem['st']['wid'])]
+            if stem['st']['wid'] != word['id']:
+                raise Exception("given key does not exist -- this exception should never occur")
 
-                    # If word already in out, add stem to word stems
-                    is_in_out = False
-                    for i, w in enumerate(out):
-                        if (
-                                'id' in w['w'] and word['id'] == w['w']['id']
-                                or
-                                w['w']['orth'] == word['orth']
-                        ):
+            # If word already in out, add stem to word stems
+            is_in_out = False
+            for i, w in enumerate(out):
+                if (
+                        'id' in w['w'] and word['id'] == w['w']['id']
+                        or
+                        w['w']['orth'] == word['orth']
+                ):
 
-                            # It is in the out list already, flag and then check if the stem is already in the stems
-                            is_in_out = True
+                    # It is in the out list already, flag and then check if the stem is already in the stems
+                    is_in_out = True
 
-                            # Ensure the stem is not already in the out word stems
-                            is_in_out_word_stems = False
-                            for st in out[i]['stems']:
-                                if st == stem:
-                                    is_in_out_word_stems = True
-                                    # We have a match, break the loop
-                                    break
-
-                            if not is_in_out_word_stems:
-                                out[i]['stems'].append(stem)
-                            # If we matched a word in the out, break the loop
+                    # Ensure the stem is not already in the out word stems
+                    is_in_out_word_stems = False
+                    for st in out[i]['stems']:
+                        if st == stem:
+                            is_in_out_word_stems = True
+                            # We have a match, break the loop
                             break
 
-                    # If the word isn't in the out yet
-                    if not is_in_out:
+                    if not is_in_out_word_stems:
+                        out[i]['stems'].append(stem)
+                    # If we matched a word in the out, break the loop
+                    break
 
-                        # Check the VPAR / V relationship
-                        if word['pos'] == "V":
+            # If the word isn't in the out yet
+            if not is_in_out:
 
-                            # If the stem doesn't match the 4th principle part, it's not VPAR
-                            if word['parts'].index(stem['st']['orth']) == 3:
+                # Check the VPAR / V relationship
+                if word['pos'] == "V":
 
-                                # Remove "V" infls
-                                stem = self._remove_extra_infls(stem, "V")
+                    # If the stem doesn't match the 4th principle part, it's not VPAR
+                    if word['parts'].index(stem['st']['orth']) == 3:
 
-                            else:
-                                # Remove "VPAR" infls
-                                stem = self._remove_extra_infls(stem, "VPAR")
+                        # Remove "V" infls
+                        stem = self._remove_extra_infls(stem, "V")
 
-                        # Lookup word ends
-                        # Need to Clone this object - otherwise self.dict is modified
-                        word_clone = deepcopy(word)
-                        if get_word_ends:
-                            word_clone = self._get_word_endings(word_clone)
+                    else:
+                        # Remove "VPAR" infls
+                        stem = self._remove_extra_infls(stem, "VPAR")
 
-                        # Finally, append new word to out
-                        out.append({'w': word_clone, 'stems': [stem]})
+                # Lookup word ends
+                # Need to Clone this object - otherwise self.dict is modified
+                word_clone = deepcopy(word)
+                if get_word_ends:
+                    word_clone = self._get_word_endings(word_clone)
+
+                # Finally, append new word to out
+                out.append({'w': word_clone, 'stems': [stem]})
 
         return out
 
