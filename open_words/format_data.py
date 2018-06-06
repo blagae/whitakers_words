@@ -161,7 +161,7 @@ def import_uniques():
 
         i = 0
         obj = {}
-        data = []
+        data = dict()
 
         for line in f:
 
@@ -177,7 +177,13 @@ def import_uniques():
 
             i = i + 1
             if i == 3:
-                data.append(obj)
+                orth = obj['orth']
+                if orth in data:
+                    items = data[orth]
+                    items.append(obj)
+                    data[orth] = items
+                else:
+                    data[orth] = [obj]
                 obj = {}
                 i = 0
 

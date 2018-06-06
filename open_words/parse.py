@@ -86,11 +86,10 @@ class Parse:
         s, out = self._split_enclitic(s)
 
         # Check against list of uniques
-        for u in self.uniques:
-            if s == u['orth']:
-                out.append({'w': u, 'stems': []})
-                is_unique = True
-                break
+        if s in self.uniques:
+            u = self.uniques[s]
+            out.append({'w': u, 'stems': []})
+            is_unique = True
 
         # If it's not in the list of uniques
         if not is_unique:
