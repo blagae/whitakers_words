@@ -61,8 +61,6 @@ class Parse:
         Words program.
 
         """
-        out = []
-
         s = input_string
 
         # Do the lookup based on the direction of the parse
@@ -79,20 +77,14 @@ class Parse:
 
     def latin_to_english(self, s):
         """Find definition and word formation from Latin word"""
-        is_unique = False
-        out = []
-
         # Split enclitics
         s, out = self._split_enclitic(s)
 
         # Check against list of uniques
         if s in self.uniques:
-            u = self.uniques[s]
-            out.append({'w': u, 'stems': []})
-            is_unique = True
-
-        # If it's not in the list of uniques
-        if not is_unique:
+            for u in self.uniques[s]:
+                out.append({'w': u, 'stems': []})
+        else:
             out = self._find_forms(s)
 
         return out
@@ -331,7 +323,6 @@ class Parse:
                                     word['parts'][3] = word['parts'][3] + infl['ending']
                                     end_four = True
 
-
                         # If the word is a noun or adjective, get the nominative and genetive singular forms
                         elif word['pos'] in ["N", "ADJ", "PRON"]:
                             # Nominative singular
@@ -423,9 +414,8 @@ class Parse:
     def _reduce(self, s):
         """Reduce the stem with suffixes and try again"""
         out = []
-        is_unique = False
         found_new_match = False
-        infls = []
+
         # For each inflection match, check prefixes and suffixes
         for prefix in self.addons['prefixes']:
             if s.startswith(prefix['orth']):
@@ -462,7 +452,7 @@ class Parse:
 
         return stem
 
-    def _format_output(self, out, format_type="condensed"):
+    def _format_output(self, out):
         """Format the output in the designated type"""
         new_out = []
 
@@ -580,8 +570,6 @@ class Parse:
          - voice: active, passive
 
         """
-        formatted = {}
-
         if pos in ["N", "PRON", "ADJ", "NUM"]:
             # Ex. "ACC S C"
             form = form.split(" ")
@@ -639,7 +627,6 @@ class Parse:
         return formatted
 
     def _trans_declension(self, abb):
-        w = ''
         declensions = {
             'NOM': "nominative",
             'VOC': "vocative",
@@ -656,7 +643,6 @@ class Parse:
         return w
 
     def _trans_number(self, abb):
-        w = ''
         numbers = {
             'S': "singular",
             'P': "plural",
@@ -668,7 +654,6 @@ class Parse:
         return w
 
     def _trans_gender(self, abb):
-        w = ''
         genders = {
             'M': "masculine",
             'F': "feminine",
@@ -682,7 +667,6 @@ class Parse:
         return w
 
     def _trans_mood(self, abb):
-        w = ''
         moods = {
             'IND': "indicative",
             'SUB': "subjunctive",
@@ -696,7 +680,6 @@ class Parse:
         return w
 
     def _trans_voice(self, abb):
-        w = ''
         voices = {
             'ACTIVE': "active",
             'PASSIVE': "passive",
@@ -708,7 +691,6 @@ class Parse:
         return w
 
     def _trans_tense(self, abb):
-        w = ''
 
         tenses = {
             'PRES': "present",
