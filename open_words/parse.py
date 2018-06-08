@@ -77,15 +77,18 @@ class Parse:
 
     def latin_to_english(self, s):
         """Find definition and word formation from Latin word"""
+        out = []
         # Split enclitics
-        s, out = self._split_enclitic(s)
+        options = self._split_enclitic(s)
 
-        # Check against list of uniques
-        if s in self.uniques:
-            for u in self.uniques[s]:
-                out.append({'w': u, 'stems': []})
-        else:
-            out = self._find_forms(s)
+        for opt in options:
+            # Check base word against list of uniques
+            if opt['base'] in self.uniques:
+                for u in self.uniques[opt['base']]:
+                    out.append({'w': u, 'enclitic': opt['encl'], 'stems': []})
+            # Get regular words
+            else:
+                out.extend(self._find_forms(opt))
 
         return out
 
@@ -95,29 +98,28 @@ class Parse:
         print(" -- Still need to build English to Latin")
         return out
 
-    def _find_forms(self, s, reduced=False):
+    def _find_forms(self, option, reduced=False):
         infls = []
-        out = []
 
         # Check against inflection list
-        max_inflect_length = min(7, len(s))
+        max_inflect_length = min(7, len(option['base']) - 1)
         # range does not include the parameter number
         for length in reversed(range(max_inflect_length)):
-            ending = s[-length:]
+            ending = option['base'][-length:]
             if ending in self.inflects[str(length)]:
                 infl = self.inflects[str(length)][ending]
 
                 infls.append(infl)
 
         # Run against stems
-        stems = self._check_stems(s, infls)
+        stems = self._check_stems(option, infls)
 
         # Lookup dict info
-        out = self._lookup_stems(stems, out, not reduced)
+        out = self._lookup_stems(stems, not reduced)
 
         # If not already reduced, reduce the word and recurse
         if len(out) == 0 and not reduced:
-            r_out = self._reduce(s)
+            r_out = self._reduce(option)
 
             # If there's useful data after reducing, extend out w/data
             if r_out:
@@ -125,7 +127,7 @@ class Parse:
 
         return out
 
-    def _check_stems(self, s, infls):
+    def _check_stems(self, option, infls):
         """
         For each inflection that was a match, remove the inflection from
         the end of the word string and then check the resulting stem
@@ -136,7 +138,7 @@ class Parse:
         # For each of the inflections that is a match, strip the inflection from the end of the word
         # and look up the stripped word (w) in the stems
         for infl_list in infls:
-            w = s[:-len(infl_list[0]['ending'])]
+            w = option['base'][:-len(infl_list[0]['ending'])]
 
             if w in self.stems:
                 stem_list = self.stems[w]
@@ -172,12 +174,13 @@ class Parse:
                                             mst['infls'].append(infl)
 
                                 if not is_in_match_stems:
-                                    match_stems.append({'st': stem, 'infls': [infl]})
+                                    match_stems.append({'st': stem, 'infls': [infl], 'encl': option['encl']})
 
         return match_stems
 
-    def _lookup_stems(self, match_stems, out, get_word_ends=True):
+    def _lookup_stems(self, match_stems, get_word_ends=True):
         """Find the word id mentioned in the stem in the dictionary"""
+        out = []
 
         for stem in match_stems:
             word = self.dict[int(stem['st']['wid'])]
@@ -232,13 +235,13 @@ class Parse:
                     word_clone = self._get_word_endings(word_clone)
 
                 # Finally, append new word to out
-                out.append({'w': word_clone, 'stems': [stem]})
+                out.append({'w': word_clone, 'enclitic': stem['encl'], 'stems': [stem]})
 
         return out
 
     def _split_enclitic(self, s):
         """Split enclitic ending from word"""
-        out = []
+        out = [{'base': s, 'encl': ''}]
 
         # Test the different tackons / packons as specified in addons.py
         for e in self.addons['tackons']:
@@ -249,25 +252,25 @@ class Parse:
 
                 # Est exception
                 if s != "est":
-                    out.append({'w': e, "stems": []})
-                    s = re.sub(e['orth'] + "$", "", s)
-                break
+                    base = re.sub(e['orth'] + "$", "", s)
+                    out.append({'base': base, 'encl': e, "stems": []})
 
+        # which list do we get info from
         if s.startswith("qu"):
-            for e in self.addons['packons']:
-                if s.endswith(e['orth']):
-                    out.append({'w': e})
-                    s = re.sub(e['orth'] + "$", "", s)
-                    break
-
+            lst = 'packons'
         else:
-            for e in self.addons['not_packons']:
-                if s.endswith(e['orth']):
-                    out.append({'w': e})
-                    s = re.sub(e['orth'] + "$", "", s)
+            lst = 'not_packons'
+
+        for e in self.addons[lst]:
+            if s.endswith(e['orth']):
+                base = re.sub(e['orth'] + "$", "", s)
+                # an enclitic without a base is not an enclitic
+                if base:
+                    out.append({'base': base, 'encl': e, "stems": []})
+                    # avoid double entry for -cumque and -que
                     break
 
-        return s, out
+        return out
 
     def _get_word_endings(self, word):
         """
@@ -462,7 +465,8 @@ class Parse:
                 'senses': word['w']['senses'],
                 'infls': []
             }
-
+            if word['enclitic']:
+                obj['enclitic'] = word['enclitic']
             # Format the orth of the new object
             if 'parts' in word['w']:
                 obj['orth'] = word['w']['parts']

@@ -11,7 +11,7 @@ import json
 def dump_file(name, obj):
     with open(name, 'w') as out:
         out.write("value = ")
-        json.dump(obj, out, indent=2)
+        json.dump(obj, out)
 
 
 def import_dicts():
