@@ -414,11 +414,11 @@ class Parse:
 
         return s
 
-    def _reduce(self, s):
+    def _reduce(self, option):
         """Reduce the stem with suffixes and try again"""
         out = []
         found_new_match = False
-
+        s = option['base']
         # For each inflection match, check prefixes and suffixes
         for prefix in self.addons['prefixes']:
             if s.startswith(prefix['orth']):
@@ -432,7 +432,8 @@ class Parse:
                 break
 
         # Find forms with the 'reduced' flag set to true
-        out = self._find_forms(s, True)
+        option['base'] = s
+        out = self._find_forms(option, True)
 
         # Has reducing input string given us useful data?
         # If not, return false
@@ -440,8 +441,8 @@ class Parse:
             if len(word['stems']) > 0:
                 found_new_match = True
 
-        if not found_new_match:
-            out = False
+        if out and not found_new_match:
+            out = []
 
         return out
 
