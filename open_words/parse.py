@@ -15,6 +15,7 @@ from copy import deepcopy
 
 try:
     from open_words.dict_id import WordsIds
+    from open_words.dict_line import WordsDict
     from open_words.addons import LatinAddons
     from open_words.stem_list import Stems
     from open_words.uniques import Uniques
@@ -23,6 +24,7 @@ except ImportError:
     from open_words.format_data import reimport_all_dicts
     reimport_all_dicts()
     from open_words.dict_id import WordsIds
+    from open_words.dict_line import WordsDict
     from open_words.addons import LatinAddons
     from open_words.stem_list import Stems
     from open_words.uniques import Uniques
@@ -31,15 +33,16 @@ except ImportError:
 
 class Parse:
 
-    def __init__(self, words_list=WordsIds, addons=LatinAddons, stems=Stems, uniques=Uniques, inflects=Inflects):
+    def __init__(self, words_list=WordsIds, addons=LatinAddons, stems=Stems, uniques=Uniques, inflects=Inflects, words_keys=WordsDict):
         """Provide a modular structure for loading the parser data"""
 
         # Parser data
-        self.dict = words_list
+        self.wordlist = words_list
         self.addons = addons
         self.stems = stems
         self.uniques = uniques
         self.inflects = inflects
+        self.wordkeys = words_keys
 
         # Useful for sanitizing string for parsing
         self.punctuation_transtable = {ord(c): " " for c in string.punctuation}
@@ -101,8 +104,15 @@ class Parse:
     def _find_forms(self, option, reduced=False):
         infls = []
 
+        if not option['encl']:
+            if option['base'] in self.wordkeys:
+                out = []
+                for w in self.wordkeys[option['base']]:
+                    out.append({'w': deepcopy(w), 'enclitic': '', 'stems': []})
+                return out
+
         # Check against inflection list
-        max_inflect_length = min(7, len(option['base']) - 1)
+        max_inflect_length = min(7, len(option['base']))
         # range does not include the parameter number
         for length in reversed(range(max_inflect_length)):
             ending = option['base'][-length:]
@@ -183,7 +193,7 @@ class Parse:
         out = []
 
         for stem in match_stems:
-            word = self.dict[int(stem['st']['wid'])]
+            word = self.wordlist[int(stem['st']['wid'])]
             if stem['st']['wid'] != word['id']:
                 raise Exception("given key does not exist -- this exception should never occur")
 
@@ -229,7 +239,7 @@ class Parse:
                         stem = self._remove_extra_infls(stem, "VPAR")
 
                 # Lookup word ends
-                # Need to Clone this object - otherwise self.dict is modified
+                # Need to Clone this object - otherwise self.wordlist is modified
                 word_clone = deepcopy(word)
                 if get_word_ends:
                     word_clone = self._get_word_endings(word_clone)

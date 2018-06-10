@@ -6,17 +6,18 @@ import json
 
 class CrashTest(unittest.TestCase):
 
-    def __init__(self, methodName):
-        super().__init__(methodName)
+    def __init__(self, meth):
+        super().__init__(meth)
         self.par = Parse()
 
     def parse(self, word):
-        return self.par.parse(word)
+        print(self.par.parse(word))
 
     def test_unique(self):
-        val = self.parse("quodcumque")
-        print(json.dumps(val, indent=2))
+        self.parse("quodcumque")
 
     def test_regular(self):
-        val = self.parse("cecidit")
-        print(json.dumps(val, indent=2))
+        self.parse("cecidit")
+
+    def test_immutable(self):
+        self.parse("et")
