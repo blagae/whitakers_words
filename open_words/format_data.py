@@ -187,6 +187,16 @@ def import_uniques():
                 obj = {}
                 i = 0
 
+    from open_words.esse import esse
+    for est in esse:
+        orth = est['orth']
+        if orth in data:
+            items = data[orth]
+            items.append(est)
+            data[orth] = items
+        else:
+            data[orth] = [est]
+
     dump_file('files/uniques.py', data)
 
 
