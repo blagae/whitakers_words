@@ -1,7 +1,6 @@
 from open_words.parse import Parse
 
 import unittest
-import json
 
 
 class CrashTest(unittest.TestCase):
@@ -15,6 +14,9 @@ class CrashTest(unittest.TestCase):
 
     def test_unique(self):
         self.parse("quodcumque")
+
+    def test_esse(self):
+        self.parse("sum")
 
     def test_regular(self):
         self.parse("cecidit")

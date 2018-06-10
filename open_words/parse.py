@@ -103,13 +103,11 @@ class Parse:
 
     def _find_forms(self, option, reduced=False):
         infls = []
+        out = []
 
-        if not option['encl']:
-            if option['base'] in self.wordkeys:
-                out = []
-                for w in self.wordkeys[option['base']]:
-                    out.append({'w': deepcopy(w), 'enclitic': '', 'stems': []})
-                return out
+        if not option['encl'] and option['base'] in self.wordkeys:
+            for w in self.wordkeys[option['base']]:
+                out.append({'w': deepcopy(w), 'enclitic': '', 'stems': []})
 
         # Check against inflection list
         max_inflect_length = min(7, len(option['base']))
@@ -125,7 +123,7 @@ class Parse:
         stems = self._check_stems(option, infls)
 
         # Lookup dict info
-        out = self._lookup_stems(stems, not reduced)
+        out.extend(self._lookup_stems(stems, not reduced))
 
         # If not already reduced, reduce the word and recurse
         if len(out) == 0 and not reduced:
