@@ -1,6 +1,7 @@
 from open_words.parse import Parse
 
 import unittest
+import json
 
 
 class CrashTest(unittest.TestCase):
@@ -10,7 +11,7 @@ class CrashTest(unittest.TestCase):
         self.par = Parse()
 
     def parse(self, word):
-        print(self.par.parse(word))
+        print(json.dumps(self.par.parse(word), indent=2))
 
     def test_unique(self):
         self.parse("quodcumque")
@@ -23,3 +24,9 @@ class CrashTest(unittest.TestCase):
 
     def test_immutable(self):
         self.parse("et")
+
+    def test_vol(self):
+        self.parse("vult")
+
+    def test_optional_enclitic(self):
+        self.parse("pollice")

@@ -56,7 +56,7 @@ class Parse:
                 out.append(self.parse(word))
         return out
 
-    def parse(self, input_string, direction="latin_to_english", formatted=True):
+    def parse(self, input_string, formatted=True):
         """
         Parse an input string as a Latin word and look it up in the Words dictionary.
 
@@ -66,12 +66,7 @@ class Parse:
         """
         s = input_string
 
-        # Do the lookup based on the direction of the parse
-        if direction == "latin_to_english":
-            out = self.latin_to_english(s)
-
-        else:
-            out = self.english_to_latin(s)
+        out = self.latin_to_english(s)
 
         if formatted:
             out = self._format_output(out)
