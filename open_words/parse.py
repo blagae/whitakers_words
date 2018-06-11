@@ -84,7 +84,7 @@ class Parse:
             # Check base word against list of uniques
             if opt['base'] in self.uniques:
                 for u in self.uniques[opt['base']]:
-                    out.append({'w': u, 'enclitic': opt['encl'], 'stems': []})
+                    out.append({'w': u, 'enclitic': opt['encl'], 'stems': []})  # TODO: stems shouldn't be empty
             # Get regular words
             else:
                 out.extend(self._find_forms(opt))
@@ -103,12 +103,13 @@ class Parse:
 
         if not option['encl'] and option['base'] in self.wordkeys:
             for w in self.wordkeys[option['base']]:
-                out.append({'w': deepcopy(w), 'enclitic': '', 'stems': []})
+                if w['pos'] in ['ADV', 'PRON', 'PREP', 'INTERJ']:  # TODO: expand on these conditions
+                    out.append({'w': deepcopy(w), 'enclitic': '', 'stems': []})  # TODO: stems shouldn't be empty
 
         # Check against inflection list
         max_inflect_length = min(7, len(option['base']))
         # range does not include the parameter number
-        for length in reversed(range(max_inflect_length)):
+        for length in reversed(range(1, max_inflect_length)):
             ending = option['base'][-length:]
             if ending in self.inflects[str(length)]:
                 infl = self.inflects[str(length)][ending]
@@ -187,7 +188,10 @@ class Parse:
         out = []
 
         for stem in match_stems:
-            word = self.wordlist[int(stem['st']['wid'])]
+            try:
+                word = self.wordlist[int(stem['st']['wid'])]
+            except IndexError:
+                continue
             if stem['st']['wid'] != word['id']:
                 raise Exception("given key does not exist -- this exception should never occur")
 

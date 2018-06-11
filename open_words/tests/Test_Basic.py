@@ -30,3 +30,33 @@ class CrashTest(unittest.TestCase):
 
     def test_optional_enclitic(self):
         self.parse("pollice")
+
+    def test_pronoun(self):
+        self.parse("se")
+
+    def test_preposition(self):
+        self.parse("super")
+
+    def test_personal_pronoun(self):
+        self.parse("tu")
+
+    def test_aen(self):
+        words = dict()
+        filename = "aeneis.txt"
+        with open(filename, encoding="ISO-8859-1") as f:
+            for line in f:
+                for word in line.split():
+                    try:
+                        # don't print
+                        self.par.parse(word)
+                    except:
+                        if word in words:
+                            words[word] += 1
+                        else:
+                            words[word] = 1
+        print(len(words))
+        total = 0
+        for k, v in words.items():
+            print(k)
+            total += v
+        print(total)
