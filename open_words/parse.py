@@ -91,20 +91,13 @@ class Parse:
 
         return out
 
-    def english_to_latin(self, s):
-        """Find definition and word formation from English word"""
-        out = []
-        print(" -- Still need to build English to Latin")
-        return out
-
     def _find_forms(self, option, reduced=False):
         infls = []
         out = []
 
-        if not option['encl'] and option['base'] in self.wordkeys:
-            for w in self.wordkeys[option['base']]:
-                if w['pos'] in ['ADV', 'PRON', 'PREP', 'INTERJ']:  # TODO: expand on these conditions
-                    out.append({'w': deepcopy(w), 'enclitic': '', 'stems': []})  # TODO: stems shouldn't be empty
+        if option['base'] in self.wordkeys:
+            ii = self.inflects["0"]['']
+            infls.append(ii)
 
         # Check against inflection list
         max_inflect_length = min(7, len(option['base']))
@@ -143,8 +136,10 @@ class Parse:
         # For each of the inflections that is a match, strip the inflection from the end of the word
         # and look up the stripped word (w) in the stems
         for infl_list in infls:
-            w = option['base'][:-len(infl_list[0]['ending'])]
-
+            if len(infl_list[0]['ending']):
+                w = option['base'][:-len(infl_list[0]['ending'])]
+            else:
+                w = option['base']
             if w in self.stems:
                 stem_list = self.stems[w]
                 for stem in stem_list:
