@@ -113,7 +113,7 @@ class Parse:
         against the list of stems loaded in __init__
         """
         match_stems = []
-
+        result = dict()
         # For each of the inflections that is a match, strip the inflection from the end of the word
         # and look up the stripped word (w) in the stems
         for infl_list in infls:
@@ -126,47 +126,25 @@ class Parse:
                 for stem_candidate in stem_list:
                     for infl in infl_list:
                         # If the inflection and stem identify as the same part of speech
-                        if (
-                                infl['pos'] == stem_candidate['pos']
-                                or (
-                                infl['pos'] == "VPAR"
-                                and stem_candidate['pos'] == "V"
-                        )
-                        ):
+                        if (infl['pos'] == stem_candidate['pos'] or
+                                (infl['pos'] == "VPAR" and stem_candidate['pos'] == "V")):
 
                             # Ensure the inflections apply to the correct stem decl/conj/etc
                             if infl['n'][0] == stem_candidate['n'][0]:
-                                is_in_match_stems = False
+                                if stem_candidate['form'] in result:
+                                    iss = result[stem_candidate['form']]
+                                    iss['infls'].append(infl)
+                                    result[stem_candidate['form']] = iss
+                                else:
+                                    result[stem_candidate['form']] = {'st': stem_candidate, 'infls': [infl], 'encl': option['encl']}
 
-                                # If this stem is already in the match_stems list,
-                                # add infl to that stem (if not already an infl in that stem list)
-                                for i, mst in enumerate(match_stems):
-                                    if stem_candidate == mst['st']:
-                                        is_in_match_stems = True
-
-                                        # So the matches a stem in the match_stems.
-                                        # Is it unique to that stem's infls.
-                                        # If so, append it to that stem's infls.
-                                        is_in_stem_infls = False
-                                        for stem_infl in mst['infls']:
-                                            if stem_infl['form'] == infl['form']:
-                                                is_in_stem_infls = True
-                                                # we found a match, stop looking
-                                                break
-
-                                        if not is_in_stem_infls:
-                                            mst['infls'].append(infl)
-
-                                if not is_in_match_stems:
-                                    match_stems.append({'st': stem_candidate, 'infls': [infl], 'encl': option['encl']})
-
-        return match_stems
+        return result
 
     def _lookup_stems(self, match_stems, get_word_ends=True):
         """Find the word id mentioned in the stem in the dictionary"""
         out = []
 
-        for stem in match_stems:
+        for key, stem in match_stems.items():
             try:
                 word = self.wordlist[int(stem['st']['wid'])]
             except IndexError:
