@@ -75,18 +75,18 @@ class Parse:
         infls = []
         out = []
 
+        # can the word be an undeclined word
         if option['base'] in self.wordkeys:
-            ii = self.inflects["0"]['']
-            infls.append(ii)
+            infl = self.inflects["0"]['']
+            infls.append(infl)
 
         # Check against inflection list
         max_inflect_length = min(7, len(option['base']))
-        # range does not include the parameter number
+        # range does not include the upper value
         for length in reversed(range(1, max_inflect_length)):
             ending = option['base'][-length:]
             if ending in self.inflects[str(length)]:
                 infl = self.inflects[str(length)][ending]
-
                 infls.append(infl)
 
         # Run against stems
@@ -97,6 +97,7 @@ class Parse:
 
         # If not already reduced, reduce the word and recurse
         if len(out) == 0 and not reduced:
+            # TODO: see what this is relevant for
             r_out = self._reduce(option)
 
             # If there's useful data after reducing, extend out w/data
@@ -117,32 +118,35 @@ class Parse:
         # and look up the stripped word (w) in the stems
         for infl_list in infls:
             if len(infl_list[0]['ending']):
-                w = option['base'][:-len(infl_list[0]['ending'])]
+                option_stem = option['base'][:-len(infl_list[0]['ending'])]
             else:
-                w = option['base']
-            if w in self.stems:
-                stem_list = self.stems[w]
-                for stem in stem_list:
+                option_stem = option['base']
+            if option_stem in self.stems:
+                stem_list = self.stems[option_stem]
+                for stem_candidate in stem_list:
                     for infl in infl_list:
                         # If the inflection and stem identify as the same part of speech
                         if (
-                                infl['pos'] == stem['pos']
+                                infl['pos'] == stem_candidate['pos']
                                 or (
                                 infl['pos'] == "VPAR"
-                                and stem['pos'] == "V"
+                                and stem_candidate['pos'] == "V"
                         )
                         ):
 
                             # Ensure the inflections apply to the correct stem decl/conj/etc
-                            if infl['n'][0] == stem['n'][0]:
+                            if infl['n'][0] == stem_candidate['n'][0]:
                                 is_in_match_stems = False
 
-                                # If this stem is already in the match_stems list, add infl to that stem (if not already an infl in that stem list)
+                                # If this stem is already in the match_stems list,
+                                # add infl to that stem (if not already an infl in that stem list)
                                 for i, mst in enumerate(match_stems):
-                                    if stem == mst['st']:
+                                    if stem_candidate == mst['st']:
                                         is_in_match_stems = True
 
-                                        # So the matches a stem in the match_stems.  Is it unique to that stem's infls. If so, append it to that stem's infls.
+                                        # So the matches a stem in the match_stems.
+                                        # Is it unique to that stem's infls.
+                                        # If so, append it to that stem's infls.
                                         is_in_stem_infls = False
                                         for stem_infl in mst['infls']:
                                             if stem_infl['form'] == infl['form']:
@@ -154,7 +158,7 @@ class Parse:
                                             mst['infls'].append(infl)
 
                                 if not is_in_match_stems:
-                                    match_stems.append({'st': stem, 'infls': [infl], 'encl': option['encl']})
+                                    match_stems.append({'st': stem_candidate, 'infls': [infl], 'encl': option['encl']})
 
         return match_stems
 
