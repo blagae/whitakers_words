@@ -49,6 +49,20 @@ declensions = {
 }
 
 
+parts_of_speech = {
+    "N": "noun",
+    "V": "verb",
+    "VPAR": "participle",
+    "ADJ": "adjective",
+    "ADV": "adverb",
+    "PRON": "pronoun",
+    "INTERJ": "interjection",
+    "NUM": "number",
+    "CONJ": "conjunction",
+    "PREP": "preposition"
+}
+
+
 def format_form(form, pos):
     """
     Format form data to be more useful and relevant
@@ -133,39 +147,31 @@ def format_form(form, pos):
 
 
 def trans_declension(abb):
-    w = declensions[abb]
-
-    return w
+    return declensions[abb]
 
 
 def trans_number(abb):
-    w = numbers[abb]
-
-    return w
+    return numbers[abb]
 
 
 def trans_gender(abb):
-    w = genders[abb]
-
-    return w
+    return genders[abb]
 
 
 def trans_mood(abb):
-    w = moods[abb]
-
-    return w
+    return moods[abb]
 
 
 def trans_voice(abb):
-    w = voices[abb]
-
-    return w
+    return voices[abb]
 
 
 def trans_tense(abb):
-    w = tenses[abb]
+    return tenses[abb]
 
-    return w
+
+def trans_pos(abb):
+    return parts_of_speech[abb]
 
 
 def format_morph(word):
@@ -178,26 +184,7 @@ def format_morph(word):
         infl['form'] = format_form(infl['form'], infl['pos'])
 
         # Set part of speech
-        if infl['pos'] == "N":
-            infl['pos'] = "noun"
-        elif infl['pos'] == "V":
-            infl['pos'] = "verb"
-        elif infl['pos'] == "VPAR":
-            infl['pos'] = "participle"
-        elif infl['pos'] == "ADJ":
-            infl['pos'] = "adjective"
-        elif infl['pos'] == "PREP":
-            infl['pos'] = "adjective"
-        elif infl['pos'] == "PRON":
-            infl['pos'] = "pronoun"
-        elif infl['pos'] == "INTERJ":
-            infl['pos'] = "interjection"
-        elif infl['pos'] == "NUM":
-            infl['pos'] = "number"
-        elif infl['pos'] == "CONJ":
-            infl['pos'] = "conjunction"
-        elif infl['pos'] == "PREP":
-            infl['pos'] = "preposition"
+        infl['pos'] = trans_pos(infl['pos'])
 
     return word
 

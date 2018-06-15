@@ -11,7 +11,7 @@ __license__ = "MIT License. See LICENSE."
 
 import re
 from copy import deepcopy
-from open_words.constants import format_output
+from open_words.formatter import format_output
 from open_words.exceptions import WordsException
 
 try:
