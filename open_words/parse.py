@@ -9,10 +9,10 @@ definition
 __author__ = "Luke Hollis <luke@archimedes.digital>"
 __license__ = "MIT License. See LICENSE."
 
-import string
 import re
 from copy import deepcopy
 from open_words.constants import format_output
+from open_words.exceptions import WordsException
 
 try:
     from open_words.dict_id import WordsIds
@@ -34,19 +34,14 @@ except ImportError:
 
 class Parse:
 
-    def __init__(self, words_list=WordsIds, addons=LatinAddons, stems=Stems, uniques=Uniques, inflects=Inflects, words_keys=WordsDict):
+    def __init__(self, **kwargs):
         """Provide a modular structure for loading the parser data"""
-
-        # Parser data
-        self.wordlist = words_list
-        self.addons = addons
-        self.stems = stems
-        self.uniques = uniques
-        self.inflects = inflects
-        self.wordkeys = words_keys
-
-        # Useful for sanitizing string for parsing
-        self.punctuation_transtable = {ord(c): " " for c in string.punctuation}
+        self.wordlist = kwargs['wordlist'] if 'wordlist' in kwargs else WordsIds
+        self.addons = kwargs['addons'] if 'addons' in kwargs else LatinAddons
+        self.stems = kwargs['stems'] if 'stems' in kwargs else Stems
+        self.uniques = kwargs['uniques'] if 'uniques' in kwargs else Uniques
+        self.inflects = kwargs['inflects'] if 'inflects' in kwargs else Inflects
+        self.wordkeys = kwargs['worddict'] if 'worddict' in kwargs else WordsDict
 
     def parse(self, word):
         """
@@ -56,18 +51,22 @@ class Parse:
         Words program.
 
         """
+        if not word.isalpha():
+            raise WordsException("Text to be parsed must be a single Latin word")
+
         out = []
         # Split enclitics
         options = self._split_enclitic(word)
 
-        for opt in options:
+        for option in options:
             # Check base word against list of uniques
-            if opt['base'] in self.uniques:
-                for u in self.uniques[opt['base']]:
-                    out.append({'w': u, 'enclitic': opt['encl'], 'stems': []})  # TODO: stems shouldn't be empty
+            if option['base'] in self.uniques:
+                for unique_form in self.uniques[option['base']]:
+                    # TODO: stems shouldn't be empty
+                    out.append({'w': unique_form, 'enclitic': option['encl'], 'stems': []})
             # Get regular words
             else:
-                out.extend(self._find_forms(opt))
+                out.extend(self._find_forms(option))
 
         out = format_output(out)
         return {'word': word, 'defs': out}
