@@ -12,6 +12,7 @@ __license__ = "MIT License. See LICENSE."
 import string
 import re
 from copy import deepcopy
+from open_words.constants import format_output
 
 try:
     from open_words.dict_id import WordsIds
@@ -47,16 +48,7 @@ class Parse:
         # Useful for sanitizing string for parsing
         self.punctuation_transtable = {ord(c): " " for c in string.punctuation}
 
-    def parse_line(self, line):
-        """Parse a line of words delimited by spaces"""
-        out = []
-        line = self.sanitize(line)
-        for word in line.split(" "):
-            if len(word):
-                out.append(self.parse(word))
-        return out
-
-    def parse(self, input_string, formatted=True):
+    def parse(self, word):
         """
         Parse an input string as a Latin word and look it up in the Words dictionary.
 
@@ -64,21 +56,9 @@ class Parse:
         Words program.
 
         """
-        s = input_string
-
-        out = self.latin_to_english(s)
-
-        if formatted:
-            from open_words.constants import format_output
-            out = format_output(out)
-
-        return {'word': s, 'defs': out}
-
-    def latin_to_english(self, s):
-        """Find definition and word formation from Latin word"""
         out = []
         # Split enclitics
-        options = self._split_enclitic(s)
+        options = self._split_enclitic(word)
 
         for opt in options:
             # Check base word against list of uniques
@@ -89,7 +69,8 @@ class Parse:
             else:
                 out.extend(self._find_forms(opt))
 
-        return out
+        out = format_output(out)
+        return {'word': word, 'defs': out}
 
     def _find_forms(self, option, reduced=False):
         infls = []
@@ -404,18 +385,6 @@ class Parse:
                 word['parts'][3] = word['parts'][3] + "us"
 
         return word
-
-    def sanitize(self, input_string):
-        """
-        Sanitize the input string from all punct and numbers, make lowercase
-        """
-
-        s = input_string
-        s = s.translate(self.punctuation_transtable).lower()
-        s = s.replace("—", " ")
-        s = re.sub("\d", " ", s)
-
-        return s
 
     def _reduce(self, option):
         """Reduce the stem with suffixes and try again"""
