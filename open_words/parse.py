@@ -54,19 +54,19 @@ class Parse:
         if not word.isalpha():
             raise WordsException("Text to be parsed must be a single Latin word")
 
-        out = []
         # Split enclitics
         options = self._split_enclitic(word)
 
         for option in options:
             # Check base word against list of uniques
             if option['base'] in self.uniques:
+                out = []
                 for unique_form in self.uniques[option['base']]:
                     # TODO: stems shouldn't be empty
                     out.append({'w': unique_form, 'enclitic': option['encl'], 'stems': []})
             # Get regular words
             else:
-                out.extend(self._find_forms(option))
+                out = self._find_forms(option)
 
         out = format_output(out)
         return {'word': word, 'defs': out}
@@ -152,8 +152,7 @@ class Parse:
             # If word already in out, add stem to word stems
             is_in_out = False
             for w in out:
-                if word['id'] == w['w']['id'] or w['w']['orth'] == word['orth']:
-
+                if word['id'] == w['w']['id']:
                     # It is in the out list already, flag and then check if the stem is already in the stems
                     is_in_out = True
 
