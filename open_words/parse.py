@@ -112,8 +112,7 @@ class Parse:
         the end of the word string and then check the resulting stem
         against the list of stems loaded in __init__
         """
-        match_stems = []
-        result = dict()
+        match_stems = dict()
         # For each of the inflections that is a match, strip the inflection from the end of the word
         # and look up the stripped word (w) in the stems
         for infl_list in infls:
@@ -131,14 +130,14 @@ class Parse:
 
                             # Ensure the inflections apply to the correct stem decl/conj/etc
                             if infl['n'][0] == stem_candidate['n'][0]:
-                                if stem_candidate['form'] in result:
-                                    iss = result[stem_candidate['form']]
+                                if stem_candidate['form'] in match_stems:
+                                    iss = match_stems[stem_candidate['form']]
                                     iss['infls'].append(infl)
-                                    result[stem_candidate['form']] = iss
+                                    match_stems[stem_candidate['form']] = iss
                                 else:
-                                    result[stem_candidate['form']] = {'st': stem_candidate, 'infls': [infl], 'encl': option['encl']}
+                                    match_stems[stem_candidate['form']] = {'st': stem_candidate, 'infls': [infl], 'encl': option['encl']}
 
-        return result
+        return match_stems
 
     def _lookup_stems(self, match_stems, get_word_ends=True):
         """Find the word id mentioned in the stem in the dictionary"""
@@ -149,31 +148,25 @@ class Parse:
                 word = self.wordlist[int(stem['st']['wid'])]
             except IndexError:
                 continue
-            if stem['st']['wid'] != word['id']:
-                raise Exception("given key does not exist -- this exception should never occur")
 
             # If word already in out, add stem to word stems
             is_in_out = False
-            for i, w in enumerate(out):
-                if (
-                        'id' in w['w'] and word['id'] == w['w']['id']
-                        or
-                        w['w']['orth'] == word['orth']
-                ):
+            for w in out:
+                if word['id'] == w['w']['id'] or w['w']['orth'] == word['orth']:
 
                     # It is in the out list already, flag and then check if the stem is already in the stems
                     is_in_out = True
 
                     # Ensure the stem is not already in the out word stems
                     is_in_out_word_stems = False
-                    for st in out[i]['stems']:
+                    for st in w['stems']:
                         if st == stem:
                             is_in_out_word_stems = True
                             # We have a match, break the loop
                             break
 
                     if not is_in_out_word_stems:
-                        out[i]['stems'].append(stem)
+                        w['stems'].append(stem)
                     # If we matched a word in the out, break the loop
                     break
 
