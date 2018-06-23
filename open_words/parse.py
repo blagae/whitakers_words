@@ -32,7 +32,7 @@ except ImportError:
     from open_words.inflects import Inflects
 
 
-class Parse:
+class Parser:
 
     def __init__(self, **kwargs):
         """Provide a modular structure for loading the parser data"""
@@ -87,7 +87,7 @@ class Parse:
         # range does not include the upper value
         for length in reversed(range(1, max_inflect_length)):
             ending = option['base'][-length:]
-            if ending in self.inflects[str(length)]:
+            if str(length) in self.inflects and ending in self.inflects[str(length)]:
                 infl = self.inflects[str(length)][ending]
                 infls.append(infl)
 
@@ -122,7 +122,7 @@ class Parse:
                 for stem_candidate in stem_list:
                     for infl in infl_list:
                         # If the inflection and stem identify as the same part of speech
-                        if Parse.check_match(stem_candidate, infl):
+                        if Parser.check_match(stem_candidate, infl):
                             if stem_candidate['form'] in match_stems:
                                 iss = match_stems[stem_candidate['form']]
                                 iss['infls'].append(infl)
@@ -180,11 +180,11 @@ class Parse:
                     if word['parts'].index(stem['st']['orth']) == 3:
 
                         # Remove "V" infls
-                        stem = Parse.remove_extra_infls(stem, "V")
+                        stem = Parser.remove_extra_infls(stem, "V")
 
                     else:
                         # Remove "VPAR" infls
-                        stem = Parse.remove_extra_infls(stem, "VPAR")
+                        stem = Parser.remove_extra_infls(stem, "VPAR")
 
                 # Lookup word ends
                 # Need to Clone this object - otherwise self.wordlist is modified
@@ -202,16 +202,17 @@ class Parse:
         out = [{'base': s, 'encl': ''}]
 
         # Test the different tackons / packons as specified in addons.py
-        for e in self.addons['tackons']:
-            if s.endswith(e['orth']):
+        if 'tackons' in self.addons:
+            for e in self.addons['tackons']:
+                if s.endswith(e['orth']):
 
-                # Standardize data format
-                e['form'] = e['orth']
+                    # Standardize data format
+                    e['form'] = e['orth']
 
-                # Est exception
-                if s != "est":
-                    base = re.sub(e['orth'] + "$", "", s)
-                    out.append({'base': base, 'encl': e, "stems": []})
+                    # Est exception
+                    if s != "est":
+                        base = re.sub(e['orth'] + "$", "", s)
+                        out.append({'base': base, 'encl': e, "stems": []})
 
         # which list do we get info from
         if s.startswith("qu"):
@@ -219,14 +220,15 @@ class Parse:
         else:
             lst = 'not_packons'
 
-        for e in self.addons[lst]:
-            if s.endswith(e['orth']):
-                base = re.sub(e['orth'] + "$", "", s)
-                # an enclitic without a base is not an enclitic
-                if base:
-                    out.append({'base': base, 'encl': e, "stems": []})
-                    # avoid double entry for -cumque and -que
-                    break
+        if lst in self.addons:
+            for e in self.addons[lst]:
+                if s.endswith(e['orth']):
+                    base = re.sub(e['orth'] + "$", "", s)
+                    # an enclitic without a base is not an enclitic
+                    if base:
+                        out.append({'base': base, 'encl': e, "stems": []})
+                        # avoid double entry for -cumque and -que
+                        break
 
         return out
 
@@ -366,16 +368,18 @@ class Parse:
         found_new_match = False
         s = option['base']
         # For each inflection match, check prefixes and suffixes
-        for prefix in self.addons['prefixes']:
-            if s.startswith(prefix['orth']):
-                s = re.sub("^" + prefix['orth'], "", s)
-                out.append({'w': prefix, 'stems': [], 'addon': "prefix"})
-                break
-        for suffix in self.addons['suffixes']:
-            if s.endswith(suffix['orth']):
-                s = re.sub(suffix['orth'] + "$", "", s)
-                out.append({'w': suffix, 'stems': [], 'addon': "suffix"})
-                break
+        if 'prefixes' in self.addons:
+            for prefix in self.addons['prefixes']:
+                if s.startswith(prefix['orth']):
+                    s = re.sub("^" + prefix['orth'], "", s)
+                    out.append({'w': prefix, 'stems': [], 'addon': "prefix"})
+                    break
+        if 'suffixes' in self.addons:
+            for suffix in self.addons['suffixes']:
+                if s.endswith(suffix['orth']):
+                    s = re.sub(suffix['orth'] + "$", "", s)
+                    out.append({'w': suffix, 'stems': [], 'addon': "suffix"})
+                    break
 
         # Find forms with the 'reduced' flag set to true
         option['base'] = s
