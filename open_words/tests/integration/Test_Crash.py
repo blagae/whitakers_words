@@ -40,6 +40,12 @@ class CrashTest(unittest.TestCase):
     def test_personal_pronoun(self):
         self.parse("tu")
 
+    def test_noun(self):
+        self.parse("templum")
+
     def test_repeat(self):
         self.parse("habes")
         self.parse("habes")
+
+    def test_regina(self):
+        self.parse("regina")

@@ -220,11 +220,14 @@ def format_output(out):
                             is_in_formatted_infls = True
 
                     if not is_in_formatted_infls:
+                        form = infl['form']
+                        if stem['st']['pos'] == 'N':
+                            form = form[:-1] + stem['st']['form'][4]
                         to_add_infls.append({
                             'stem': stem['st']['orth'],
                             'ending': infl['ending'],
                             'pos': infl['pos'],
-                            'form': infl['form']
+                            'form': form
                         })
 
                 for formatted_infl in to_add_infls:

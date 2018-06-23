@@ -54,7 +54,7 @@ class Parse:
         if not word.isalpha():
             raise WordsException("Text to be parsed must be a single Latin word")
 
-        # Split enclitics
+        # Split words with enclitic into base + enclitic
         options = self._split_enclitic(word)
 
         for option in options:
@@ -72,8 +72,10 @@ class Parse:
         return {'word': word, 'defs': out}
 
     def _find_forms(self, option, reduced=False):
+        """
+        Find all possible endings that may apply, so without checking congruence between word type and ending type
+        """
         infls = []
-        out = []
 
         # can the word be an undeclined word
         if option['base'] in self.wordkeys:
@@ -89,28 +91,23 @@ class Parse:
                 infl = self.inflects[str(length)][ending]
                 infls.append(infl)
 
-        # Run against stems
+        # Get viable combinations of stem + endings (+ enclitics)
         stems = self._check_stems(option, infls)
 
-        # Lookup dict info
-        out.extend(self._lookup_stems(stems, not reduced))
+        # Lookup dict info for found stems
+        out = self._lookup_stems(stems, not reduced)
 
-        # If not already reduced, reduce the word and recurse
-        if len(out) == 0 and not reduced:
-            # TODO: see what this is relevant for
-            r_out = self._reduce(option)
-
-            # If there's useful data after reducing, extend out w/data
-            if r_out:
-                out.extend(r_out)
-
-        return out
+        if len(out):
+            return out
+        # If no hits and not already reduced, strip the word of any prefixes it may have, and try again
+        if not reduced:
+            return self._reduce(option)
+        return []
 
     def _check_stems(self, option, infls):
         """
-        For each inflection that was a match, remove the inflection from
-        the end of the word string and then check the resulting stem
-        against the list of stems loaded in __init__
+        For each inflection that was a theoretical match, remove the inflection from the end of the word string
+        and then check the resulting stem against the list of stems loaded in __init__
         """
         match_stems = dict()
         # For each of the inflections that is a match, strip the inflection from the end of the word
@@ -125,19 +122,23 @@ class Parse:
                 for stem_candidate in stem_list:
                     for infl in infl_list:
                         # If the inflection and stem identify as the same part of speech
-                        if (infl['pos'] == stem_candidate['pos'] or
-                                (infl['pos'] == "VPAR" and stem_candidate['pos'] == "V")):
-
-                            # Ensure the inflections apply to the correct stem decl/conj/etc
-                            if infl['n'][0] == stem_candidate['n'][0]:
-                                if stem_candidate['form'] in match_stems:
-                                    iss = match_stems[stem_candidate['form']]
-                                    iss['infls'].append(infl)
-                                    match_stems[stem_candidate['form']] = iss
-                                else:
-                                    match_stems[stem_candidate['form']] = {'st': stem_candidate, 'infls': [infl], 'encl': option['encl']}
+                        if Parse.check_match(stem_candidate, infl):
+                            if stem_candidate['form'] in match_stems:
+                                iss = match_stems[stem_candidate['form']]
+                                iss['infls'].append(infl)
+                                match_stems[stem_candidate['form']] = iss
+                            else:
+                                match_stems[stem_candidate['form']] = {'st': stem_candidate, 'infls': [infl], 'encl': option['encl']}
 
         return match_stems
+
+    @staticmethod
+    def check_match(stem, infl):
+        if infl['pos'] != stem['pos']:
+            return infl['pos'] == "VPAR" and stem['pos'] == "V"
+        if stem['pos'] == 'N':
+            return infl['n'] == stem['n']
+        return infl['n'][0] == stem['n'][0]
 
     def _lookup_stems(self, match_stems, get_word_ends=True):
         """Find the word id mentioned in the stem in the dictionary"""
