@@ -68,8 +68,7 @@ class Parser:
             else:
                 out = self._find_forms(option)
 
-        out = format_output(out)
-        return {'word': word, 'defs': out}
+        return {'word': word, 'defs': format_output(out)}
 
     def _find_forms(self, option, reduced=False):
         """
