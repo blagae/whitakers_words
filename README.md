@@ -31,12 +31,12 @@ This project is under the MIT license. The license was taken over from the
 
 # Usage
 
-To use the dictionary lookup, use the `Parser` class as follows:
+To use the standard dictionary lookup, use the `Parser` class as follows:
 
 ```
-from open_words.parse import 
-
-Other changes:
+from open_words.parse import Parser
+parser = Parser()
+parser.parse("regis")
 ```
 
 The return value is a Python dictionary, easily wrapped to JSON, structured as followed:
