@@ -41,7 +41,7 @@ class Parser:
         self.stems = kwargs['stems'] if 'stems' in kwargs else Stems
         self.uniques = kwargs['uniques'] if 'uniques' in kwargs else Uniques
         self.inflects = kwargs['inflects'] if 'inflects' in kwargs else Inflects
-        self.wordkeys = kwargs['worddict'] if 'worddict' in kwargs else WordsDict
+        self.wordkeys = kwargs['wordkeys'] if 'wordkeys' in kwargs else WordsDict
 
     def parse(self, word):
         """

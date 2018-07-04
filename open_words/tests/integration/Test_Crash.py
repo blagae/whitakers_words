@@ -5,6 +5,10 @@ import json
 
 
 class CrashTest(unittest.TestCase):
+    """
+    A test class that makes sure the most basic common use cases don't crash
+    These tests do not verify anything, they're just meant to provid basic protection against unforeseen crashes
+    """
 
     def __init__(self, meth):
         super().__init__(meth)

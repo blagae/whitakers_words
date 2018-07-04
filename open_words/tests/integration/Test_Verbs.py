@@ -14,5 +14,5 @@ class VerbTest(unittest.TestCase):
         return self.par.parse(word)
 
     def test_sum(self):
-        result = self.parse("sum")
-        print(json.dumps(result, indent=2))
+        result = self.parse("quaero")
+        print(result)
