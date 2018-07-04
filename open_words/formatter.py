@@ -70,7 +70,7 @@ def format_form(form, pos):
     Nouns, Verbs, Adjectives, Participles(, Adverbs, Conjunctions, Prepositions)
 
     Nouns, Adjectives
-     - declension: nominative, vocative, genitive, accusative, dative, ablative, locative
+     - case: nominative, vocative, genitive, accusative, dative, ablative, locative
      - gender: male, female, neuter
      - number: singular, plural
 
@@ -82,7 +82,7 @@ def format_form(form, pos):
      - tense: present, imperfect, perfect, future, future perfect, pluperfect, infinitive, imperative
 
     Participles
-     - declension: nominative, vocative, genitive, accusative, dative, ablative, locative
+     - case: nominative, vocative, genitive, accusative, dative, ablative, locative
      - gender: male, female, neuter
      - number: singular, plural
      - tense: present, perfect, future
@@ -94,7 +94,7 @@ def format_form(form, pos):
         form = form.split(" ")
         if len(form) == 3:
             formatted = {
-                'declension': trans_declension(form[0]),
+                'case': trans_declension(form[0]),
                 'number': trans_number(form[1]),
                 'gender': trans_gender(form[2])
             }
@@ -122,7 +122,7 @@ def format_form(form, pos):
         # Ex: "VOC P N PRES ACTIVE  PPL"
         if len(form) == 24:
             formatted = {
-                'declension': trans_declension(form[0:4].strip()),
+                'case': trans_declension(form[0:4].strip()),
                 'number': trans_number(form[4:6].strip()),
                 'gender': trans_gender(form[6:8].strip()),
                 'tense': trans_tense(form[8:13].strip()),
