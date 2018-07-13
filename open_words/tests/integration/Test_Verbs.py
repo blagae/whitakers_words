@@ -1,17 +1,13 @@
 from open_words.parse import Parser
 
 import unittest
-import json
 
 
 class VerbTest(unittest.TestCase):
 
-    def __init__(self, meth):
-        super().__init__(meth)
-        self.par = Parser()
-
-    def parse(self, word):
-        return self.par.parse(word)
+    @classmethod
+    def setUpClass(cls):
+        cls.par = Parser()
 
     def test_quaero(self):
         """
@@ -22,7 +18,7 @@ class VerbTest(unittest.TestCase):
                                          'form': {'tense': 'present', 'voice': 'active', 'mood': 'indicative',
                                                   'person': 1, 'number': 'singular'}}]}]}
         """
-        result = self.parse("quaero")
+        result = self.par.parse("quaero")
         # response syntax and basics
         self.assertEqual(len(result['defs']), 1)  # there is only one definition
         self.assertTrue(len(result['defs'][0]))  # defs does not contain an empty dictionary
@@ -36,8 +32,5 @@ class VerbTest(unittest.TestCase):
 
         # response details
         form = infl['form']
-        self.assertEqual(form['tense'], 'present')
-        self.assertEqual(form['voice'], 'active')
-        self.assertEqual(form['mood'], 'indicative')
-        self.assertEqual(form['person'], 1)
-        self.assertEqual(form['number'], 'singular')
+        expected_form = {'tense': 'present', 'voice': 'active', 'mood': 'indicative', 'person': 1, 'number': 'singular'}
+        self.assertEqual(form, expected_form)

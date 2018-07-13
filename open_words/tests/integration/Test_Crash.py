@@ -1,7 +1,6 @@
 from open_words.parse import Parser
 
 import unittest
-import json
 
 
 class CrashTest(unittest.TestCase):
@@ -10,46 +9,43 @@ class CrashTest(unittest.TestCase):
     These tests do not verify anything, they're just meant to provid basic protection against unforeseen crashes
     """
 
-    def __init__(self, meth):
-        super().__init__(meth)
-        self.par = Parser()
-
-    def parse(self, word):
-        print(json.dumps(self.par.parse(word), indent=2))
+    @classmethod
+    def setUpClass(cls):
+        cls.par = Parser()
 
     def test_unique(self):
-        self.parse("quodcumque")
+        self.par.parse("quodcumque")
 
     def test_esse(self):
-        self.parse("sum")
+        self.par.parse("sum")
 
     def test_regular(self):
-        self.parse("cecidit")
+        self.par.parse("cecidit")
 
     def test_immutable(self):
-        self.parse("et")
+        self.par.parse("et")
 
     def test_vol(self):
-        self.parse("vult")
+        self.par.parse("vult")
 
     def test_optional_enclitic(self):
-        self.parse("pollice")
+        self.par.parse("pollice")
 
     def test_pronoun(self):
-        self.parse("se")
+        self.par.parse("se")
 
     def test_preposition(self):
-        self.parse("super")
+        self.par.parse("super")
 
     def test_personal_pronoun(self):
-        self.parse("tu")
+        self.par.parse("tu")
 
     def test_noun(self):
-        self.parse("templum")
+        self.par.parse("templum")
 
     def test_repeat(self):
-        self.parse("habes")
-        self.parse("habes")
+        self.par.parse("habes")
+        self.par.parse("habes")
 
     def test_regina(self):
-        self.parse("regina")
+        self.par.parse("regina")

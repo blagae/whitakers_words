@@ -1,17 +1,13 @@
 from open_words.parse import Parser
 
 import unittest
-import json
 
 
 class NounTest(unittest.TestCase):
 
-    def __init__(self, meth):
-        super().__init__(meth)
-        self.par = Parser()
-
-    def parse(self, word):
-        return self.par.parse(word)
+    @classmethod
+    def setUpClass(cls):
+        cls.par = Parser()
 
     def test_regionem(self):
         """
@@ -19,10 +15,9 @@ class NounTest(unittest.TestCase):
                     'defs': [{'orth': ['regio', 'region'],
                               'senses': ['area, region', 'neighborhood', 'district, country', 'direction'],
                               'infls': [{'stem': 'region', 'ending': 'em', 'pos': 'noun',
-                                         'form': {'declension': 'accusative', 'number': 'singular', 'gender': 'feminine'
-                                                  }}]}]}
+                                         'form': {'case': 'accusative', 'number': 'singular', 'gender': 'feminine'}}]}]}
         """
-        result = self.parse("regionem")
+        result = self.par.parse("regionem")
 
         # response syntax and basics
         self.assertEqual(len(result['defs']), 1)  # there is only one definition
@@ -37,6 +32,5 @@ class NounTest(unittest.TestCase):
 
         # response details
         form = infl['form']
-        self.assertEqual(form['case'], 'accusative')
-        self.assertEqual(form['gender'], 'feminine')
-        self.assertEqual(form['number'], 'singular')
+        expected_form = {'case': 'accusative', 'number': 'singular', 'gender': 'feminine'}
+        self.assertEqual(form, expected_form)
