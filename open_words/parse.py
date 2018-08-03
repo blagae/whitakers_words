@@ -141,7 +141,8 @@ class Parser:
         if infl['pos'] != stem['pos']:
             return infl['pos'] == "VPAR" and stem['pos'] == "V"
         if stem['pos'] == 'N':
-            return infl['n'] == stem['n'] or (infl['n'][0] == stem['n'][0] and infl['n'][-1] == 0)
+            if infl['n'] == stem['n'] or (infl['n'][0] == stem['n'][0] and infl['n'][-1] == 0):
+                return infl['form'][-1] == stem['form'][4] or infl['form'][-1] == 'C'
         return infl['n'][0] == stem['n'][0]
 
     def _lookup_stems(self, match_stems, get_word_ends=True):
