@@ -122,12 +122,17 @@ class Parser:
                     for infl in infl_list:
                         # If the inflection and stem identify as the same part of speech
                         if Parser.check_match(stem_candidate, infl):
-                            if stem_candidate['form'] in match_stems:
-                                iss = match_stems[stem_candidate['form']]
-                                iss['infls'].append(infl)
-                                match_stems[stem_candidate['form']] = iss
+                            if stem_candidate['orth'] in match_stems:
+                                for idx, iss in enumerate(match_stems[stem_candidate['orth']]):
+                                    if iss['st']['wid'] == stem_candidate['wid']:
+                                        iss['infls'].append(infl)
+                                        match_stems[stem_candidate['orth']][idx] = iss
+                                        break
+                                # for-else statement: else is only executed if for-loop is not interrupted by `break`
+                                else:
+                                    match_stems[stem_candidate['orth']].append({'st': stem_candidate, 'infls': [infl], 'encl': option['encl']})
                             else:
-                                match_stems[stem_candidate['form']] = {'st': stem_candidate, 'infls': [infl], 'encl': option['encl']}
+                                match_stems[stem_candidate['orth']] = [{'st': stem_candidate, 'infls': [infl], 'encl': option['encl']}]
 
         return match_stems
 
@@ -136,63 +141,64 @@ class Parser:
         if infl['pos'] != stem['pos']:
             return infl['pos'] == "VPAR" and stem['pos'] == "V"
         if stem['pos'] == 'N':
-            return infl['n'] == stem['n']
+            return infl['n'] == stem['n'] or (infl['n'][0] == stem['n'][0] and infl['n'][-1] == 0)
         return infl['n'][0] == stem['n'][0]
 
     def _lookup_stems(self, match_stems, get_word_ends=True):
         """Find the word id mentioned in the stem in the dictionary"""
         out = []
 
-        for key, stem in match_stems.items():
-            try:
-                word = self.wordlist[int(stem['st']['wid'])]
-            except IndexError:
-                continue
+        for key, stems in match_stems.items():
+            for stem in stems:
+                try:
+                    word = self.wordlist[int(stem['st']['wid'])]
+                except IndexError:
+                    continue
 
-            # If word already in out, add stem to word stems
-            is_in_out = False
-            for w in out:
-                if word['id'] == w['w']['id']:
-                    # It is in the out list already, flag and then check if the stem is already in the stems
-                    is_in_out = True
+                # If word already in out, add stem to word stems
+                is_in_out = False
+                for w in out:
+                    if word['id'] == w['w']['id']:
+                        # It is in the out list already, flag and then check if the stem is already in the stems
+                        is_in_out = True
 
-                    # Ensure the stem is not already in the out word stems
-                    is_in_out_word_stems = False
-                    for st in w['stems']:
-                        if st == stem:
-                            is_in_out_word_stems = True
-                            # We have a match, break the loop
-                            break
+                        # Ensure the stem is not already in the out word stems
+                        is_in_out_word_stems = False
+                        for st in w['stems']:
+                            if st == stem:
+                                is_in_out_word_stems = True
+                                # We have a match, break the loop
+                                break
 
-                    if not is_in_out_word_stems:
-                        w['stems'].append(stem)
-                    # If we matched a word in the out, break the loop
-                    break
+                        if not is_in_out_word_stems:
+                            w['stems'].append(stem)
+                        # If we matched a word in the out, break the loop
+                        break
 
-            # If the word isn't in the out yet
-            if not is_in_out:
+                # If the word isn't in the out yet
+                if not is_in_out:
 
-                # Check the VPAR / V relationship
-                if word['pos'] == "V":
+                    # Check the VPAR / V relationship
+                    if word['pos'] == "V":
 
-                    # If the stem doesn't match the 4th principle part, it's not VPAR
-                    if word['parts'].index(stem['st']['orth']) == 3:
+                        # If the stem doesn't match the 4th principle part, it's not VPAR
+                        if word['parts'].index(stem['st']['orth']) == 3:
 
-                        # Remove "V" infls
-                        stem = Parser.remove_extra_infls(stem, "V")
+                            # Remove "V" infls
+                            stem = Parser.remove_extra_infls(stem, "V")
 
-                    else:
-                        # Remove "VPAR" infls
-                        stem = Parser.remove_extra_infls(stem, "VPAR")
+                        else:
+                            # Remove "VPAR" infls
+                            stem = Parser.remove_extra_infls(stem, "VPAR")
 
-                # Lookup word ends
-                # Need to Clone this object - otherwise self.wordlist is modified
-                word_clone = deepcopy(word)
-                if get_word_ends:
-                    word_clone = self._get_word_endings(word_clone)
+                    # Lookup word ends
+                    # Need to Clone this object - otherwise self.wordlist is modified
+                    word_clone = deepcopy(word)
+                    if get_word_ends:
+                        word_clone = self._get_word_endings(word_clone)
 
-                # Finally, append new word to out
-                out.append({'w': word_clone, 'enclitic': stem['encl'], 'stems': [stem]})
+                    # Finally, append new word to out
+                    out.append({'w': word_clone, 'enclitic': stem['encl'], 'stems': [stem]})
 
         return out
 
