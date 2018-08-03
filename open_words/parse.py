@@ -121,7 +121,7 @@ class Parser:
                 for stem_candidate in stem_list:
                     for infl in infl_list:
                         # If the inflection and stem identify as the same part of speech
-                        if Parser.check_match(stem_candidate, infl):
+                        if self.check_match(stem_candidate, infl):
                             if stem_candidate['orth'] in match_stems:
                                 for idx, iss in enumerate(match_stems[stem_candidate['orth']]):
                                     if iss['st']['wid'] == stem_candidate['wid']:
@@ -136,10 +136,15 @@ class Parser:
 
         return match_stems
 
-    @staticmethod
-    def check_match(stem, infl):
+    def check_match(self, stem, infl):
         if infl['pos'] != stem['pos']:
-            return infl['pos'] == "VPAR" and stem['pos'] == "V"
+            if infl['pos'] == "VPAR" and stem['pos'] == "V":
+                wrd = self.wordlist[int(stem['wid'])]
+                if infl['form'][8:12] == "PERF":
+                    return stem['orth'] == wrd['parts'][-1]
+                else:
+                    return stem['orth'] == wrd['parts'][0]
+            return False
         if stem['pos'] == 'N':
             if infl['n'] == stem['n'] or (infl['n'][0] == stem['n'][0] and infl['n'][-1] == 0):
                 return infl['form'][-1] == stem['form'][4] or infl['form'][-1] == 'C'
