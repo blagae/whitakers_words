@@ -43,100 +43,105 @@ class Parser:
         self.inflects = kwargs['inflects'] if 'inflects' in kwargs else Inflects
         self.wordkeys = kwargs['wordkeys'] if 'wordkeys' in kwargs else WordsDict
 
-    def parse(self, word):
+    def parse(self, text):
         """
         Parse an input string as a Latin word and look it up in the Words dictionary.
 
         Return dictionary and grammatical data formatted in a similar manner as original
         Words program.
-
         """
-        if not word.isalpha():
+        if not text.isalpha():
             raise WordsException("Text to be parsed must be a single Latin word")
 
-        # Split words with enclitic into base + enclitic
-        options = self._split_enclitic(word)
+        # Split text with enclitic into form + enclitic
+        words = self.split_form_enclitic(text)
 
-        for option in options:
+        parse_result = []
+
+        for word in words:
             # Check base word against list of uniques
-            if option['base'] in self.uniques:
-                out = []
-                for unique_form in self.uniques[option['base']]:
+            if word['base'] in self.uniques:
+                for unique_form in self.uniques[word['base']]:
                     # TODO: stems shouldn't be empty
-                    out.append({'w': unique_form, 'enclitic': option['encl'], 'stems': []})
+                    parse_result.append({'w': unique_form, 'enclitic': word['encl'], 'stems': []})
             # Get regular words
             else:
-                out = self._find_forms(option)
+                parse_result = self.analyze_forms(word)
 
-        return {'word': word, 'defs': format_output(out)}
+        return {'word': text, 'defs': format_output(parse_result)}
 
-    def _find_forms(self, option, reduced=False):
+    def analyze_forms(self, word, reduced=False):
         """
         Find all possible endings that may apply, so without checking congruence between word type and ending type
         """
-        infls = []
+        form = word['base']
+        viable_inflections = []
 
-        # can the word be an undeclined word
-        if option['base'] in self.wordkeys:
-            infl = self.inflects["0"]['']
-            infls.append(infl)
+        # the word may be undeclined, so add this as an option if the full form exists in the list of words
+        if form in self.wordkeys:
+            viable_inflections.append(self.inflects["0"][''])
 
         # Check against inflection list
-        max_inflect_length = min(7, len(option['base']))
-        # range does not include the upper value
-        for length in reversed(range(1, max_inflect_length)):
-            ending = option['base'][-length:]
-            if str(length) in self.inflects and ending in self.inflects[str(length)]:
-                infl = self.inflects[str(length)][ending]
-                infls.append(infl)
+        for inflect_length in range(1, min(8, len(form))):
+            end_of_word = form[-inflect_length:]
+            if str(inflect_length) in self.inflects and end_of_word in self.inflects[str(inflect_length)]:
+                infl = self.inflects[str(inflect_length)][end_of_word]
+                viable_inflections.append(infl)
 
         # Get viable combinations of stem + endings (+ enclitics)
-        stems = self._check_stems(option, infls)
+        match_stems = self.match_stems_inflections(form, viable_inflections)
+
+        for key, stems in match_stems.items():
+            for stem in stems:
+                stem['encl'] = word['encl']
 
         # Lookup dict info for found stems
-        out = self._lookup_stems(stems, not reduced)
+        forms = self.lookup_stems(match_stems, not reduced)
 
-        if len(out):
-            return out
+        if len(forms):
+            return forms
         # If no hits and not already reduced, strip the word of any prefixes it may have, and try again
         if not reduced:
-            return self._reduce(option)
+            return self.reduce(word)
         return []
 
-    def _check_stems(self, option, infls):
+    def match_stems_inflections(self, form, infls):
         """
         For each inflection that was a theoretical match, remove the inflection from the end of the word string
         and then check the resulting stem against the list of stems loaded in __init__
         """
-        match_stems = dict()
+        matched_stems = dict()
         # For each of the inflections that is a match, strip the inflection from the end of the word
         # and look up the stripped word (w) in the stems
-        for infl_list in infls:
-            if len(infl_list[0]['ending']):
-                option_stem = option['base'][:-len(infl_list[0]['ending'])]
+        for infl_lemma in infls:
+            if len(infl_lemma[0]['ending']):
+                stem_lemma = form[:-len(infl_lemma[0]['ending'])]
             else:
-                option_stem = option['base']
-            if option_stem in self.stems:
-                stem_list = self.stems[option_stem]
-                for stem_candidate in stem_list:
-                    for infl in infl_list:
-                        # If the inflection and stem identify as the same part of speech
-                        if self.check_match(stem_candidate, infl):
-                            if stem_candidate['orth'] in match_stems:
-                                for idx, iss in enumerate(match_stems[stem_candidate['orth']]):
-                                    if iss['st']['wid'] == stem_candidate['wid']:
-                                        iss['infls'].append(infl)
-                                        match_stems[stem_candidate['orth']][idx] = iss
+                stem_lemma = form
+            if stem_lemma in self.stems:
+                stem_list = self.stems[stem_lemma]
+                for stem_cand in stem_list:
+                    for infl_cand in infl_lemma:
+                        if self.check_match(stem_cand, infl_cand):
+                            # If there's already a matched stem with that orthography
+                            if stem_cand['orth'] in matched_stems:
+                                for idx, matched_stem in enumerate(matched_stems[stem_cand['orth']]):
+                                    if matched_stem['st']['wid'] == stem_cand['wid']:
+                                        # if they're on the same lemma, multiple inflections exist for one stem
+                                        matched_stem['infls'].append(infl_cand)
+                                        matched_stems[stem_cand['orth']][idx] = matched_stem
                                         break
                                 # for-else statement: else is only executed if for-loop is not interrupted by `break`
                                 else:
-                                    match_stems[stem_candidate['orth']].append({'st': stem_candidate, 'infls': [infl], 'encl': option['encl']})
+                                    # so add a new lemma entry (separate wid) under the same orthography
+                                    matched_stems[stem_cand['orth']].append({'st': stem_cand, 'infls': [infl_cand]})
                             else:
-                                match_stems[stem_candidate['orth']] = [{'st': stem_candidate, 'infls': [infl], 'encl': option['encl']}]
+                                matched_stems[stem_cand['orth']] = [{'st': stem_cand, 'infls': [infl_cand]}]
 
-        return match_stems
+        return matched_stems
 
     def check_match(self, stem, infl):
+        """ Do custom checking mechanisms to see if the inflection and stem identify as the same part of speech """
         if infl['pos'] != stem['pos']:
             if infl['pos'] == "VPAR" and stem['pos'] == "V":
                 wrd = self.wordlist[int(stem['wid'])]
@@ -150,7 +155,7 @@ class Parser:
                 return infl['form'][-1] == stem['form'][4] or infl['form'][-1] == 'C'
         return infl['n'][0] == stem['n'][0]
 
-    def _lookup_stems(self, match_stems, get_word_ends=True):
+    def lookup_stems(self, match_stems, get_word_ends=True):
         """Find the word id mentioned in the stem in the dictionary"""
         out = []
 
@@ -208,7 +213,7 @@ class Parser:
 
         return out
 
-    def _split_enclitic(self, s):
+    def split_form_enclitic(self, s):
         """Split enclitic ending from word"""
         out = [{'base': s, 'encl': ''}]
 
@@ -373,7 +378,7 @@ class Parser:
 
         return word
 
-    def _reduce(self, option):
+    def reduce(self, option):
         """Reduce the stem with suffixes and try again"""
         out = []
         found_new_match = False
@@ -394,7 +399,7 @@ class Parser:
 
         # Find forms with the 'reduced' flag set to true
         option['base'] = s
-        out = self._find_forms(option, True)
+        out = self.analyze_forms(option, True)
 
         # Has reducing input string given us useful data?
         # If not, return false
