@@ -21,7 +21,7 @@ try:
     from open_words.stem_list import Stems
     from open_words.uniques import Uniques
     from open_words.inflects import Inflects
-except ImportError:
+except ModuleNotFoundError:
     from open_words.format_data import reimport_all_dicts
 
     reimport_all_dicts()
@@ -145,7 +145,10 @@ class Parser:
         """ Do custom checking mechanisms to see if the inflection and stem identify as the same part of speech """
         if infl['pos'] != stem['pos']:
             if infl['pos'] == "VPAR" and stem['pos'] == "V":
-                wrd = self.wordlist[int(stem['wid'])]
+                try:
+                    wrd = self.wordlist[int(stem['wid'])]
+                except IndexError:
+                    return False  # must be part of uniques
                 if infl['form'][8:12] == "PERF":
                     return stem['orth'] == wrd['parts'][-1]
                 else:

@@ -3,7 +3,7 @@ from open_words.parse import Parser
 import unittest
 
 
-class MinimalTest(unittest.TestCase):
+class MinimalDictionaryConstructorTest(unittest.TestCase):
 
     def setUp(self):
         # make sure to create a new Parser for each test

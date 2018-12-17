@@ -17,7 +17,8 @@ def dump_file(name, obj):
 def import_dicts():
     keys = dict()
     ids = []
-    with open('data/DICTLINE.GEN', encoding="ISO-8859-1") as f:
+    previous_item = None
+    with open('../data/DICTLINE.GEN', encoding="ISO-8859-1") as f:
         for i, line in enumerate(f):
 
             orth = line[0:19].replace("zzz", "-").strip()
@@ -46,15 +47,20 @@ def import_dicts():
                 sense = sense.strip()
                 if len(sense):
                     new_senses.append(sense)
-            item = {
-                'id': i + 1,
-                'orth': orth,
-                'parts': parts,
-                'pos': line[76:83].strip(),
-                'form': line[83:100].strip(),
-                'n': n,
-                'senses': new_senses
-            }
+            if senses[0][0] == '|':
+                new_senses[0] = new_senses[0].replace("|", "")
+                previous_item['senses'].extend(new_senses)
+                item = previous_item
+            else:
+                item = {
+                    'id': i + 1,
+                    'orth': orth,
+                    'parts': parts,
+                    'pos': line[76:83].strip(),
+                    'form': line[83:100].strip(),
+                    'n': n,
+                    'senses': new_senses
+                }
 
             if len(ids) == 0:
                 ids.append(item)
@@ -66,14 +72,15 @@ def import_dicts():
                 keys[orth] = items
             else:
                 keys[orth] = [item]
+            previous_item = item
 
-    dump_file('files/dict_keys.py', keys)
-    dump_file('files/dict_ids.py', ids)
+    dump_file('../files/dict_keys.py', keys)
+    dump_file('../files/dict_ids.py', ids)
 
 
 def import_stems():
     data = dict()
-    with open('data/STEMLIST.GEN') as f:
+    with open('../data/STEMLIST.GEN') as f:
         for line in f:
             if len(line[26:30].strip()) > 0:
                 n = line[26:30].strip().split(" ")
@@ -97,11 +104,11 @@ def import_stems():
             else:
                 data[orth] = [item]
 
-    dump_file('files/stems.py', data)
+    dump_file('../files/stems.py', data)
 
 
 def import_suffixes():
-    with open('data/suffixes.txt') as f:
+    with open('../data/suffixes.txt') as f:
 
         i = 0
         obj = {}
@@ -125,11 +132,11 @@ def import_suffixes():
                 obj = {}
                 i = 0
 
-    dump_file('files/suffixes.py', data)
+    dump_file('../files/suffixes.py', data)
 
 
 def import_prefixes():
-    with open('data/prefixes.txt') as f:
+    with open('../data/prefixes.txt') as f:
 
         i = 0
         obj = {}
@@ -153,11 +160,11 @@ def import_prefixes():
                 obj = {}
                 i = 0
 
-    dump_file('files/prefixes.py', data)
+    dump_file('../files/prefixes.py', data)
 
 
 def import_uniques():
-    with open('data/UNIQUES.LAT') as f:
+    with open('../data/UNIQUES.LAT') as f:
 
         i = 0
         obj = {}
@@ -197,11 +204,11 @@ def import_uniques():
         else:
             data[orth] = [est]
 
-    dump_file('files/uniques.py', data)
+    dump_file('../files/uniques.py', data)
 
 
 def import_inflects():
-    with open('data/INFLECTS.LAT') as f:
+    with open('../data/INFLECTS.LAT') as f:
 
         i = 0
         obj = {}
@@ -831,7 +838,7 @@ def import_inflects():
                     })
 
     reordered = reorder_inflects(data)
-    dump_file('files/inflects.py', reordered)
+    dump_file('../files/inflects.py', reordered)
 
 
 def reorder_inflects(data):

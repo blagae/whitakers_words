@@ -49,3 +49,9 @@ class CrashTest(unittest.TestCase):
 
     def test_regina(self):
         self.par.parse("regina")
+
+    def test_abacus(self):
+        print(self.par.parse("abacus"))
+
+    def test_anceps(self):
+        print(self.par.parse("anceps"))
