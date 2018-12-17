@@ -167,6 +167,8 @@ class Parser:
             for stem in stems:
                 try:
                     dict_word = self.wordlist[int(stem['st']['wid'])]
+                    if not dict_word:
+                        continue
                 except IndexError:
                     continue
 

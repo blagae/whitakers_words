@@ -16,7 +16,7 @@ def dump_file(name, obj):
 
 def import_dicts():
     keys = dict()
-    ids = []
+    ids = ['']
     previous_item = None
     with open('../data/DICTLINE.GEN', encoding="ISO-8859-1") as f:
         for i, line in enumerate(f):
@@ -47,10 +47,6 @@ def import_dicts():
                 sense = sense.strip()
                 if len(sense):
                     new_senses.append(sense)
-            if senses[0][0] == '|':
-                new_senses[0] = new_senses[0].replace("|", "")
-                previous_item['senses'].extend(new_senses)
-                item = previous_item
             else:
                 item = {
                     'id': i + 1,
@@ -62,17 +58,19 @@ def import_dicts():
                     'senses': new_senses
                 }
 
-            if len(ids) == 0:
-                ids.append(item)
-            ids.append(item)
-
-            if orth in keys:
-                items = keys[orth]
-                items.append(item)
-                keys[orth] = items
+            if senses[0][0] == '|':
+                new_senses[0] = new_senses[0].replace("|", "")
+                previous_item['senses'].extend(new_senses)
+                ids.append(dict())
             else:
-                keys[orth] = [item]
-            previous_item = item
+                if orth in keys:
+                    items = keys[orth]
+                    items.append(item)
+                    keys[orth] = items
+                else:
+                    keys[orth] = [item]
+                ids.append(item)
+                previous_item = item
 
     dump_file('../files/dict_keys.py', keys)
     dump_file('../files/dict_ids.py', ids)
