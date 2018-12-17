@@ -23,6 +23,7 @@ try:
     from open_words.inflects import Inflects
 except ImportError:
     from open_words.format_data import reimport_all_dicts
+
     reimport_all_dicts()
     from open_words.dict_id import WordsIds
     from open_words.dict_line import WordsDict
@@ -91,7 +92,7 @@ class Parser:
         # Get viable combinations of stem + endings (+ enclitics)
         match_stems = self.match_stems_inflections(form, viable_inflections)
 
-        for key, stems in match_stems.items():
+        for stems in match_stems.values():
             for stem in stems:
                 stem['encl'] = word['encl']
 
@@ -157,43 +158,40 @@ class Parser:
 
     def lookup_stems(self, match_stems, get_word_ends=True):
         """Find the word id mentioned in the stem in the dictionary"""
-        out = []
+        results = []
 
-        for key, stems in match_stems.items():
+        for stems in match_stems.values():
             for stem in stems:
                 try:
-                    word = self.wordlist[int(stem['st']['wid'])]
+                    dict_word = self.wordlist[int(stem['st']['wid'])]
                 except IndexError:
                     continue
 
-                # If word already in out, add stem to word stems
-                is_in_out = False
-                for w in out:
-                    if word['id'] == w['w']['id']:
-                        # It is in the out list already, flag and then check if the stem is already in the stems
-                        is_in_out = True
+                # Look for the word in the existing results
+                is_in_results = False
+                for word in results:
+                    if dict_word['id'] == word['w']['id']:
+                        # It is in the results list already, flag and then check if the stem is already in the stems
+                        is_in_results = True
 
-                        # Ensure the stem is not already in the out word stems
-                        is_in_out_word_stems = False
-                        for st in w['stems']:
-                            if st == stem:
-                                is_in_out_word_stems = True
-                                # We have a match, break the loop
-                                break
+                        # Ensure the stem is not already in the results word stems
+                        is_in_results_stems = False
+                        for word_stem in word['stems']:
+                            if word_stem == stem:
+                                is_in_results_stems = True
+                                break  # We have a match, break the inner loop
+                        if not is_in_results_stems:
+                            word['stems'].append(stem)
+                        break  # If we matched a word in the results, break the outer loop
 
-                        if not is_in_out_word_stems:
-                            w['stems'].append(stem)
-                        # If we matched a word in the out, break the loop
-                        break
-
-                # If the word isn't in the out yet
-                if not is_in_out:
+                # If the word is in the results already, we're done
+                if not is_in_results:
 
                     # Check the VPAR / V relationship
-                    if word['pos'] == "V":
+                    if dict_word['pos'] == "V":
 
                         # If the stem doesn't match the 4th principle part, it's not VPAR
-                        if word['parts'].index(stem['st']['orth']) == 3:
+                        if dict_word['parts'].index(stem['st']['orth']) == 3:
 
                             # Remove "V" infls
                             stem = Parser.remove_extra_infls(stem, "V")
@@ -204,18 +202,17 @@ class Parser:
 
                     # Lookup word ends
                     # Need to Clone this object - otherwise self.wordlist is modified
-                    word_clone = deepcopy(word)
+                    dict_word_clone = deepcopy(dict_word)
                     if get_word_ends:
-                        word_clone = self._get_word_endings(word_clone)
+                        dict_word_clone = self.get_word_endings(dict_word_clone)
 
-                    # Finally, append new word to out
-                    out.append({'w': word_clone, 'enclitic': stem['encl'], 'stems': [stem]})
-
-        return out
+                    # Finally, append new word to results
+                    results.append({'w': dict_word_clone, 'enclitic': stem['encl'], 'stems': [stem]})
+        return results
 
     def split_form_enclitic(self, s):
         """Split enclitic ending from word"""
-        out = [{'base': s, 'encl': ''}]
+        result = [{'base': s, 'encl': ''}]
 
         # Test the different tackons / packons as specified in addons.py
         if 'tackons' in self.addons:
@@ -228,7 +225,7 @@ class Parser:
                     # Est exception
                     if s != "est":
                         base = re.sub(e['orth'] + "$", "", s)
-                        out.append({'base': base, 'encl': e, "stems": []})
+                        result.append({'base': base, 'encl': e, "stems": []})
 
         # which list do we get info from
         if s.startswith("qu"):
@@ -236,19 +233,19 @@ class Parser:
         else:
             lst = 'not_packons'
 
-        if lst in self.addons:
+        if lst in self.addons:  # just to be sure
             for e in self.addons[lst]:
                 if s.endswith(e['orth']):
                     base = re.sub(e['orth'] + "$", "", s)
                     # an enclitic without a base is not an enclitic
                     if base:
-                        out.append({'base': base, 'encl': e, "stems": []})
+                        result.append({'base': base, 'encl': e, "stems": []})
                         # avoid double entry for -cumque and -que
                         break
 
-        return out
+        return result
 
-    def _get_word_endings(self, word):
+    def get_word_endings(self, word):
         """
         Get the word endings for the stems in the Dictionary;
         eventually this should be phased out in favor of including the
@@ -261,19 +258,14 @@ class Parser:
 
         len_w_p = len(word['parts'])
 
-        for key, infl_set in self.inflects.items():
-            for ke, infl_list in self.inflects[key].items():
+        for infl_set in self.inflects.values():
+            for infl_list in infl_set.values():
                 for infl in infl_list:
                     # If the conjugation/declesion is a match AND the part of speech is a match (regularize V/VPAR)
-                    if (
-                            infl['n'] == word['n']
-                            and (
-                            infl['pos'] == word['pos']
-                            or (
-                                    infl['pos'] in ["V", "VPAR"]
-                                    and word['pos'] in ["V", "VPAR"]
+                    if (infl['n'] == word['n'] and
+                            (infl['pos'] == word['pos']
+                             or (infl['pos'] in ["V", "VPAR"] and word['pos'] in ["V", "VPAR"])
                             )
-                    )
                     ):
 
                         # If the word is a verb, get the 4 principle parts
@@ -291,7 +283,8 @@ class Parser:
                                     end_two = True
 
                             # Perf act ind first singular
-                            if len_w_p > 2 and not end_three and (len(word['parts'][2]) > 0 and word['parts'][2] != "-"):
+                            if len_w_p > 2 and not end_three and (
+                                    len(word['parts'][2]) > 0 and word['parts'][2] != "-"):
                                 if infl['form'] == "PERF  ACTIVE  IND  1 S":
                                     word['parts'][2] = word['parts'][2] + infl['ending']
                                     end_three = True
@@ -306,13 +299,15 @@ class Parser:
                         elif word['pos'] in ["N", "ADJ", "PRON"]:
                             # Nominative singular
                             if len_w_p > 0 and not end_one:
-                                if infl['form'].startswith("NOM S") and (len(word['parts'][0]) > 0 and word['parts'][0] != "-"):
+                                if infl['form'].startswith("NOM S") and (
+                                        len(word['parts'][0]) > 0 and word['parts'][0] != "-"):
                                     word['parts'][0] = word['parts'][0] + infl['ending']
                                     end_one = True
 
                             # Genitive singular
                             if len_w_p > 1 and not end_two:
-                                if infl['form'].startswith("GEN S") and (len(word['parts'][1]) > 0 and word['parts'][1] != "-"):
+                                if infl['form'].startswith("GEN S") and (
+                                        len(word['parts'][1]) > 0 and word['parts'][1] != "-"):
                                     word['parts'][1] = word['parts'][1] + infl['ending']
                                     end_two = True
 
@@ -320,50 +315,40 @@ class Parser:
         # For Verbs
         if word['pos'] in ["V", "VPAR"]:
             if len_w_p > 0 and not end_one:
-                for inf in self.inflects:
-                    if infl['form'] == "PRES  ACTIVE  IND  1 S" and infl['n'] == [0, 0] and (
-                            len(word['parts'][0]) > 0 and word['parts'][0] != "-"):
-                        word['parts'][0] = word['parts'][0] + infl['ending']
-                        break
+                if infl['form'] == "PRES  ACTIVE  IND  1 S" and infl['n'] == [0, 0] and (
+                        len(word['parts'][0]) > 0 and word['parts'][0] != "-"):
+                    word['parts'][0] = word['parts'][0] + infl['ending']
 
             if len_w_p > 1 and not end_two:
-                for inf in self.inflects:
-                    if infl['form'] == "PRES  ACTIVE  INF  0 X" and infl['n'] == [0, 0] and (
-                            len(word['parts'][1]) > 0 and word['parts'][1] != "-"):
-                        word['parts'][1] = word['parts'][1] + infl['ending']
-                        break
+                if infl['form'] == "PRES  ACTIVE  INF  0 X" and infl['n'] == [0, 0] and (
+                        len(word['parts'][1]) > 0 and word['parts'][1] != "-"):
+                    word['parts'][1] = word['parts'][1] + infl['ending']
 
             if len_w_p > 2 and not end_three:
-                for inf in self.inflects:
-                    if infl['form'] == "PERF  ACTIVE  IND  1 S" and infl['n'] == [0, 0] and (
-                            len(word['parts'][2]) > 0 and word['parts'][2] != "-"):
-                        word['parts'][2] = word['parts'][2] + infl['ending']
-                        break
+                if infl['form'] == "PERF  ACTIVE  IND  1 S" and infl['n'] == [0, 0] and (
+                        len(word['parts'][2]) > 0 and word['parts'][2] != "-"):
+                    word['parts'][2] = word['parts'][2] + infl['ending']
 
             if len_w_p > 3 and not end_four:
-                for inf in self.inflects:
-                    if infl['form'] == "NOM S M PERF PASSIVE PPL" and infl['n'] == [0, 0] and (
-                            len(word['parts'][3]) > 0 and word['parts'][3] != "-"):
-                        word['parts'][3] = word['parts'][3] + infl['ending']
-                        break
+                if infl['form'] == "NOM S M PERF PASSIVE PPL" and infl['n'] == [0, 0] and (
+                        len(word['parts'][3]) > 0 and word['parts'][3] != "-"):
+                    word['parts'][3] = word['parts'][3] + infl['ending']
 
         # Finish for nouns
         elif word['pos'] in ["N", "ADJ", "PRON"]:
             # Nominative singular
             if len_w_p > 0 and not end_one and infl['n'] == [0, 0] and (
                     len(word['parts'][0]) > 0 and word['parts'][0] != "-"):
-                for inf in self.inflects:
-                    if infl['form'].startswith("NOM S"):
-                        word['parts'][0] = word['parts'][0] + infl['ending']
-                        end_one = True
+                if infl['form'].startswith("NOM S"):
+                    word['parts'][0] = word['parts'][0] + infl['ending']
+                    end_one = True
 
             # Genitive singular
             if len_w_p > 1 and not end_two and infl['n'] == [0, 0] and (
                     len(word['parts'][1]) > 0 and word['parts'][1] != "-"):
-                for inf in self.inflects:
-                    if infl['form'].startswith("GEN S"):
-                        word['parts'][1] = word['parts'][1] + infl['ending']
-                        end_two = True
+                if infl['form'].startswith("GEN S"):
+                    word['parts'][1] = word['parts'][1] + infl['ending']
+                    end_two = True
 
         # If endings really don't exist, fall back to default
         if word['pos'] in ["V", "VPAR"]:
