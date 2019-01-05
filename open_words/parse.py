@@ -11,8 +11,9 @@ __license__ = "MIT License. See LICENSE."
 
 import re
 from copy import deepcopy
-from open_words.formatter import format_output
+
 from open_words.exceptions import WordsException
+from open_words.formatter import format_output
 
 try:
     from open_words.dict_id import WordsIds
@@ -224,13 +225,10 @@ class Parser:
             for e in self.addons['tackons']:
                 if s.endswith(e['orth']):
 
-                    # Standardize data format
-                    e['form'] = e['orth']
-
                     # Est exception
                     if s != "est":
                         base = re.sub(e['orth'] + "$", "", s)
-                        result.append({'base': base, 'encl': e, "stems": []})
+                        result.append({'base': base, 'encl': e})
 
         # which list do we get info from
         if s.startswith("qu"):
@@ -244,7 +242,7 @@ class Parser:
                     base = re.sub(e['orth'] + "$", "", s)
                     # an enclitic without a base is not an enclitic
                     if base:
-                        result.append({'base': base, 'encl': e, "stems": []})
+                        result.append({'base': base, 'encl': e})
                         # avoid double entry for -cumque and -que
                         break
 

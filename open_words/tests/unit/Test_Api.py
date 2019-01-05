@@ -3,7 +3,7 @@ from open_words.parse import Parser
 import unittest
 
 
-class MinimalDictionaryConstructorTest(unittest.TestCase):
+class MinimalDictionaryParseTest(unittest.TestCase):
 
     def setUp(self):
         # make sure to create a new Parser for each test
@@ -55,10 +55,80 @@ class MinimalDictionaryConstructorTest(unittest.TestCase):
         self.prs.addons['tackons'] = [{'orth': 'd'}]
         result = self.prs.parse("word")
         expected = {'word': 'word',
-                    'defs': [{'enclitic': {'form': 'd', 'orth': 'd'},
+                    'defs': [{'enclitic': {'orth': 'd'},
                               'infls': [{'ending': '',
                                          'form': {'form': ['abc']},
                                          'pos': 'number'}],
                               'orth': ['wor'],
                               'senses': []}]}
+        self.assertEqual(result, expected)
+
+
+class MinimalDictionaryAnalyzeFormsTest(unittest.TestCase):
+    def setUp(self):
+        # make sure to create a new Parser for each test
+        self.prs = Parser(wordlist=[], addons=dict(), stems=dict(), uniques=dict(), inflects=dict(), wordkeys=dict())
+
+    def test_empty(self):
+        result = self.prs.analyze_forms({"base": "word"})
+        expected = []
+        self.assertEqual(result, expected)
+
+
+class MinimalDictionarySplitFromEnclitic(unittest.TestCase):
+    def setUp(self):
+        # make sure to create a new Parser for each test
+        self.prs = Parser(wordlist=[], addons=dict(), stems=dict(), uniques=dict(), inflects=dict(), wordkeys=dict())
+
+    def test_empty(self):
+        result = self.prs.split_form_enclitic("word")
+        expected = [{"base": "word", "encl": ""}]
+        self.assertEqual(result, expected)
+
+    def test_tackon(self):
+        self.prs.addons['tackons'] = [{'orth': 'd'}]
+        result = self.prs.split_form_enclitic("word")
+        expected = [{"base": "word", "encl": ""}, {"base": "wor", "encl": {'orth': 'd'}}]
+        self.assertEqual(result, expected)
+
+    def test_packon(self):
+        self.prs.addons['packons'] = [{'orth': 'd'}]
+        result = self.prs.split_form_enclitic("quword")
+        expected = [{"base": "quword", "encl": ""}, {"base": "quwor", "encl": {'orth': 'd'}}]
+        self.assertEqual(result, expected)
+
+    def test_not_packon(self):
+        self.prs.addons['not_packons'] = [{'orth': 'd'}]
+        result = self.prs.split_form_enclitic("word")
+        expected = [{"base": "word", "encl": ""}, {"base": "wor", "encl": {'orth': 'd'}}]
+        self.assertEqual(result, expected)
+
+    def test_nonexisting_not_packon(self):
+        self.prs.addons['packons'] = [{'orth': 'd'}]
+        result = self.prs.split_form_enclitic("word")
+        expected = [{"base": "word", "encl": ""}]
+        self.assertEqual(result, expected)
+
+    def test_nonexisting_packon(self):
+        self.prs.addons['not_packons'] = [{'orth': 'd'}]
+        result = self.prs.split_form_enclitic("quword")
+        expected = [{"base": "quword", "encl": ""}]
+        self.assertEqual(result, expected)
+
+    def test_double_tackon(self):
+        self.prs.addons['tackons'] = [{'orth': 'd'}, {'orth': 'd'}]
+        result = self.prs.split_form_enclitic("word")
+        expected = [{"base": "word", "encl": ""}, {"base": "wor", "encl": {'orth': 'd'}}, {"base": "wor", "encl": {'orth': 'd'}}]
+        self.assertEqual(result, expected)
+
+    def test_double_packon(self):
+        self.prs.addons['packons'] = [{'orth': 'd'}, {'orth': 'd'}]
+        result = self.prs.split_form_enclitic("quword")
+        expected = [{"base": "quword", "encl": ""}, {"base": "quwor", "encl": {'orth': 'd'}}]
+        self.assertEqual(result, expected)
+
+    def test_double_not_packon(self):
+        self.prs.addons['not_packons'] = [{'orth': 'd'}, {'orth': 'd'}]
+        result = self.prs.split_form_enclitic("word")
+        expected = [{"base": "word", "encl": ""}, {"base": "wor", "encl": {'orth': 'd'}}]
         self.assertEqual(result, expected)
