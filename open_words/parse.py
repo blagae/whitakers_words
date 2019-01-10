@@ -98,7 +98,7 @@ class Parser:
                 stem['encl'] = word['encl']
 
         # Lookup dict info for found stems
-        forms = self.lookup_stems(match_stems, not reduced)
+        forms = self.lookup_stems(match_stems)
 
         if len(forms):
             return forms
@@ -160,7 +160,7 @@ class Parser:
                 return infl['form'][-1] == stem['form'][4] or infl['form'][-1] == 'C'
         return infl['n'][0] == stem['n'][0]
 
-    def lookup_stems(self, match_stems, get_word_ends=True):
+    def lookup_stems(self, match_stems):
         """Find the word id mentioned in the stem in the dictionary"""
         results = []
 
@@ -209,8 +209,6 @@ class Parser:
                     # Lookup word ends
                     # Need to Clone this object - otherwise self.wordlist is modified
                     dict_word_clone = deepcopy(dict_word)
-                    if get_word_ends:
-                        dict_word_clone = self.get_word_endings(dict_word_clone)
 
                     # Finally, append new word to results
                     results.append({'w': dict_word_clone, 'enclitic': stem['encl'], 'stems': [stem]})
@@ -248,124 +246,6 @@ class Parser:
 
         return result
 
-    def get_word_endings(self, word):
-        """
-        Get the word endings for the stems in the Dictionary;
-        eventually this should be phased out in favor of including the
-        endings in the words in the dict_line dict
-        """
-        end_one = False
-        end_two = False
-        end_three = False
-        end_four = False
-
-        len_w_p = len(word['parts'])
-
-        for infl_set in self.inflects.values():
-            for infl_list in infl_set.values():
-                for infl in infl_list:
-                    # If the conjugation/declesion is a match AND the part of speech is a match (regularize V/VPAR)
-                    if (infl['n'] == word['n'] and
-                            (infl['pos'] == word['pos']
-                             or (infl['pos'] in ["V", "VPAR"] and word['pos'] in ["V", "VPAR"])
-                            )
-                    ):
-
-                        # If the word is a verb, get the 4 principle parts
-                        if word['pos'] in ["V", "VPAR"]:
-                            # Pres act ind first singular
-                            if len_w_p > 0 and not end_one and (len(word['parts'][0]) > 0 and word['parts'][0] != "-"):
-                                if infl['form'] == "PRES  ACTIVE  IND  1 S":
-                                    word['parts'][0] = word['parts'][0] + infl['ending']
-                                    end_one = True
-
-                            # Pres act inf
-                            if len_w_p > 1 and not end_two and (len(word['parts'][1]) > 0 and word['parts'][1] != "-"):
-                                if infl['form'] == "PRES  ACTIVE  INF  0 X":
-                                    word['parts'][1] = word['parts'][1] + infl['ending']
-                                    end_two = True
-
-                            # Perf act ind first singular
-                            if len_w_p > 2 and not end_three and (
-                                    len(word['parts'][2]) > 0 and word['parts'][2] != "-"):
-                                if infl['form'] == "PERF  ACTIVE  IND  1 S":
-                                    word['parts'][2] = word['parts'][2] + infl['ending']
-                                    end_three = True
-
-                            # Perfect passive participle
-                            if len_w_p > 3 and not end_four and (len(word['parts'][3]) > 0 and word['parts'][3] != "-"):
-                                if infl['form'] == "NOM S M PRES PASSIVE PPL":
-                                    word['parts'][3] = word['parts'][3] + infl['ending']
-                                    end_four = True
-
-                        # If the word is a noun or adjective, get the nominative and genetive singular forms
-                        elif word['pos'] in ["N", "ADJ", "PRON"]:
-                            # Nominative singular
-                            if len_w_p > 0 and not end_one:
-                                if infl['form'].startswith("NOM S") and (
-                                        len(word['parts'][0]) > 0 and word['parts'][0] != "-"):
-                                    word['parts'][0] = word['parts'][0] + infl['ending']
-                                    end_one = True
-
-                            # Genitive singular
-                            if len_w_p > 1 and not end_two:
-                                if infl['form'].startswith("GEN S") and (
-                                        len(word['parts'][1]) > 0 and word['parts'][1] != "-"):
-                                    word['parts'][1] = word['parts'][1] + infl['ending']
-                                    end_two = True
-
-        # Finish up a little bit of standardization for forms
-        # For Verbs
-        if word['pos'] in ["V", "VPAR"]:
-            if len_w_p > 0 and not end_one:
-                if infl['form'] == "PRES  ACTIVE  IND  1 S" and infl['n'] == [0, 0] and (
-                        len(word['parts'][0]) > 0 and word['parts'][0] != "-"):
-                    word['parts'][0] = word['parts'][0] + infl['ending']
-
-            if len_w_p > 1 and not end_two:
-                if infl['form'] == "PRES  ACTIVE  INF  0 X" and infl['n'] == [0, 0] and (
-                        len(word['parts'][1]) > 0 and word['parts'][1] != "-"):
-                    word['parts'][1] = word['parts'][1] + infl['ending']
-
-            if len_w_p > 2 and not end_three:
-                if infl['form'] == "PERF  ACTIVE  IND  1 S" and infl['n'] == [0, 0] and (
-                        len(word['parts'][2]) > 0 and word['parts'][2] != "-"):
-                    word['parts'][2] = word['parts'][2] + infl['ending']
-
-            if len_w_p > 3 and not end_four:
-                if infl['form'] == "NOM S M PERF PASSIVE PPL" and infl['n'] == [0, 0] and (
-                        len(word['parts'][3]) > 0 and word['parts'][3] != "-"):
-                    word['parts'][3] = word['parts'][3] + infl['ending']
-
-        # Finish for nouns
-        elif word['pos'] in ["N", "ADJ", "PRON"]:
-            # Nominative singular
-            if len_w_p > 0 and not end_one and infl['n'] == [0, 0] and (
-                    len(word['parts'][0]) > 0 and word['parts'][0] != "-"):
-                if infl['form'].startswith("NOM S"):
-                    word['parts'][0] = word['parts'][0] + infl['ending']
-                    end_one = True
-
-            # Genitive singular
-            if len_w_p > 1 and not end_two and infl['n'] == [0, 0] and (
-                    len(word['parts'][1]) > 0 and word['parts'][1] != "-"):
-                if infl['form'].startswith("GEN S"):
-                    word['parts'][1] = word['parts'][1] + infl['ending']
-                    end_two = True
-
-        # If endings really don't exist, fall back to default
-        if word['pos'] in ["V", "VPAR"]:
-            if len_w_p > 0 and not end_one and (len(word['parts'][0]) > 0 and word['parts'][0] != "-"):
-                word['parts'][0] = word['parts'][0] + "o"
-            if len_w_p > 1 and not end_two and (len(word['parts'][1]) > 0 and word['parts'][1] != "-"):
-                word['parts'][1] = word['parts'][1] + "?re"
-            if len_w_p > 2 and not end_three and (len(word['parts'][2]) > 0 and word['parts'][2] != "-"):
-                word['parts'][2] = word['parts'][2] + "i"
-            if len_w_p > 3 and not end_four and (len(word['parts'][3]) > 0 and word['parts'][3] != "-"):
-                word['parts'][3] = word['parts'][3] + "us"
-
-        return word
-
     def reduce(self, option):
         """Reduce the stem with suffixes and try again"""
         out = []
@@ -390,11 +270,11 @@ class Parser:
         out = self.analyze_forms(option, True)
 
         # Has reducing input string given us useful data?
-        # If not, return false
         for word in out:
             if len(word['stems']) > 0:
                 found_new_match = True
 
+        # If not, return empty set
         if out and not found_new_match:
             out = []
 
