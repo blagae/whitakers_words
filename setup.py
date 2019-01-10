@@ -26,6 +26,6 @@ setup(
     name='open_words',
     packages=find_packages(),
     url='https://github.com/ArchimedesDigital/open_words',
-    version='0.0.1',
+    version='0.1.0',
     zip_safe=True,
 )
