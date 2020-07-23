@@ -1,4 +1,22 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
+
+try:
+    from open_words.dict_id import WordsIds
+    from open_words.dict_line import WordsDict
+    from open_words.addons import LatinAddons
+    from open_words.stem_list import Stems
+    from open_words.uniques import Uniques
+    from open_words.inflects import Inflects
+except ModuleNotFoundError:
+    from open_words.format_data import reimport_all_dicts
+
+    reimport_all_dicts()
+    from open_words.dict_id import WordsIds
+    from open_words.dict_line import WordsDict
+    from open_words.addons import LatinAddons
+    from open_words.stem_list import Stems
+    from open_words.uniques import Uniques
+    from open_words.inflects import Inflects
 
 setup(
     author='Archimedes Digital',
@@ -24,8 +42,9 @@ setup(
     license='MIT',
     long_description="""Open Words is a port of William Whitaker's 'Whitaker's Words' original Ada code to Python so that it may continue to be useful to Latin students and philologists for years to come.""",
     name='open_words',
-    packages=find_packages(),
-    url='https://github.com/ArchimedesDigital/open_words',
-    version='0.1.0',
+    packages=list(["open_words.files", *find_namespace_packages(include=["open_words", "open_words.*"], exclude=["open_words.tests","open_words.tests.*"])]),
+    url='https://github.com/blagae/open_words',
+    version='0.1.1',
     zip_safe=True,
+    package_data={"open_words.data": ["*.*"]}
 )

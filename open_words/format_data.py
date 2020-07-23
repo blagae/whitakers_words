@@ -6,19 +6,30 @@ Format the data from the input files from Whitaker's Words
 """
 
 import json
+import os
+from pkg_resources import resource_string, resource_stream, resource_filename
 
 
-def dump_file(name, obj):
-    with open(name, 'w') as out:
-        out.write("value = ")
-        json.dump(obj, out)
+resources_directory = resource_filename(__name__, "data")
+files_directory = resources_directory[:-4] + "files/"
+try:
+    os.mkdir(files_directory)
+except FileExistsError:
+    pass
+
+def dump_file(name, obj=None):
+    with open(files_directory + name, 'w') as out:
+        if obj:
+            out.write("value = ")
+            json.dump(obj, out)
+        out.write("\n")
 
 
 def import_dicts():
     keys = dict()
     ids = ['']
     previous_item = None
-    with open('../data/DICTLINE.GEN', encoding="ISO-8859-1") as f:
+    with open(resources_directory + '/DICTLINE.GEN', encoding="ISO-8859-1") as f:
         for i, line in enumerate(f):
 
             orth = line[0:19].replace("zzz", "-").strip()
@@ -72,13 +83,13 @@ def import_dicts():
                 ids.append(item)
                 previous_item = item
 
-    dump_file('../files/dict_keys.py', keys)
-    dump_file('../files/dict_ids.py', ids)
+    dump_file('dict_keys.py', keys)
+    dump_file('dict_ids.py', ids)
 
 
 def import_stems():
     data = dict()
-    with open('../data/STEMLIST.GEN') as f:
+    with open(resources_directory + '/STEMLIST.GEN') as f:
         for line in f:
             if len(line[26:30].strip()) > 0:
                 n = line[26:30].strip().split(" ")
@@ -102,11 +113,11 @@ def import_stems():
             else:
                 data[orth] = [item]
 
-    dump_file('../files/stems.py', data)
+    dump_file('stems.py', data)
 
 
 def import_suffixes():
-    with open('../data/suffixes.txt') as f:
+    with open(resources_directory + '/suffixes.txt') as f:
 
         i = 0
         obj = {}
@@ -130,11 +141,11 @@ def import_suffixes():
                 obj = {}
                 i = 0
 
-    dump_file('../files/suffixes.py', data)
+    dump_file('suffixes.py', data)
 
 
 def import_prefixes():
-    with open('../data/prefixes.txt') as f:
+    with open(resources_directory + '/prefixes.txt') as f:
 
         i = 0
         obj = {}
@@ -158,11 +169,11 @@ def import_prefixes():
                 obj = {}
                 i = 0
 
-    dump_file('../files/prefixes.py', data)
+    dump_file('prefixes.py', data)
 
 
 def import_uniques():
-    with open('../data/UNIQUES.LAT') as f:
+    with open(resources_directory + '/UNIQUES.LAT') as f:
 
         i = 0
         obj = {}
@@ -202,11 +213,11 @@ def import_uniques():
         else:
             data[orth] = [est]
 
-    dump_file('../files/uniques.py', data)
+    dump_file('uniques.py', data)
 
 
 def import_inflects():
-    with open('../data/INFLECTS.LAT') as f:
+    with open(resources_directory + '/INFLECTS.LAT') as f:
 
         i = 0
         obj = {}
@@ -836,7 +847,7 @@ def import_inflects():
                     })
 
     reordered = reorder_inflects(data)
-    dump_file('../files/inflects.py', reordered)
+    dump_file('inflects.py', reordered)
 
 
 def reorder_inflects(data):
@@ -866,7 +877,12 @@ def parse_infl_type(s):
     return n
 
 
+def create_init():
+    dump_file("__init__.py")
+
+
 def reimport_all_dicts():
+    create_init()
     import_dicts()
     import_stems()
     import_suffixes()
