@@ -178,15 +178,16 @@ def import_uniques():
         i = 0
         obj = {}
         data = dict()
-
+        x = str()
         for line in f:
 
             if i == 0:
                 obj['orth'] = line.strip()
 
             elif i == 1:
-                obj['pos'] = line[0].strip()
-                obj['form'] = line[1:52].strip()
+                space = line.find(" ")
+                obj['pos'] = line[:space].strip()
+                obj['form'] = line[space:52].strip()
 
             elif i == 2:
                 obj['senses'] = [line.strip()]
