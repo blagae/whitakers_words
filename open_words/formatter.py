@@ -223,12 +223,15 @@ def format_output(out):
                         form = infl['form']
                         if stem['st']['pos'] == 'N':
                             form = form[:-1] + stem['st']['form'][4]
-                        to_add_infls.append({
+                        formatted_infl = {
                             'stem': stem['st']['orth'],
                             'ending': infl['ending'],
                             'pos': infl['pos'],
                             'form': form
-                        })
+                        }
+                        if infl['pos'] in ['ADJ', 'N', 'V', 'VPAR'] and stem['st']['n'][0] < 6:
+                            formatted_infl['decl'] = stem['st']['n'][0]
+                        to_add_infls.append(formatted_infl)
 
                 for formatted_infl in to_add_infls:
                     if formatted_infl not in obj['infls']:
