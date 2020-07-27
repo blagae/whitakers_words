@@ -1,22 +1,22 @@
 from setuptools import setup, find_namespace_packages
 
 try:
-    from open_words.dict_id import WordsIds
-    from open_words.dict_line import WordsDict
-    from open_words.addons import LatinAddons
-    from open_words.stem_list import Stems
-    from open_words.uniques import Uniques
-    from open_words.inflects import Inflects
+    from whitakers_words.dict_id import WordsIds
+    from whitakers_words.dict_line import WordsDict
+    from whitakers_words.addons import LatinAddons
+    from whitakers_words.stem_list import Stems
+    from whitakers_words.uniques import Uniques
+    from whitakers_words.inflects import Inflects
 except ModuleNotFoundError:
-    from open_words.format_data import reimport_all_dicts
+    from whitakers_words.format_data import reimport_all_dicts
 
     reimport_all_dicts()
-    from open_words.dict_id import WordsIds
-    from open_words.dict_line import WordsDict
-    from open_words.addons import LatinAddons
-    from open_words.stem_list import Stems
-    from open_words.uniques import Uniques
-    from open_words.inflects import Inflects
+    from whitakers_words.dict_id import WordsIds
+    from whitakers_words.dict_line import WordsDict
+    from whitakers_words.addons import LatinAddons
+    from whitakers_words.stem_list import Stems
+    from whitakers_words.uniques import Uniques
+    from whitakers_words.inflects import Inflects
 
 setup(
     author='Archimedes Digital',
@@ -41,10 +41,10 @@ setup(
     keywords=['literature', 'philology', 'text processing', 'archive'],
     license='MIT',
     long_description="""Open Words is a port of William Whitaker's 'Whitaker's Words' original Ada code to Python so that it may continue to be useful to Latin students and philologists for years to come.""",
-    name='open_words',
-    packages=list(["open_words.files", *find_namespace_packages(include=["open_words", "open_words.*"], exclude=["open_words.tests","open_words.tests.*"])]),
-    url='https://github.com/blagae/open_words',
+    name='whitakers_words',
+    packages=list(["whitakers_words.files", *find_namespace_packages(include=["whitakers_words", "whitakers_words.*"], exclude=["whitakers_words.tests","whitakers_words.tests.*"])]),
+    url='https://github.com/blagae/whitakers_words',
     version='0.1.1',
     zip_safe=True,
-    package_data={"open_words.data": ["*.*"]}
+    package_data={"whitakers_words.data": ["*.*"]}
 )

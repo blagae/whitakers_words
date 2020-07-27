@@ -1,8 +1,8 @@
-# Open Words
+# Whitaker's Words
 
 ## Project history
 
-Open Words is a port of William Whitaker's original Ada code to Python for future maintenance and improvement.
+Whitaker's Words is a port of William Whitaker's original Ada code to Python for future maintenance and improvement.
 You can find the current state of development that started with the original Whitaker's Words, written in Ada, on
 [Martin Keegan's Github repository](https://github.com/mk270/whitakers-words).
 More information about William Whitaker and the Words program is available there.  
@@ -34,7 +34,7 @@ This project is under the MIT license. The license was taken over from the
 To use the standard dictionary lookup, use the `Parser` class as follows:
 
 ```
-from open_words.parse import Parser
+from whitakers_words.parse import Parser
 parser = Parser()
 parser.parse("regis")
 ```

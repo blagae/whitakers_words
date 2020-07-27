@@ -1,0 +1,2 @@
+class WordsException(Exception):
+    pass
