@@ -61,3 +61,24 @@ The return value is a Python dictionary, easily wrapped to JSON, structured as f
   ]
 }
 ```
+
+## Install instructions
+
+If you have cloned the repository, you can just use
+
+    $ python setup.py install
+
+Otherwise, you will need to install from the Github repo, because there is no PyPi package for this project.
+
+    $ pip install git+https://github.com/blagae/whitakers_words.git#egg=whitakers_words
+
+If you have a requirements file, then this is a valid format for the dependency:
+
+    git+git://github.com/blagae/whitakers_words.git#egg=whitakers_words
+
+## Test instructions
+
+The tests use the standard Python `unittest` framework. All tests are in the `whitakers_words.tests` module.
+You should be able to run them from the command line, without any further config, by just calling:
+
+    $ python -m unittest
