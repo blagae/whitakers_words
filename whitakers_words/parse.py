@@ -148,6 +148,8 @@ class Parser:
             if infl['pos'] == "VPAR" and stem['pos'] == "V":
                 try:
                     wrd = self.wordlist[int(stem['wid'])]
+                    if not wrd:
+                        return False  # probably an entry with a lot of meanings
                 except IndexError:
                     return False  # must be part of uniques
                 if infl['form'][8:12] == "PERF":

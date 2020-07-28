@@ -55,3 +55,9 @@ class CrashTest(unittest.TestCase):
 
     def test_anceps(self):
         print(self.par.parse("anceps"))
+
+    def test_de(self):
+        print(self.par.parse("de"))
+
+    def test_peccata(self):
+        print(self.par.parse("peccata"))
