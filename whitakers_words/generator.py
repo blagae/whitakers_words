@@ -1,7 +1,7 @@
 """
-format_data.py
+generator.py
 
-Format the data from the input files from Whitaker's Words
+Format the data from the input files from Whitaker's Words into python dictionaries
 
 """
 
@@ -11,7 +11,7 @@ from pkg_resources import resource_string, resource_stream, resource_filename
 
 
 resources_directory = resource_filename(__name__, "data")
-files_directory = resources_directory[:-4] + "files/"
+files_directory = resources_directory[:-4] + "generated/"
 try:
     os.mkdir(files_directory)
 except FileExistsError:
@@ -20,7 +20,7 @@ except FileExistsError:
 def dump_file(name, obj=None):
     with open(files_directory + name, 'w') as out:
         if obj:
-            out.write("value = ")
+            out.write(name[:-3] + " = ")
             json.dump(obj, out)
         out.write("\n")
 
@@ -204,7 +204,7 @@ def import_uniques():
                 obj = {}
                 i = 0
 
-    from whitakers_words.esse import esse
+    from whitakers_words.data.esse import esse
     for est in esse:
         orth = est['orth']
         if orth in data:
@@ -878,12 +878,12 @@ def parse_infl_type(s):
     return n
 
 
-def create_init():
+def create_init_file():
     dump_file("__init__.py")
 
 
-def reimport_all_dicts():
-    create_init()
+def generate_all_dicts():
+    create_init_file()
     import_dicts()
     import_stems()
     import_suffixes()

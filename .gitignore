@@ -26,5 +26,5 @@ pypyenv/
 env*/
 venv/
 __pycache__
-whitakers_words/files/
+whitakers_words/generated/
 .vscode

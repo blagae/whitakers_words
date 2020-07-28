@@ -84,7 +84,7 @@ that ADDONS are not coded but left text for easy change.
 
 """
 
-LatinAddons = {
+addons = {
 
     #
     # TICKONS

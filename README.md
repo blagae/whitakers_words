@@ -9,7 +9,7 @@ More information about William Whitaker and the Words program is available there
 
 ## Changes since fork
 
-This specific project is a fork of the initial effort by [Luke Hollis](https://github.com/ArchimedesDigital/open_words).
+This specific project is a repurposed fork of the initial effort by [Luke Hollis](https://github.com/ArchimedesDigital/open_words).
 A few functions have been deleted:
 
 * the promise of english-to-latin lookups has been abandoned
@@ -19,10 +19,10 @@ Other changes include:
 
 * inefficient dictionary loops (`O(n)`) have been replaced by lookups (`O(log n)`)
 * `Parse` has been renamed to `Parser`
-* the formatting logic has moved to its own module, named `formatter`
+* the response formatting logic has moved to its own module, named `formatter`
 * tests were added
-* `format_data` is now a data feeding program which reads Whitaker's file lists into Python dictionaries and lists
-* `format_data` logic is called automatically if necessary (should be only once)
+* `format_data` has been renamed to `generator`. It is now a data feeding program which reads Whitaker's file lists into Python dictionaries and lists
+* `format_data` logic is called upon installation of the egg (`python setup.py install`)
 
 ## License
 

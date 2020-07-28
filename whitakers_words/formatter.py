@@ -1,3 +1,9 @@
+"""
+formatter.py
+
+Format the response of parse.py to be more human-readable
+
+"""
 
 tenses = {
     'PRES': "present",

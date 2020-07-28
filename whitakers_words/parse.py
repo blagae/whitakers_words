@@ -1,5 +1,5 @@
 """
-Parse.py (relating to Words's parse.adb)
+parse.py (relating to Words's parse.adb)
 
 Parse a word or list of input words and return word form and
 definition
@@ -15,35 +15,24 @@ from copy import deepcopy
 from whitakers_words.exceptions import WordsException
 from whitakers_words.formatter import format_output
 
-try:
-    from whitakers_words.dict_id import WordsIds
-    from whitakers_words.dict_line import WordsDict
-    from whitakers_words.addons import LatinAddons
-    from whitakers_words.stem_list import Stems
-    from whitakers_words.uniques import Uniques
-    from whitakers_words.inflects import Inflects
-except ModuleNotFoundError:
-    from whitakers_words.format_data import reimport_all_dicts
-
-    reimport_all_dicts()
-    from whitakers_words.dict_id import WordsIds
-    from whitakers_words.dict_line import WordsDict
-    from whitakers_words.addons import LatinAddons
-    from whitakers_words.stem_list import Stems
-    from whitakers_words.uniques import Uniques
-    from whitakers_words.inflects import Inflects
+from whitakers_words.generated.dict_ids import dict_ids
+from whitakers_words.generated.dict_keys import dict_keys
+from whitakers_words.generated.stems import stems
+from whitakers_words.generated.uniques import uniques
+from whitakers_words.generated.inflects import inflects
+from whitakers_words.data.addons import addons
 
 
 class Parser:
 
     def __init__(self, **kwargs):
         """Provide a modular structure for loading the parser data"""
-        self.wordlist = kwargs['wordlist'] if 'wordlist' in kwargs else WordsIds
-        self.addons = kwargs['addons'] if 'addons' in kwargs else LatinAddons
-        self.stems = kwargs['stems'] if 'stems' in kwargs else Stems
-        self.uniques = kwargs['uniques'] if 'uniques' in kwargs else Uniques
-        self.inflects = kwargs['inflects'] if 'inflects' in kwargs else Inflects
-        self.wordkeys = kwargs['wordkeys'] if 'wordkeys' in kwargs else WordsDict
+        self.wordlist = kwargs['wordlist'] if 'wordlist' in kwargs else dict_ids
+        self.wordkeys = kwargs['wordkeys'] if 'wordkeys' in kwargs else dict_keys
+        self.stems = kwargs['stems'] if 'stems' in kwargs else stems
+        self.uniques = kwargs['uniques'] if 'uniques' in kwargs else uniques
+        self.inflects = kwargs['inflects'] if 'inflects' in kwargs else inflects
+        self.addons = kwargs['addons'] if 'addons' in kwargs else addons
 
     def parse(self, text):
         """
@@ -93,8 +82,8 @@ class Parser:
         # Get viable combinations of stem + endings (+ enclitics)
         match_stems = self.match_stems_inflections(form, viable_inflections)
 
-        for stems in match_stems.values():
-            for stem in stems:
+        for stemlist in match_stems.values():
+            for stem in stemlist:
                 stem['encl'] = word['encl']
 
         # Lookup dict info for found stems
@@ -166,8 +155,8 @@ class Parser:
         """Find the word id mentioned in the stem in the dictionary"""
         results = []
 
-        for stems in match_stems.values():
-            for stem in stems:
+        for stemlist in match_stems.values():
+            for stem in stemlist:
                 try:
                     dict_word = self.wordlist[int(stem['st']['wid'])]
                     if not dict_word:
