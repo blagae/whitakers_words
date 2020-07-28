@@ -14,7 +14,7 @@ class VerbTest(unittest.TestCase):
         expected = {'word': 'quaero',
                     'defs': [{'orth': ['quaero', 'quaerere', 'quaesivi', 'quaesitus'],
                               'senses': ['search for, seek, strive for', 'obtain', 'ask, inquire, demand'],
-                              'infls': [{'stem': 'quaer', 'ending': 'o', 'pos': 'verb',
+                              'infls': [{'stem': 'quaer', 'ending': 'o', 'pos': 'verb', 'decl': 3,
                                          'form': {'tense': 'present', 'voice': 'active', 'mood': 'indicative',
                                                   'person': 1, 'number': 'singular'}}]}]}
         """

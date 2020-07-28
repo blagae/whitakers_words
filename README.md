@@ -47,14 +47,14 @@ The return value is a Python dictionary, easily wrapped to JSON, structured as f
     { "orth": [ "rex", "reg" ],
       "senses": [ "king" ],
       "infls": [
-        { "stem": "reg",  "ending": "is", "pos": "noun",
+        { "stem": "reg",  "ending": "is", "pos": "noun", "decl": 3,
           "form": { "declension": "accusative", "number": "plural", "gender": "masculine" }
         }]
     },
     { "orth": [ "rego", "regere", "rexi", "rectus" ],
       "senses": [ "rule, guide", "manage, direct" ],
       "infls": [
-        { "stem": "reg", "ending": "is", "pos": "verb",
+        { "stem": "reg", "ending": "is", "pos": "verb", "decl": 3,
           "form": { "tense": "present", "voice": "active", "mood": "indicative", "person": 2, "number": "singular" }
         }]
     }

@@ -14,7 +14,7 @@ class NounTest(unittest.TestCase):
         expected = {'word': 'regionem',
                     'defs': [{'orth': ['regio', 'region'],
                               'senses': ['area, region', 'neighborhood', 'district, country', 'direction'],
-                              'infls': [{'stem': 'region', 'ending': 'em', 'pos': 'noun',
+                              'infls': [{'stem': 'region', 'ending': 'em', 'pos': 'noun', 'decl': 3,
                                          'form': {'case': 'accusative', 'number': 'singular', 'gender': 'feminine'}}]}]}
         """
         result = self.par.parse("regionem")
