@@ -14,5 +14,9 @@ class VergiliusTest(unittest.TestCase):
         cls.par = Parser()
 
     def test_arma(self):
+        word = self.par.parse("arma")
+        print(word)
+
+    def test_regis(self):
         word = self.par.parse("regis")
         print(word)
