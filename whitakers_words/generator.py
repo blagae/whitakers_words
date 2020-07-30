@@ -7,7 +7,7 @@ Format the data from the input files from Whitaker's Words into python dictionar
 
 import json
 import os
-from pkg_resources import resource_string, resource_stream, resource_filename
+from pkg_resources import resource_filename
 
 
 resources_directory = resource_filename(__name__, "data")
@@ -26,8 +26,9 @@ def dump_file(name, obj=None):
 
 
 def import_dicts():
-    keys = dict()
+    keys = list()
     ids = ['']
+    stems = dict()
     previous_item = None
     with open(resources_directory + '/DICTLINE.GEN', encoding="ISO-8859-1") as f:
         for i, line in enumerate(f):
@@ -68,52 +69,34 @@ def import_dicts():
                     'n': n,
                     'senses': new_senses
                 }
-
+                for part in parts:
+                    stem = {
+                        'orth': part,
+                        'pos': line[76:83].strip(),
+                        'form': line[83:100].strip(),
+                        'n': n,
+                        'wid': i + 1
+                    }
+                    if part in stems:
+                        items = stems[part]
+                        items.append(stem)
+                        stems[part] = items
+                    else:
+                        stems[part] = [stem]
             if senses[0][0] == '|':
                 new_senses[0] = new_senses[0].replace("|", "")
                 previous_item['senses'].extend(new_senses)
                 ids.append(dict())
             else:
-                if orth in keys:
-                    items = keys[orth]
-                    items.append(item)
-                    keys[orth] = items
-                else:
-                    keys[orth] = [item]
+                keys.extend(parts)
                 ids.append(item)
                 previous_item = item
 
+    keys = list(set(keys))
+    keys.sort()
     dump_file('dict_keys.py', keys)
     dump_file('dict_ids.py', ids)
-
-
-def import_stems():
-    data = dict()
-    with open(resources_directory + '/STEMLIST.GEN') as f:
-        for line in f:
-            if len(line[26:30].strip()) > 0:
-                n = line[26:30].strip().split(" ")
-                for i, v in enumerate(n):
-                    try:
-                        n[i] = int(v)
-                    except ValueError:
-                        pass
-            orth = line[0:19].strip()
-            item = {
-                    'orth': orth,
-                    'pos': line[19:26].strip(),
-                    'form': line[26:45].strip(),
-                    'n': n,
-                    'wid': int(line[50:].strip())
-                }
-            if orth in data:
-                items = data[orth]
-                items.append(item)
-                data[orth] = items
-            else:
-                data[orth] = [item]
-
-    dump_file('stems.py', data)
+    dump_file('stems.py', stems)
 
 
 def import_suffixes():
@@ -894,7 +877,6 @@ def create_init_file():
 def generate_all_dicts():
     create_init_file()
     import_dicts()
-    import_stems()
     import_suffixes()
     import_prefixes()
     import_uniques()
