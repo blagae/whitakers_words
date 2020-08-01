@@ -2,7 +2,7 @@
 
 ## Project history
 
-Whitaker's Words is a port of William Whitaker's original Ada code to Python for future maintenance and improvement.
+`whitakers_words` is a port of William Whitaker's original Ada code to Python for future maintenance and improvement.
 You can find the current state of development that started with the original Whitaker's Words, written in Ada, on
 [Martin Keegan's Github repository](https://github.com/mk270/whitakers-words).
 More information about William Whitaker and the Words program is available there.  
@@ -22,7 +22,17 @@ Other changes include:
 * the response formatting logic has moved to its own module, named `formatter`
 * tests were added
 * `format_data` has been renamed to `generator`. It is now a data feeding program which reads Whitaker's file lists into Python dictionaries and lists
-* `format_data` logic is called upon installation of the egg (`python setup.py install`)
+* `generator` logic is called upon installation of the egg (`python setup.py install`)
+
+## Project status
+
+This project is far from production-ready. Known issues are:
+
+* `prefixes.py` and `suffixes.py` are not being used in program logic
+* adverbial forms of comparatives and superlatives are analyzed completely wrong
+* `INCLECTS.LAT` has two sets of two numbers to indicate declination etc; the only one I use right now is the first one.
+
+There are certainly more problem to be found. Feel free to create Github issues for any error you encounter.
 
 ## License
 
