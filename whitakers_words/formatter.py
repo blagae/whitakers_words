@@ -97,12 +97,16 @@ def format_form(form, pos):
     """
     if pos in ["N", "PRON", "ADJ", "NUM"]:
         # Ex. "ACC S C"
-        form = form.split(" ")
+        form = form.split(" ") # TODO see if we want to use form.split()
         if len(form) == 3:
             formatted = {
                 'case': trans_declension(form[0]),
                 'number': trans_number(form[1]),
                 'gender': trans_gender(form[2])
+            }
+        elif not len(form):
+            formatted = {
+                'form': ''
             }
         else:
             formatted = {
@@ -111,13 +115,18 @@ def format_form(form, pos):
 
     elif pos == "V":
         # Ex: "FUT   ACTIVE  IND  3 S"
-        if len(form) == 22:
+        form = form.split()
+        if len(form) == 5:
             formatted = {
-                'tense': trans_tense(form[0:6].strip()),
-                'voice': trans_voice(form[6:14].strip()),
-                'mood': trans_mood(form[14:19].strip()),
-                'person': int(form[19:21].strip()),
-                'number': trans_number(form[21:].strip())
+                'tense': trans_tense(form[0].strip()),
+                'voice': trans_voice(form[1].strip()),
+                'mood': trans_mood(form[2].strip()),
+                'person': int(form[3].strip()),
+                'number': trans_number(form[4].strip())
+            }
+        elif not len(form):
+            formatted = {
+                'form': ''
             }
         else:
             formatted = {
@@ -126,14 +135,20 @@ def format_form(form, pos):
 
     elif pos == "VPAR":
         # Ex: "VOC P N PRES ACTIVE  PPL"
-        if len(form) == 24:
+        form = form.split()
+        if len(form) == 5:
             formatted = {
-                'case': trans_declension(form[0:4].strip()),
-                'number': trans_number(form[4:6].strip()),
-                'gender': trans_gender(form[6:8].strip()),
-                'tense': trans_tense(form[8:13].strip()),
-                'voice': trans_voice(form[13:21].strip())
+                'case': trans_declension(form[0].strip()),
+                'number': trans_number(form[1].strip()),
+                'gender': trans_gender(form[2].strip()),
+                'tense': trans_tense(form[3].strip()),
+                'voice': trans_voice(form[4].strip())
             }
+        elif not len(form):
+            formatted = {
+                'form': ''
+            }
+
         else:
             formatted = {
                 'form': form
