@@ -222,14 +222,20 @@ def import_inflects():
                 ending = ''
             pos = info[0]
             n = info[1:3]
-            if pos in ('ADV', 'PREP', 'CONJ', 'INTERJ'):
+            if pos == 'ADV':
+                n = info[-4:-2]
+                form = [info[1]]
+            elif pos in ('PREP', 'CONJ', 'INTERJ'):
                 n = info[-4:-2]
                 form = info[1:-2]
 
             elif pos == 'V':
                 form = info[3:8]
 
-            elif pos in ('N', 'ADJ', 'VPAR', 'SUPINE', 'PRON', 'NUM'):
+            elif pos == 'ADJ':
+                form = info[3:7]
+
+            elif pos in ('N', 'VPAR', 'SUPINE', 'PRON', 'NUM'):
                 form = info[3:6]
 
             else:

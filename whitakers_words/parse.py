@@ -141,7 +141,7 @@ class Parser:
                         return False  # probably an entry with a lot of meanings
                 except IndexError:
                     return False  # must be part of uniques
-                if infl['form'][8:12] == "PERF":
+                if infl['form'][8:12] == "PERF": # TODO probably broken now
                     return stem['orth'] == wrd['parts'][-1]
                 else:
                     return stem['orth'] == wrd['parts'][0]
@@ -149,6 +149,16 @@ class Parser:
         if stem['pos'] == 'N':
             if infl['n'] == stem['n'] or (infl['n'][0] == stem['n'][0] and infl['n'][-1] == 0):
                 return infl['form'][-1] == stem['form'][4] or infl['form'][-1] == 'C'
+        elif stem['pos'] == 'ADV':
+            if stem['form'] == 'X':
+                try:
+                    wrd = self.wordlist[int(stem['wid'])]
+                    if not wrd:
+                        return False  # probably an entry with a lot of meanings
+                except IndexError:
+                    return False  # must be part of uniques
+                return stem['orth'] in wrd['parts']
+            return stem['form'] == infl['form']
         return infl['n'][0] == stem['n'][0]
 
     def lookup_stems(self, match_stems):

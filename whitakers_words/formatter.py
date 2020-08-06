@@ -69,7 +69,14 @@ parts_of_speech = {
 }
 
 
-def format_form(form, pos):
+degrees = {
+    "POS": "positive",
+    "COMP": "comparative",
+    "SUPER": "superlative"
+}
+
+
+def format_form(original_form, pos):
     """
     Format form data to be more useful and relevant
 
@@ -95,38 +102,46 @@ def format_form(form, pos):
      - voice: active, passive
 
     """
-    if pos in ["N", "PRON", "ADJ", "NUM"]:
+    form = original_form.split()
+    if not len(form):
+        formatted = {
+            'form': ['']
+        }
+    elif pos in ["N", "PRON", "NUM"]:
         # Ex. "ACC S C"
-        form = form.split(" ") # TODO see if we want to use form.split()
         if len(form) == 3:
             formatted = {
                 'case': trans_declension(form[0]),
                 'number': trans_number(form[1]),
                 'gender': trans_gender(form[2])
             }
-        elif not len(form):
-            formatted = {
-                'form': ''
-            }
         else:
             formatted = {
                 'form': form
             }
 
+    elif pos == "ADJ":
+        # Ex. "ACC S M COMP"
+        if len(form) == 4:
+            formatted = {
+                'case': trans_declension(form[0]),
+                'number': trans_number(form[1]),
+                'gender': trans_gender(form[2]),
+                'degree': trans_degree(form[3])
+            }
+        else:
+            formatted = {
+                'form': form
+            }
     elif pos == "V":
         # Ex: "FUT   ACTIVE  IND  3 S"
-        form = form.split()
         if len(form) == 5:
             formatted = {
-                'tense': trans_tense(form[0].strip()),
-                'voice': trans_voice(form[1].strip()),
-                'mood': trans_mood(form[2].strip()),
-                'person': int(form[3].strip()),
-                'number': trans_number(form[4].strip())
-            }
-        elif not len(form):
-            formatted = {
-                'form': ''
+                'tense': trans_tense(form[0]),
+                'voice': trans_voice(form[1]),
+                'mood': trans_mood(form[2]),
+                'person': int(form[3]),
+                'number': trans_number(form[4])
             }
         else:
             formatted = {
@@ -135,31 +150,29 @@ def format_form(form, pos):
 
     elif pos == "VPAR":
         # Ex: "VOC P N PRES ACTIVE  PPL"
-        form = form.split()
         if len(form) == 5:
             formatted = {
-                'case': trans_declension(form[0].strip()),
-                'number': trans_number(form[1].strip()),
-                'gender': trans_gender(form[2].strip()),
-                'tense': trans_tense(form[3].strip()),
-                'voice': trans_voice(form[4].strip())
+                'case': trans_declension(form[0]),
+                'number': trans_number(form[1]),
+                'gender': trans_gender(form[2]),
+                'tense': trans_tense(form[3]),
+                'voice': trans_voice(form[4])
             }
-        elif not len(form):
-            formatted = {
-                'form': ''
-            }
-
         else:
             formatted = {
                 'form': form
             }
-
-    elif pos in ["ADV", "INTERJ", "CONJ", "PREP", "X", "P"]:
-        formatted = {
-            'form': form
-        }
-
-    else:
+    elif pos == "ADV":
+        if len(form) == 1:
+            formatted = {
+                'degree': trans_degree(form[0])
+            }
+        else:
+            formatted = {
+                'form': form
+            }
+    
+    else:  # if pos in ["INTERJ", "CONJ", "PREP", "X", "P"]:
         formatted = {
             'form': form
         }
@@ -194,6 +207,12 @@ def trans_tense(abb):
 def trans_pos(abb):
     return parts_of_speech[abb]
 
+
+def trans_degree(abb):
+    try:  # TODO remove asap
+        return degrees[abb]
+    except KeyError:
+        return 'X'
 
 def format_morph(word):
     """
