@@ -148,7 +148,7 @@ class Parser:
             return False
         if stem['pos'] == 'N':
             if infl['n'] == stem['n'] or (infl['n'][0] == stem['n'][0] and infl['n'][-1] == 0):
-                return infl['form'][-1] == stem['form'][4] or infl['form'][-1] == 'C'
+                return infl['form'][-1] == stem['form'][0] or infl['form'][-1] == 'C'
         elif stem['pos'] == 'ADV':
             if stem['form'] == 'X':
                 try:
@@ -159,7 +159,7 @@ class Parser:
                     return False  # must be part of uniques
                 return stem['orth'] in wrd['parts']
             return stem['form'] == infl['form']
-        return infl['n'][0] == stem['n'][0]
+        return len(stem['n']) and infl['n'][0] == stem['n'][0]
 
     def lookup_stems(self, match_stems):
         """Find the word id mentioned in the stem in the dictionary"""

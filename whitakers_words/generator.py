@@ -32,26 +32,25 @@ def import_dicts():
     previous_item = None
     with open(resources_directory + '/DICTLINE.GEN', encoding="ISO-8859-1") as f:
         for i, line in enumerate(f):
+            parts = line[:76].replace("zzz", "-").split()
 
-            orth = line[0:19].replace("zzz", "-").strip()
-            parts = [orth]
+            orth = parts[0]
 
-            if len(line[19:38].strip()) > 0:
-                parts.append(line[19:38].replace("zzz", "-").strip())
+            pos = line[76:83].strip()
 
-            if len(line[38:57].strip()) > 0:
-                parts.append(line[38:57].replace("zzz", "-").strip())
+            raw_form = line[83:100].strip()
 
-            if len(line[57:76].strip()) > 0:
-                parts.append(line[57:76].replace("zzz", "-").strip())
-
-            if len(line[83:87].strip()) > 0:
-                n = line[83:87].strip().split(" ")
-                for n_i, v in enumerate(n):
-                    try:
-                        n[n_i] = int(v)
-                    except ValueError:
-                        pass
+            n = []
+            form = []
+            for v in raw_form.split():
+                try:
+                    val = int(v)
+                    if val > 9:
+                        form.append(val)
+                    else:
+                        n.append(val)
+                except ValueError:
+                    form.append(v)
 
             senses = line[109:].strip().split(";")
             new_senses = []
@@ -59,30 +58,29 @@ def import_dicts():
                 sense = sense.strip()
                 if len(sense):
                     new_senses.append(sense)
-            else:
-                item = {
-                    'id': i + 1,
-                    'orth': orth,
-                    'parts': parts,
-                    'pos': line[76:83].strip(),
-                    'form': line[83:100].strip(),
+            item = {
+                'id': i + 1,
+                'orth': orth,
+                'parts': parts,
+                'pos': pos,
+                'form': form,
+                'n': n,
+                'senses': new_senses
+            }
+            for part in parts:
+                stem = {
+                    'orth': part,
+                    'pos': pos,
+                    'form': form,
                     'n': n,
-                    'senses': new_senses
+                    'wid': i + 1
                 }
-                for part in parts:
-                    stem = {
-                        'orth': part,
-                        'pos': line[76:83].strip(),
-                        'form': line[83:100].strip(),
-                        'n': n,
-                        'wid': i + 1
-                    }
-                    if part in stems:
-                        items = stems[part]
-                        items.append(stem)
-                        stems[part] = items
-                    else:
-                        stems[part] = [stem]
+                if part in stems:
+                    items = stems[part]
+                    items.append(stem)
+                    stems[part] = items
+                else:
+                    stems[part] = [stem]
             if senses[0][0] == '|':
                 new_senses[0] = new_senses[0].replace("|", "")
                 previous_item['senses'].extend(new_senses)
@@ -245,7 +243,7 @@ def import_inflects():
                 'n': [int(i) for i in n],
                 'note': comment,
                 'pos': pos,
-                'form': ' '.join(form)
+                'form': form
             })
 
     reordered = reorder_inflects(data)

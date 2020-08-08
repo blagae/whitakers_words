@@ -76,7 +76,7 @@ degrees = {
 }
 
 
-def format_form(original_form, pos):
+def format_form(form, pos):
     """
     Format form data to be more useful and relevant
 
@@ -102,7 +102,6 @@ def format_form(original_form, pos):
      - voice: active, passive
 
     """
-    form = original_form.split()
     if not len(form):
         formatted = {
             'form': ['']
@@ -262,7 +261,7 @@ def format_output(out):
                     if not is_in_formatted_infls:
                         form = infl['form']
                         if stem['st']['pos'] == 'N':
-                            form = form[:-1] + stem['st']['form'][4]
+                            form[-1] = stem['st']['form'][0]
                         formatted_infl = {
                             'stem': stem['st']['orth'],
                             'ending': infl['ending'],

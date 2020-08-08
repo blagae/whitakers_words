@@ -41,7 +41,7 @@ class MinimalDictionaryParseTest(unittest.TestCase):
         self.assertEqual(result, expected)
 
     def test_minimal_unique_with_result(self):
-        word = {'orth': 'word', 'pos': 'NUM', 'form': 'abc', 'senses': []}
+        word = {'orth': 'word', 'pos': 'NUM', 'form': ['abc'], 'senses': []}
         self.prs.uniques['word'] = [word]
         result = self.prs.parse("word")
         expected = {'word': 'word',
@@ -50,7 +50,7 @@ class MinimalDictionaryParseTest(unittest.TestCase):
         self.assertEqual(result, expected)
 
     def test_minimal_unique_with_addon(self):
-        word = {'orth': 'wor', 'pos': 'NUM', 'form': 'abc', 'senses': []}
+        word = {'orth': 'wor', 'pos': 'NUM', 'form': ['abc'], 'senses': []}
         self.prs.uniques['wor'] = [word]
         self.prs.addons['tackons'] = [{'orth': 'd'}]
         result = self.prs.parse("word")
