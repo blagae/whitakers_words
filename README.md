@@ -29,7 +29,6 @@ Other changes include:
 This project is far from production-ready. Known issues are:
 
 * `prefixes.py` and `suffixes.py` are not being used in program logic
-* adverbial forms of comparatives and superlatives are analyzed completely wrong
 * `INCLECTS.LAT` has two sets of two numbers to indicate declination etc; the only one I use right now is the first one.
 
 There are certainly more problem to be found. Feel free to create Github issues for any error you encounter.

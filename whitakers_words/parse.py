@@ -158,8 +158,19 @@ class Parser:
                 except IndexError:
                     return False  # must be part of uniques
                 if stem['orth'] in wrd['parts']:
-                    return get_degree(wrd['parts'].index(stem['orth'])) == infl['form']
+                    return get_degree(wrd['parts'], stem['orth']) == infl['form']
             return stem['form'] == infl['form']
+        elif stem['pos'] == 'ADJ':
+            if stem['form'][-1] == 'X':
+                try:
+                    wrd = self.wordlist[int(stem['wid'])]
+                    if not wrd:
+                        return False  # probably an entry with a lot of meanings
+                except IndexError:
+                    return False  # must be part of uniques
+                if stem['orth'] in wrd['parts']:
+                    return get_degree(wrd['parts'][1:], stem['orth'])[0] == infl['form'][-1]
+            return stem['form'] == infl['form']  # TODO we're now only checking pos/comp/super
         return len(stem['n']) and infl['n'][0] == stem['n'][0]
 
     def lookup_stems(self, match_stems):

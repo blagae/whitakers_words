@@ -211,8 +211,9 @@ def trans_degree(abb):
     return degrees[abb]['name']
 
 
-def get_degree(num):
-    return [key for (key, value) in degrees.items() if value['id'] == num]
+def get_degree(parts, stem):
+    val = [key for (key, value) in degrees.items() if value['id'] == parts.index(stem)]
+    return val
 
 
 def format_morph(word):
