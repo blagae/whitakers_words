@@ -70,9 +70,9 @@ parts_of_speech = {
 
 
 degrees = {
-    "POS": "positive",
-    "COMP": "comparative",
-    "SUPER": "superlative"
+    "POS": {"id": 0, "name": "positive"},
+    "COMP": {"id": 1, "name": "comparative"},
+    "SUPER": {"id": 2, "name": "superlative"}
 }
 
 
@@ -208,10 +208,12 @@ def trans_pos(abb):
 
 
 def trans_degree(abb):
-    try:  # TODO remove asap
-        return degrees[abb]
-    except KeyError:
-        return 'X'
+    return degrees[abb]['name']
+
+
+def get_degree(num):
+    return [key for (key, value) in degrees.items() if value['id'] == num]
+
 
 def format_morph(word):
     """
