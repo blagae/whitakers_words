@@ -57,7 +57,7 @@ class Parser:
                     parse_result.append({'w': unique_form, 'enclitic': word['encl'], 'stems': []})
             # Get regular words
             else:
-                parse_result = self.analyze_forms(word)
+                parse_result.extend(self.analyze_forms(word))
 
         return {'word': text, 'defs': format_output(parse_result)}
 
