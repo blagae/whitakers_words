@@ -30,7 +30,7 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Operating System :: POSIX',
-        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.9',
         'Topic :: Text Processing',
         'Topic :: Text Processing :: General',
         'Topic :: Text Processing :: Linguistic',
