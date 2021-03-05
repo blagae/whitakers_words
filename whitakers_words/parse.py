@@ -133,6 +133,7 @@ class Parser:
 
     def check_match(self, stem, infl):
         """ Do custom checking mechanisms to see if the inflection and stem identify as the same part of speech """
+        basic_match = len(stem['n']) and infl['n'][0] == stem['n'][0]
         if infl['pos'] != stem['pos']:
             if infl['pos'] == "VPAR" and stem['pos'] == "V":
                 try:
@@ -161,6 +162,8 @@ class Parser:
                     return get_degree(wrd['parts'], stem['orth']) == infl['form']
             return stem['form'] == infl['form']
         elif stem['pos'] == 'ADJ':
+            if not basic_match:
+                return False
             if stem['form'][-1] == 'X':
                 try:
                     wrd = self.wordlist[int(stem['wid'])]
@@ -171,7 +174,7 @@ class Parser:
                 if stem['orth'] in wrd['parts']:
                     return get_degree(wrd['parts'][1:], stem['orth'])[0] == infl['form'][-1]
             return stem['form'] == infl['form']  # TODO we're now only checking pos/comp/super
-        return len(stem['n']) and infl['n'][0] == stem['n'][0]
+        return basic_match
 
     def lookup_stems(self, match_stems):
         """Find the word id mentioned in the stem in the dictionary"""

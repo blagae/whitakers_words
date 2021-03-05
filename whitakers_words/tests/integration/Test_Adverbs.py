@@ -15,10 +15,10 @@ class AdverbTest(unittest.TestCase):
                     'defs': [{'orth': ['bene', 'melius', 'optime'],
 	                          'senses': ['well, very, quite, rightly, agreeably, cheaply, in good style', 'better', 'best'],
 	                          'infls': [{'stem': 'bene', 'ending': '', 'pos': 'adverb',
-                                         'form': {'degree': 'comparative'}}]}]}
+                                         'form': {'degree': 'positive'}}]}]}
         """
         result = self.par.parse("bene")
-        print(result)
+
         # response syntax and basics
         self.assertEqual(len(result['defs']), 1)  # there is only one definition
         self.assertTrue(len(result['defs'][0]))  # defs does not contain an empty dictionary
@@ -55,13 +55,14 @@ class AdverbTest(unittest.TestCase):
                                          'decl': 1}]}]}
         """
         result = self.par.parse("melius")
-        print(result)
+
         # response syntax and basics
         self.assertEqual(len(result['defs']), 2)  # there is only one definition
         self.assertTrue(len(result['defs'][0]))  # defs does not contain an empty dictionary
         self.assertEqual(len(result['defs'][0]['infls']), 1)  # there is only one inflection
 
         # response splitting
+        # TODO don't depend on order of results
         infl = result['defs'][0]['infls'][0]
         self.assertEqual(infl['stem'], 'melius')
         self.assertEqual(infl['ending'], '')
