@@ -13,9 +13,11 @@ class AdjectiveTest(unittest.TestCase):
         """
         expected = {'word': 'saevarum',
                     'defs': [{'orth': ['saev', 'saev', 'saevi', 'saevissi'],
-	                          'senses': ['savage', 'fierce/ferocious', 'violent/wild/raging', 'cruel, harsh, severe', 'vehement'],
-	                          'infls': [{'stem': 'saev', 'ending': 'arum', 'pos': 'adjective',
-                                         'form': {'case': 'genitive', 'number': 'plural', 'gender': 'feminine', 'degree': 'positive'}}]}]}
+                              'senses': ['savage', 'fierce/ferocious', 'violent/wild/raging',
+                                         'cruel, harsh, severe', 'vehement'],
+                              'infls': [{'stem': 'saev', 'ending': 'arum', 'pos': 'adjective',
+                                         'form': {'case': 'genitive', 'number': 'plural',
+                                                  'gender': 'feminine', 'degree': 'positive'}}]}]}
         """
         result = self.par.parse("saevarum")
 
@@ -39,15 +41,20 @@ class AdjectiveTest(unittest.TestCase):
         """
         expected = {'word': 'saevissimae',
                     'defs': [{'orth': ['saev', 'saev', 'saevi', 'saevissi'],
-	                          'senses': ['savage', 'fierce/ferocious', 'violent/wild/raging', 'cruel, harsh, severe', 'vehement'],
-	                          'infls': [{'stem': 'saevissi', 'ending': 'mae', 'pos': 'adjective',
-                                         'form': {'case': 'genitive', 'number': 'singular', 'gender': 'feminine', 'degree': 'superlative'}},
+                              'senses': ['savage', 'fierce/ferocious', 'violent/wild/raging',
+                                         'cruel, harsh, severe', 'vehement'],
+                              'infls': [{'stem': 'saevissi', 'ending': 'mae', 'pos': 'adjective',
+                                         'form': {'case': 'genitive', 'number': 'singular',
+                                                  'gender': 'feminine', 'degree': 'superlative'}},
                                         {'stem': 'saevissi', 'ending': 'mae', 'pos': 'adjective',
-                                         'form': {'case': 'dative', 'number': 'singular', 'gender': 'feminine', 'degree': 'superlative'}},
+                                         'form': {'case': 'dative', 'number': 'singular',
+                                                  'gender': 'feminine', 'degree': 'superlative'}},
                                         {'stem': 'saevissi', 'ending': 'mae', 'pos': 'adjective',
-                                         'form': {'case': 'nominative', 'number': 'plural', 'gender': 'feminine', 'degree': 'superlative'}},
+                                         'form': {'case': 'nominative', 'number': 'plural',
+                                                  'gender': 'feminine', 'degree': 'superlative'}},
                                         {'stem': 'saevissi', 'ending': 'mae', 'pos': 'adjective',
-                                         'form': {'case': 'vocative', 'number': 'plural', 'gender': 'feminine', 'degree': 'superlative'}}]}]}
+                                         'form': {'case': 'vocative', 'number': 'plural',
+                                                  'gender': 'feminine', 'degree': 'superlative'}}]}]}
         """
         result = self.par.parse("saevissimae")
 
@@ -71,15 +78,20 @@ class AdjectiveTest(unittest.TestCase):
         """
         expected = {'word': 'bonum',
                     'defs': [{'orth': ['saev', 'saev', 'saevi', 'saevissi'],
-	                          'senses': ['savage', 'fierce/ferocious', 'violent/wild/raging', 'cruel, harsh, severe', 'vehement'],
-	                          'infls': [{'stem': 'saevissi', 'ending': 'mae', 'pos': 'adjective',
-                                         'form': {'case': 'genitive', 'number': 'singular', 'gender': 'feminine', 'degree': 'superlative'}},
+                              'senses': ['savage', 'fierce/ferocious', 'violent/wild/raging',
+                                         'cruel, harsh, severe', 'vehement'],
+                              'infls': [{'stem': 'saevissi', 'ending': 'mae', 'pos': 'adjective',
+                                         'form': {'case': 'genitive', 'number': 'singular',
+                                                  'gender': 'feminine', 'degree': 'superlative'}},
                                         {'stem': 'saevissi', 'ending': 'mae', 'pos': 'adjective',
-                                         'form': {'case': 'dative', 'number': 'singular', 'gender': 'feminine', 'degree': 'superlative'}},
+                                         'form': {'case': 'dative', 'number': 'singular',
+                                                  'gender': 'feminine', 'degree': 'superlative'}},
                                         {'stem': 'saevissi', 'ending': 'mae', 'pos': 'adjective',
-                                         'form': {'case': 'nominative', 'number': 'plural', 'gender': 'feminine', 'degree': 'superlative'}},
+                                         'form': {'case': 'nominative', 'number': 'plural',
+                                                  'gender': 'feminine', 'degree': 'superlative'}},
                                         {'stem': 'saevissi', 'ending': 'mae', 'pos': 'adjective',
-                                         'form': {'case': 'vocative', 'number': 'plural', 'gender': 'feminine', 'degree': 'superlative'}}]}]}
+                                         'form': {'case': 'vocative', 'number': 'plural',
+                                                  'gender': 'feminine', 'degree': 'superlative'}}]}]}
         """
         result = self.par.parse("bonum")
         print(result)

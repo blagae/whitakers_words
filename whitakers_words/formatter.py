@@ -170,7 +170,6 @@ def format_form(form, pos):
             formatted = {
                 'form': form
             }
-    
     else:  # if pos in ["INTERJ", "CONJ", "PREP", "X", "P"]:
         formatted = {
             'form': form
@@ -296,4 +295,3 @@ def format_output(out):
         new_out.append(obj)
 
     return new_out
-

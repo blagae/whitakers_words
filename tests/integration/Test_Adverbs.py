@@ -13,8 +13,9 @@ class AdverbTest(unittest.TestCase):
         """
         expected = {'word': 'bene',
                     'defs': [{'orth': ['bene', 'melius', 'optime'],
-	                          'senses': ['well, very, quite, rightly, agreeably, cheaply, in good style', 'better', 'best'],
-	                          'infls': [{'stem': 'bene', 'ending': '', 'pos': 'adverb',
+                              'senses': ['well, very, quite, rightly, agreeably, cheaply, in good style',
+                                         'better', 'best'],
+                              'infls': [{'stem': 'bene', 'ending': '', 'pos': 'adverb',
                                          'form': {'degree': 'positive'}}]}]}
         """
         result = self.par.parse("bene")
@@ -39,19 +40,24 @@ class AdverbTest(unittest.TestCase):
         """
         expected = {'word': 'melius',
                     'defs': [{'orth': ['bene', 'melius', 'optime'],
-	                          'senses': ['well, very, quite, rightly, agreeably, cheaply, in good style', 'better', 'best'],
-	                          'infls': [{'stem': 'melius', 'ending': '', 'pos': 'adverb',
+                              'senses': ['well, very, quite, rightly, agreeably, cheaply, in good style',
+                                         'better', 'best'],
+                              'infls': [{'stem': 'melius', 'ending': '', 'pos': 'adverb',
                                          'form': {'degree': 'comparative'}}]},
                              {'orth': ['bon', 'bon', 'meli', 'opti'],
-                              'senses': ['good, honest, brave, noble, kind, pleasant, right, useful', 'valid', 'healthy'],
+                              'senses': ['good, honest, brave, noble, kind, pleasant, right, useful',
+                                         'valid', 'healthy'],
                               'infls': [{'stem': 'meli', 'ending': 'us', 'pos': 'adjective',
-                                         'form': {'case': 'nominative', 'number': 'singular', 'gender': 'neuter', 'degree': 'comparative'},
+                                         'form': {'case': 'nominative', 'number': 'singular',
+                                                  'gender': 'neuter', 'degree': 'comparative'},
                                          'decl': 1},
                                         {'stem': 'meli', 'ending': 'us', 'pos': 'adjective',
-                                         'form': {'case': 'accusative', 'number': 'singular', 'gender': 'neuter', 'degree': 'comparative'},
+                                         'form': {'case': 'accusative', 'number': 'singular',
+                                                  'gender': 'neuter', 'degree': 'comparative'},
                                          'decl': 1},
                                         {'stem': 'meli', 'ending': 'us', 'pos': 'adjective',
-                                         'form': {'case': 'vocative', 'number': 'singular', 'gender': 'neuter', 'degree': 'comparative'},
+                                         'form': {'case': 'vocative', 'number': 'singular',
+                                                  'gender': 'neuter', 'degree': 'comparative'},
                                          'decl': 1}]}]}
         """
         result = self.par.parse("melius")
@@ -72,4 +78,3 @@ class AdverbTest(unittest.TestCase):
         form = infl['form']
         expected_form = {'degree': 'comparative'}
         self.assertEqual(form, expected_form)
-

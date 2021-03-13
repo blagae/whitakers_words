@@ -84,7 +84,15 @@ that ADDONS are not coded but left text for easy change.
 
 """
 
-addons = {
+from typing import Sequence, TypedDict
+
+class Addon(TypedDict, total=False):
+    orth: str
+    pos: str
+    senses: Sequence[str]
+    form: str  # not always available
+
+addons: dict[str, Sequence[Addon]] = {
 
     #
     # TICKONS
@@ -185,18 +193,26 @@ addons = {
                  {"pos": "X", "form": "X X", "senses": ["ten (numerical prefix);"], "orth": "decu"},
                  {"pos": "V", "form": "V V",
                   "senses": ["- down, off, away, from; not; removal, reversal; utterly/completely (intensive);"],
-                  "orth": "de"}, {"pos": "V", "form": "V V", "senses": [
-            "- apart/asunder, in different directions; separation/dispersal/process reversal;"], "orth": "dif f"},
+                  "orth": "de"},
                  {"pos": "V", "form": "V V",
                   "senses": ["- apart/asunder, in different directions; separation/dispersal/process reversal;"],
-                  "orth": "dir"}, {"pos": "V", "form": "V V", "senses": [
-            "- apart/asunder, in different directions; separation/dispersal/process reversal;"], "orth": "dis"},
-                 {"pos": "N", "form": "N N", "senses": ["two-;"], "orth": "di"}, {"pos": "V", "form": "V V", "senses": [
-            "- apart/asunder, in different directions; separation/dispersal/process reversal;"], "orth": "di"},
+                  "orth": "dif f"},
+                 {"pos": "V", "form": "V V",
+                  "senses": ["- apart/asunder, in different directions; separation/dispersal/process reversal;"],
+                  "orth": "dir"},
+                 {"pos": "V", "form": "V V",
+                  "senses": ["- apart/asunder, in different directions; separation/dispersal/process reversal;"],
+                  "orth": "dis"},
+                 {"pos": "N", "form": "N N", "senses": ["two-;"], "orth": "di"},
+                 {"pos": "V", "form": "V V",
+                  "senses": ["- apart/asunder, in different directions; separation/dispersal/process reversal;"],
+                  "orth": "di"},
                  {"pos": "N", "form": "NUM NUM",
                   "senses": ["- less two/two less than (numerical prefix); (duodeviginti => 20 less 2 = 18);"],
-                  "orth": "duode"}, {"pos": "N", "form": "NUM NUM", "senses": [
-            "two more than (numerical prefix); (duoetviginti => two more than twenty = 22);"], "orth": "duoet"},
+                  "orth": "duode"},
+                 {"pos": "N", "form": "NUM NUM",
+                  "senses": ["two more than (numerical prefix); (duoetviginti => two more than twenty = 22);"],
+                  "orth": "duoet"},
                  {"pos": "X", "form": "X X", "senses": ["two (numerical prefix);"], "orth": "du"},
                  {"pos": "V", "form": "V V", "senses": ["- out, away from; beyond; completely;"], "orth": "ef f"},
                  {"pos": "X", "form": "X X", "senses": ["electro-; electrical; electronic;"], "orth": "electro"},
@@ -235,14 +251,17 @@ addons = {
                   "senses": ["- through, thoroughly, completely, very; adds to the force of the verb;"], "orth": "per"},
                  {"pos": "V", "form": "V V", "senses": ["- forward;"], "orth": "por"},
                  {"pos": "X", "form": "X X", "senses": ["past or by; (drive past, drive by, flow past, flow by);"],
-                  "orth": "praeter"}, {"pos": "X", "form": "X X", "senses": [
-            "pre-, before -, in front of -; forth; very -, - completely, - thorughly;"], "orth": "prae"},
+                  "orth": "praeter"},
+                 {"pos": "X", "form": "X X",
+                  "senses": ["pre-, before -, in front of -; forth; very -, - completely, - thorughly;"],
+                  "orth": "prae"},
                  {"pos": "N", "form": "N N", "senses": ["before -, in front of -;"], "orth": "pro"},
                  {"pos": "V", "form": "V V",
                   "senses": ["- forward; before; in front of; forth [pro-cedo => go forth, proceed, continue];"],
-                  "orth": "pro"}, {"pos": "X", "form": "X X",
-                                   "senses": ["pseudo-, false; fallacious, deceitful; sperious; imitation of;"],
-                                   "orth": "pseudo"},
+                  "orth": "pro"},
+                 {"pos": "X", "form": "X X",
+                  "senses": ["pseudo-, false; fallacious, deceitful; sperious; imitation of;"],
+                  "orth": "pseudo"},
                  {"pos": "X", "form": "X X", "senses": ["four (numerical prefix);"], "orth": "quadri"},
                  {"pos": "X", "form": "X X", "senses": ["four (numerical prefix);"], "orth": "quadru"},
                  {"pos": "X", "form": "X X", "senses": ["five (numerical prefix);"], "orth": "quincu"},
@@ -256,33 +275,41 @@ addons = {
                  {"pos": "X", "form": "X X", "senses": ["seven (numerical prefix);"], "orth": "septu"},
                  {"pos": "X", "form": "X X",
                   "senses": ["one and half (numerical); one plus aliquot fraction; (sesqui-septimus = 8/7);"],
-                  "orth": "sesque"}, {"pos": "X", "form": "X X", "senses": [
-            "one and half (numerical); one plus aliquot fraction; (sesqui-septimus = 8/7);"], "orth": "sesqui"},
+                  "orth": "sesque"},
+                 {"pos": "X", "form": "X X",
+                  "senses": ["one and half (numerical); one plus aliquot fraction; (sesqui-septimus = 8/7);"],
+                  "orth": "sesqui"},
                  {"pos": "X", "form": "X X",
                   "senses": ["one and half (numerical); one plus aliquot fraction; (sesqui-septimus = 8/7);"],
                   "orth": "sexqui"}, {"pos": "X", "form": "X X", "senses": ["six-;"], "orth": "ses"},
                  {"pos": "X", "form": "X X", "senses": ["six (numerical prefix);"], "orth": "sexti"},
                  {"pos": "X", "form": "X X", "senses": ["six (numerical prefix);"], "orth": "sextu"},
-                 {"pos": "X", "form": "X X", "senses": ["six-;"], "orth": "sex"}, {"pos": "-", "form": "--V V",
-                                                                                   "senses": [
-                                                                                       "--- apart, apart from; away (se-cedo = go away, withdraw, secede);"],
-                                                                                   "orth": "-- se      --  conflict with semet"},
+                 {"pos": "X", "form": "X X", "senses": ["six-;"], "orth": "sex"},
+                 {"pos": "-", "form": "--V V",
+                  "senses": ["--- apart, apart from; away (se-cedo = go away, withdraw, secede);"],
+                  "orth": "-- se      --  conflict with semet"},
                  {"pos": "X", "form": "X X", "senses": ["one (numerical prefix), single, simple;"], "orth": "sim"},
                  {"pos": "V", "form": "V V", "senses": ["sub-; - up to, - under, up from under; to the aid;"],
-                  "orth": "sub"}, {"pos": "N", "form": "N N", "senses": [
-            "sub-; somewhat -/-ish/rather -; under, from under/below; lesser/assistant/vice;"], "orth": "sub"},
+                  "orth": "sub"},
+                 {"pos": "N", "form": "N N",
+                  "senses": ["sub-; somewhat -/-ish/rather -; under, from under/below; lesser/assistant/vice;"],
+                  "orth": "sub"},
                  {"pos": "A", "form": "ADJ ADJ",
                   "senses": ["sub-; somewhat -/-ish/rather -; under, from under/below; lesser/assistant/vice;"],
                   "orth": "sub"},
                  {"pos": "V", "form": "V V", "senses": ["- up to, - under, up from under; to the aid;"],
-                  "orth": "suc  c"}, {"pos": "N", "form": "N N", "senses": [
-            "sub-; somewhat -/-ish/rather -; under, from under/below; lesser/assistant/vice;"], "orth": "suc c"},
+                  "orth": "suc  c"},
+                 {"pos": "N", "form": "N N",
+                  "senses": ["sub-; somewhat -/-ish/rather -; under, from under/below; lesser/assistant/vice;"],
+                  "orth": "suc c"},
                  {"pos": "A", "form": "ADJ ADJ",
                   "senses": ["sub-; somewhat -/-ish/rather -; under, from under/below; lesser/assistant/vice;"],
                   "orth": "suc c"},
                  {"pos": "X", "form": "X X", "senses": ["super-, over, above, upon; from above; over and above;"],
-                  "orth": "super"}, {"pos": "X", "form": "X X", "senses": [
-            "supra-, over, above, upon, on top of; earlier than; beyond; superior to;"], "orth": "supra"},
+                  "orth": "super"},
+                 {"pos": "X", "form": "X X",
+                  "senses": ["supra-, over, above, upon, on top of; earlier than; beyond; superior to;"],
+                  "orth": "supra"},
                  {"pos": "X", "form": "X X",
                   "senses": ["number plus 4/5; one plus aliquot fraction; (superquadripartiens = 9/5);"],
                   "orth": "superquadri"},
@@ -298,9 +325,9 @@ addons = {
                  {"pos": "N", "form": "NUM NUM",
                   "senses": ["- less one, one less than; (undetriginta => thirty less one = 29);"], "orth": "unde"},
                  {"pos": "A", "form": "ADJ ADJ", "senses": ["one-; having (only/but) one ~; (being) of one ~;"],
-                  "orth": "uni"}, {"pos": "A", "form": "ADJ ADJ",
-                                   "senses": ["not- (vegrandis => small), without; very (vepallidus => very pale);"],
-                                   "orth": "ve"},
+                  "orth": "uni"},
+                 {"pos": "A", "form": "ADJ ADJ",
+                  "senses": ["not- (vegrandis => small), without; very (vepallidus => very pale);"], "orth": "ve"},
                  {"pos": "N", "form": "N N", "senses": ["five-; fifth; (Roman numeral for 5);"], "orth": "V"},
                  {"pos": "N", "form": "N N", "senses": ["ten-; tenth; (Roman numeral for 10);"], "orth": "X"}],
 
@@ -428,9 +455,9 @@ addons = {
                  {"pos": "V", "form": "V 4 ADV POS 1", "orth": "i                      --  ?????????????",
                   "senses": ["-ly; (use imagination! run -> hastily; strive -> eagerly; stand -> immediately);"]},
                  {"pos": "A", "form": "ADJ 2 N 1 1 F t  0", "orth": "i",
-                  "senses": ["-ness, -es, makes abstract noun;"]}, {"pos": "N", "form": "N 2 N 1 1 F t  0", "orth": "i",
-                                                                    "senses": [
-                                                                        "art or craft done by the person (abstract noun of person); office of, -ship;"]},
+                  "senses": ["-ness, -es, makes abstract noun;"]},
+                 {"pos": "N", "form": "N 2 N 1 1 F t  0", "orth": "i",
+                  "senses": ["art or craft done by the person (abstract noun of person); office of, -ship;"]},
                  {"pos": "V", "form": "V 2 N 2 2 N t  0", "orth": "i",
                   "senses": ["makes abstract noun of the verb; place/instrument/result of verb action;"]},
                  {"pos": "A", "form": "ADJ 2 ADJ 0 0 COMP 3", "orth": "i",
@@ -503,9 +530,9 @@ addons = {
                   "senses": ["-ism; makes noun of action/ideology/association/fellowship;"]},
                  {"pos": "A", "form": "ADJ 1 ADV POS 1", "orth": "um", "senses": ["-ly;"]},
                  {"pos": "A", "form": "ADJ 2 N 3 1 F t  2", "orth": "udin  t",
-                  "senses": ["-ness; makes abstract noun;"]}, {"pos": "V", "form": "V 4 N 3 1 F t  2", "orth": "sion",
-                                                               "senses": [
-                                                                   "-ing, -ion, -ery; the action or result of the action of the verb;"]},
+                  "senses": ["-ness; makes abstract noun;"]},
+                 {"pos": "V", "form": "V 4 N 3 1 F t  2", "orth": "sion",
+                  "senses": ["-ing, -ion, -ery; the action or result of the action of the verb;"]},
                  {"pos": "V", "form": "V 2 N 3 1 F t  2", "orth": "sion",
                   "senses": ["-ing, -ion, -ery; the action or result of the action of the verb;"]},
                  {"pos": "V", "form": "V 4 N 3 1 F t  2", "orth": "tion",
@@ -540,9 +567,9 @@ addons = {
                  {"pos": "N", "form": "N 2 N 1 1 F t 0", "orth": "in",
                   "senses": ["-ing; art or craft (medic.ina = art of doctoring);"]},
                  {"pos": "A", "form": "ADJ 2 N 3 1 F t  1", "orth": "udo  t",
-                  "senses": ["-ness; makes abstract noun;"]}, {"pos": "V", "form": "V 2 N 3 1 F t  1", "orth": "sio",
-                                                               "senses": [
-                                                                   "-ing, -ion, -ery; the action or result of the action of the verb;"]},
+                  "senses": ["-ness; makes abstract noun;"]},
+                 {"pos": "V", "form": "V 2 N 3 1 F t  1", "orth": "sio",
+                  "senses": ["-ing, -ion, -ery; the action or result of the action of the verb;"]},
                  {"pos": "V", "form": "V 4 N 3 1 F t  1", "orth": "sio",
                   "senses": ["-ing, -ion, -ery; the action or result of the action of the verb;"]},
                  {"pos": "V", "form": "V 2 N 3 1 F t  1", "orth": "tio",
@@ -587,9 +614,9 @@ addons = {
                  {"pos": "N", "form": "N 2 N 1 1 F t  0", "orth": "ur", "senses": ["-ure, pertaining to, use of;"]},
                  {"pos": "N", "form": "N 4 N 1 1 F t  0", "orth": "ur", "senses": ["-ure, pertaining to, use of;"]},
                  {"pos": "A", "form": "ADJ 2 N 3 1 F t  1", "orth": "etas i",
-                  "senses": ["-ness, makes abstract noun;"]}, {"pos": "A", "form": "ADJ 2 N 3 1 F t  1", "orth": "itas",
-                                                               "senses": [
-                                                                   "-ity; -ness, makes abstract noun of quality or condition;"]},
+                  "senses": ["-ness, makes abstract noun;"]},
+                 {"pos": "A", "form": "ADJ 2 N 3 1 F t  1", "orth": "itas",
+                  "senses": ["-ity; -ness, makes abstract noun of quality or condition;"]},
                  {"pos": "N", "form": "N 2 N 3 1 F t  1", "orth": "itas",
                   "senses": ["-ness, condition of being; makes abstract noun (civ.itas = citizenship);"]},
                  {"pos": "X", "form": "X 2 ADV POS 1", "orth": "itus", "senses": ["of _; from the _; -ing;"]},

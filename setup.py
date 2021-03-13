@@ -11,12 +11,12 @@ except ModuleNotFoundError:
     from whitakers_words.generator import generate_all_dicts
 
     generate_all_dicts()
-    from whitakers_words.generated.dict_ids import dict_ids
-    from whitakers_words.generated.dict_keys import dict_keys
-    from whitakers_words.generated.stems import stems
-    from whitakers_words.generated.uniques import uniques
-    from whitakers_words.generated.inflects import inflects
-    from whitakers_words.data.addons import addons
+    from whitakers_words.generated.dict_ids import dict_ids  # noqa: F401
+    from whitakers_words.generated.dict_keys import dict_keys  # noqa: F401
+    from whitakers_words.generated.stems import stems  # noqa: F401
+    from whitakers_words.generated.uniques import uniques  # noqa: F401
+    from whitakers_words.generated.inflects import inflects  # noqa: F401
+    from whitakers_words.data.addons import addons  # noqa: F401
 
 setup(
     author='Benoit Lagae',
@@ -40,9 +40,12 @@ setup(
     # find actual keywords in future
     keywords=['literature', 'philology', 'text processing', 'archive'],
     license='MIT',
-    long_description="""Whitaker's Words is a port of William Whitaker's 'Whitaker's Words' original Ada code to Python so that it may continue to be useful to Latin students and philologists for years to come.""",
+    long_description="""Whitaker's Words is a port of William Whitaker's 'Whitaker's Words' original Ada code to Python
+    so that it may continue to be useful to Latin students and philologists for years to come.""",
     name='whitakers_words',
-    packages=list(["whitakers_words.generated", *find_namespace_packages(include=["whitakers_words", "whitakers_words.*"], exclude=["whitakers_words.tests","whitakers_words.tests.*"])]),
+    packages=list(["whitakers_words.generated",
+                  *find_namespace_packages(include=["whitakers_words", "whitakers_words.*"],
+                                           exclude=["whitakers_words.tests", "whitakers_words.tests.*"])]),
     url='https://github.com/blagae/whitakers_words',
     version='0.2.0',
     zip_safe=True,

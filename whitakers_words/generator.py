@@ -10,6 +10,50 @@ import os
 from pkg_resources import resource_filename
 
 
+stems_intro = """from typing import Sequence, TypedDict, Union
+
+
+class Stem(TypedDict):
+    orth: str
+    pos: str
+    form: Sequence[Union[str, int]]
+    n: Sequence[int]
+    wid: int
+    """
+stems_definition = ": dict[str, Sequence[Stem]]"
+
+inflects_intro = """from typing import Sequence, TypedDict
+
+class Inflect(TypedDict):
+    ending: str
+    pos: str
+    form: Sequence[str]
+    n: Sequence[int]
+    note: str
+    """
+inflects_definition = ": dict[str, dict[str, Sequence[Inflect]]]"
+uniques_intro = """from typing import Sequence, TypedDict
+
+class Unique(TypedDict):
+    orth: str
+    pos: str
+    form: str
+    senses: Sequence[str]
+    """
+uniques_definition = ": dict[str, Sequence[Unique]]"
+dictentry_intro = """from typing import Sequence, TypedDict, Union
+
+class DictEntry(TypedDict, total=False):
+    id: int
+    orth: str
+    parts: Sequence[str]
+    pos: str
+    form: Sequence[Union[int, str]]
+    n: Sequence[int]
+    senses: Sequence[str]
+    """
+dictentry_definition = ": Sequence[DictEntry]"
+dictkeys_definition = ": list[str]"
 resources_directory = resource_filename(__name__, "data")
 files_directory = resources_directory[:-4] + "generated/"
 try:
@@ -17,17 +61,20 @@ try:
 except FileExistsError:
     pass
 
-def dump_file(name, obj=None):
+
+def dump_file(name, obj=None, intro='', definition=''):
     with open(files_directory + name, 'w') as out:
         if obj:
-            out.write(name[:-3] + " = ")
+            if intro:
+                out.write(intro + "\n")
+            out.write(name[:-3] + definition + " = ")
             json.dump(obj, out)
         out.write("\n")
 
 
 def import_dicts():
     keys = list()
-    ids = ['']
+    ids = [{}]
     stems = dict()
     previous_item = None
     with open(resources_directory + '/DICTLINE.GEN', encoding="ISO-8859-1") as f:
@@ -92,9 +139,9 @@ def import_dicts():
 
     keys = list(set(keys))
     keys.sort()
-    dump_file('dict_keys.py', keys)
-    dump_file('dict_ids.py', ids)
-    dump_file('stems.py', stems)
+    dump_file('dict_keys.py', keys, definition=dictkeys_definition)
+    dump_file('dict_ids.py', ids, dictentry_intro, dictentry_definition)
+    dump_file('stems.py', stems, stems_intro, stems_definition)
 
 
 def import_suffixes():
@@ -159,7 +206,6 @@ def import_uniques():
         i = 0
         obj = {}
         data = dict()
-        x = str()
         for line in f:
 
             if i == 0:
@@ -202,7 +248,6 @@ def import_inflects():
     with open(resources_directory + '/INFLECTS.LAT') as f:
 
         i = 0
-        obj = {}
         data = []
         for i, text in enumerate(f):
             line = text.strip()
@@ -247,7 +292,7 @@ def import_inflects():
             })
 
     reordered = reorder_inflects(data)
-    dump_file('inflects.py', reordered)
+    dump_file('inflects.py', reordered, inflects_intro, inflects_definition)
 
 
 def reorder_inflects(data):

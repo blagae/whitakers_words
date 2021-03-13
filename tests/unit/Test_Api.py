@@ -118,7 +118,9 @@ class MinimalDictionarySplitFromEnclitic(unittest.TestCase):
     def test_double_tackon(self):
         self.prs.addons['tackons'] = [{'orth': 'd'}, {'orth': 'd'}]
         result = self.prs.split_form_enclitic("word")
-        expected = [{"base": "word", "encl": ""}, {"base": "wor", "encl": {'orth': 'd'}}, {"base": "wor", "encl": {'orth': 'd'}}]
+        expected = [{"base": "word", "encl": ""},
+                    {"base": "wor", "encl": {'orth': 'd'}},
+                    {"base": "wor", "encl": {'orth': 'd'}}]
         self.assertEqual(result, expected)
 
     def test_double_packon(self):

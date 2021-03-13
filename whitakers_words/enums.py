@@ -1,13 +1,15 @@
 from enum import Enum
+from typing import Literal, Union
 import inspect
 import sys
 
-def get_enum_or_dict(name):
+
+def get_enum_or_dict(name: str) -> dict[str, slice]:
     enum_class = [x[1] for x in names if x[0] == name]
     return enum_class[0]
 
 
-def get_enum_value(object_name, value_name):
+def get_enum_value(object_name: str, value_name: str) -> slice:
     return get_enum_or_dict(object_name)[value_name]
 
 
@@ -66,12 +68,14 @@ class Case(Enum):
     ABL = "Ablative"
     LOC = "Locative"
 
+
 class Degree(Enum):
     POS = "Positive"
     COMP = "Comparative"
     SUPER = "Superlative"
 
-Person = {"1": 1, "2": 2, "3": 3}
+
+#Person = {"1": 1, "2": 2, "3": 3} # IntEnum ?
 
 
 names = inspect.getmembers(sys.modules[__name__])
