@@ -1,4 +1,5 @@
 from whitakers_words.new_parser import NewParser
+from whitakers_words.parse import Parser
 
 import unittest
 
@@ -8,7 +9,8 @@ class NewParserTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.par = NewParser()
+        cls.opar = Parser()
 
-    def test_saevar(self):
-        word = self.par.parse("amavit")
-        self.assertTrue(word.text == "amavit")
+    def test_amat(self):
+        word = self.par.parse("amat")
+        self.assertTrue(False)

@@ -33,11 +33,13 @@ class Tense(Enum):
     FUT = "Futurum Simplex"
     FUTP = "Futurum Exactum"
     PLUP = "Plusquamperfectum"
+    X = "Unknown"
 
 
 class Voice(Enum):
     ACTIVE = "Active"
     PASSIVE = "Passive"
+    X = "Unknown"
 
 
 class Mood(Enum):
@@ -45,6 +47,7 @@ class Mood(Enum):
     SUB = "Subjunctive"
     IMP = "Imperative"
     INF = "Infinitive"
+    X = "Unknown"
 
 
 class Gender(Enum):
@@ -52,11 +55,13 @@ class Gender(Enum):
     F = "Feminine"
     N = "Neuter"
     C = "Common"
+    X = "Unknown"
 
 
 class Number(Enum):
     S = "Singular"
     P = "Plural"
+    X = "Unknown"
 
 
 class Case(Enum):
@@ -67,16 +72,18 @@ class Case(Enum):
     ACC = "Accusative"
     ABL = "Ablative"
     LOC = "Locative"
+    X = "Unknown"
 
 
 class Degree(Enum):
     POS = "Positive"
     COMP = "Comparative"
     SUPER = "Superlative"
+    X = "Unknown"
 
 
 # this is kind of a bad idea, because we can't use Person.1
-Person = Enum(value="Person", names=[('1', 1), ('2', 2), ('3', 3)])
+Person = Enum(value="Person", names=[('0', 0), ('1', 1), ('2', 2), ('3', 3)])
 
 
 names = inspect.getmembers(sys.modules[__name__], inspect.isclass)

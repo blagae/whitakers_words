@@ -31,7 +31,7 @@ class Inflection(object):
         elif self.wordType == WordType.ADV:
             lst = ["Degree"]
         else:
-            lst = []
+            return
         for idx, feature in enumerate(features):  # TODO will break horribly
             self.features[lst[idx]] = get_enum_value(lst[idx], feature)
 
@@ -118,7 +118,7 @@ class Form(object):
                 stem_lemma = self.text[:-ending_length]
             else:
                 stem_lemma = self.text
-            if stem_lemma in stems:
+            if stem_lemma in stems and stem_lemma == 'am':
                 stem_list = stems[stem_lemma]
                 for stem_cand in stem_list:
                     if self.check_match(stem_cand, infl_cand):
@@ -131,8 +131,62 @@ class Form(object):
                             matched_stems[word_id] = Analysis(Lexeme(stem_cand), [inflection])
         return matched_stems
 
-    def check_match(self, a: Stem, b: Inflect) -> bool:
-        return True  # TODO fix this elegantly
+    def check_match(self, stem: Stem, infl: Inflect) -> bool:  # TODO rewrite to be readable
+        """ Do custom checking mechanisms to see if the inflection and stem identify as the same part of speech """
+        if infl['pos'] != stem['pos']:
+            if infl['pos'] == "VPAR" and stem['pos'] == "V":
+                try:
+                    wrd = wordlist[stem['wid']]
+                    if not wrd:
+                        return False  # probably an entry with a lot of meanings
+                except IndexError:
+                    return False  # must be part of uniques
+                if infl['form'][0] == "PERF":
+                    return stem['orth'] == wrd['parts'][-1]
+                else:
+                    return stem['orth'] == wrd['parts'][0]
+            return False
+        basic_match = len(stem['n']) and infl['n'][0] == stem['n'][0]
+        if stem['pos'] == 'N':
+            if infl['n'] == stem['n'] or (infl['n'][0] == stem['n'][0] and infl['n'][-1] == 0):
+                return infl['form'][-1] == stem['form'][0] or infl['form'][-1] == 'C'
+        elif stem['pos'] == 'ADV':
+            if stem['form'] == ['X']:
+                try:
+                    wrd = wordlist[stem['wid']]
+                    if not wrd:
+                        return False  # probably an entry with a lot of meanings
+                except IndexError:
+                    return False  # must be part of uniques
+                if stem['orth'] in wrd['parts']:
+                    return get_degree(wrd['parts'], stem['orth']) == infl['form']
+            return stem['form'] == infl['form']
+        elif stem['pos'] == 'ADJ':
+            if not basic_match:
+                return False
+            if stem['form'][-1] == 'X':
+                try:
+                    wrd = self.wordlist[stem['wid']]
+                    if not wrd:
+                        return False  # probably an entry with a lot of meanings
+                except IndexError:
+                    return False  # must be part of uniques
+                if stem['orth'] in wrd['parts']:
+                    return get_degree(wrd['parts'][1:], stem['orth'])[0] == infl['form'][-1]
+            return stem['form'] == infl['form']  # TODO we're now only checking pos/comp/super
+        return basic_match
+
+
+degrees = {
+    "POS": {"id": 0, "name": "positive"},
+    "COMP": {"id": 1, "name": "comparative"},
+    "SUPER": {"id": 2, "name": "superlative"}
+}
+
+
+def get_degree(parts: list[str], stem: str) -> str:  # TODO replace
+    val = [key for (key, value) in degrees.items() if value['id'] == parts.index(stem)]
+    return val
 
 
 class Word(object):
