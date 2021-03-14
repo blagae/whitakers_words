@@ -86,14 +86,15 @@ that ADDONS are not coded but left text for easy change.
 
 from typing import Sequence, TypedDict
 
+
 class Addon(TypedDict, total=False):
     orth: str
     pos: str
     senses: Sequence[str]
     form: str  # not always available
 
-addons: dict[str, Sequence[Addon]] = {
 
+addons: dict[str, Sequence[Addon]] = {
     #
     # TICKONS
     # These are applied to a class of PRON which in the code are designated as PACKons.

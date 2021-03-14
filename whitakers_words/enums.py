@@ -1,15 +1,15 @@
 from enum import Enum
-from typing import Literal, Union
+from typing import Type
 import inspect
 import sys
 
 
-def get_enum_or_dict(name: str) -> dict[str, slice]:
+def get_enum_or_dict(name: str) -> Type[Enum]:
     enum_class = [x[1] for x in names if x[0] == name]
     return enum_class[0]
 
 
-def get_enum_value(object_name: str, value_name: str) -> slice:
+def get_enum_value(object_name: str, value_name: str) -> Enum:
     return get_enum_or_dict(object_name)[value_name]
 
 
@@ -75,7 +75,8 @@ class Degree(Enum):
     SUPER = "Superlative"
 
 
-#Person = {"1": 1, "2": 2, "3": 3} # IntEnum ?
+# this is kind of a bad idea, because we can't use Person.1
+Person = Enum(value="Person", names=[('1', 1), ('2', 2), ('3', 3)])
 
 
-names = inspect.getmembers(sys.modules[__name__])
+names = inspect.getmembers(sys.modules[__name__], inspect.isclass)

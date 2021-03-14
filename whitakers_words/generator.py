@@ -241,7 +241,7 @@ def import_uniques():
         else:
             data[orth] = [est]
 
-    dump_file('uniques.py', data)
+    dump_file('uniques.py', data, uniques_intro, uniques_definition)
 
 
 def import_inflects():

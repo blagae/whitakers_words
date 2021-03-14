@@ -1,5 +1,6 @@
 import re
-from typing import Any, List, Sequence, Union
+from typing import List, Sequence
+from enum import Enum
 
 from whitakers_words.generated.dict_ids import dict_ids as wordlist
 from whitakers_words.generated.dict_keys import dict_keys as wordkeys
@@ -15,7 +16,7 @@ class Inflection(object):
         self.wordType = get_enum_value("WordType", infl["pos"])
         self.category = infl['n']
         self.affix = infl["ending"]
-        self.features: dict[str, Any] = {}
+        self.features: dict[str, Enum] = {}
         self.analyse_features(infl["form"])
 
     def analyse_features(self, features: Sequence[str]) -> None:
