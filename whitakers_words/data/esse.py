@@ -1,4 +1,6 @@
-esse = [
+from whitakers_words.datatypes import Unique
+
+esse: list[Unique] = [
     {"orth": "sum", "pos": "V", "form": "PRES ACTIVE IND 1 S",
      "senses": ["to be, exist", "also used to form verb perfect passive tenses with NOM PERF PPL"]},
     {"orth": "es", "pos": "V", "form": "PRES ACTIVE IND 2 S",

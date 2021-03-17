@@ -8,52 +8,20 @@ Format the data from the input files from Whitaker's Words into python dictionar
 import json
 import os
 from pkg_resources import resource_filename
+from typing import Any, Sequence, Union
 
+from .datatypes import DictEntry, Stem, Unique
 
-stems_intro = """from typing import Sequence, TypedDict, Union
+stems_imports = "Stem"
+stems_definition = "dict[str, Sequence[Stem]]"
+inflects_imports = "Inflect"
+inflects_definition = "dict[str, dict[str, Sequence[Inflect]]]"
+uniques_imports = "Unique"
+uniques_definition = "dict[str, Sequence[Unique]]"
+dictentry_imports = "DictEntry"
+dictentry_definition = "Sequence[DictEntry]"
+dictkeys_definition = "list[str]"
 
-
-class Stem(TypedDict):
-    orth: str
-    pos: str
-    form: Sequence[Union[str, int]]
-    n: Sequence[int]
-    wid: int
-    """
-stems_definition = ": dict[str, Sequence[Stem]]"
-
-inflects_intro = """from typing import Sequence, TypedDict
-
-class Inflect(TypedDict):
-    ending: str
-    pos: str
-    form: Sequence[str]
-    n: Sequence[int]
-    note: str
-    """
-inflects_definition = ": dict[str, dict[str, Sequence[Inflect]]]"
-uniques_intro = """from typing import Sequence, TypedDict
-
-class Unique(TypedDict):
-    orth: str
-    pos: str
-    form: str
-    senses: Sequence[str]
-    """
-uniques_definition = ": dict[str, Sequence[Unique]]"
-dictentry_intro = """from typing import Sequence, TypedDict, Union
-
-class DictEntry(TypedDict, total=False):
-    id: int
-    orth: str
-    parts: Sequence[str]
-    pos: str
-    form: Sequence[Union[int, str]]
-    n: Sequence[int]
-    senses: Sequence[str]
-    """
-dictentry_definition = ": Sequence[DictEntry]"
-dictkeys_definition = ": list[str]"
 resources_directory = resource_filename(__name__, "data")
 files_directory = resources_directory[:-4] + "generated/"
 try:
@@ -62,21 +30,24 @@ except FileExistsError:
     pass
 
 
-def dump_file(name, obj=None, intro='', definition=''):
+def dump_file(name: str, obj: Any = None, definition: str = '', imports: str = '') -> None:
     with open(files_directory + name, 'w') as out:
         if obj:
-            if intro:
-                out.write(intro + "\n")
-            out.write(name[:-3] + definition + " = ")
+            if "Sequence" in definition:
+                out.write("from typing import Sequence\n")
+            if imports:
+                out.write(f"from whitakers_words.datatypes import {imports}\n\n")
+            local_def = f": {definition}" if definition else ""
+            out.write(f"{name[:-3]}{local_def} = ")
             json.dump(obj, out)
         out.write("\n")
 
 
-def import_dicts():
-    keys = list()
-    ids = [{}]
-    stems = dict()
-    previous_item = None
+def import_dicts() -> None:
+    keys: Sequence[str] = list()
+    ids: Sequence[DictEntry] = [{}]
+    stems: dict[str, Sequence[Stem]] = dict()
+    previous_item: DictEntry = {}
     with open(resources_directory + '/DICTLINE.GEN', encoding="ISO-8859-1") as f:
         for i, line in enumerate(f):
             parts = line[:76].replace("zzz", "-").split()
@@ -87,8 +58,8 @@ def import_dicts():
 
             raw_form = line[83:100].strip()
 
-            n = []
-            form = []
+            n: Sequence[int] = []
+            form: Sequence[Union[str, int]] = []
             for v in raw_form.split():
                 try:
                     val = int(v)
@@ -105,7 +76,7 @@ def import_dicts():
                 sense = sense.strip()
                 if len(sense):
                     new_senses.append(sense)
-            item = {
+            item: DictEntry = {
                 'id': i + 1,
                 'orth': orth,
                 'parts': parts,
@@ -115,7 +86,7 @@ def import_dicts():
                 'senses': new_senses
             }
             for part in parts:
-                stem = {
+                stem: Stem = {
                     'orth': part,
                     'pos': pos,
                     'form': form,
@@ -139,17 +110,17 @@ def import_dicts():
 
     keys = list(set(keys))
     keys.sort()
-    dump_file('dict_keys.py', keys, definition=dictkeys_definition)
-    dump_file('dict_ids.py', ids, dictentry_intro, dictentry_definition)
-    dump_file('stems.py', stems, stems_intro, stems_definition)
+    dump_file('dict_keys.py', keys, dictkeys_definition)
+    dump_file('dict_ids.py', ids, dictentry_definition, dictentry_imports)
+    dump_file('stems.py', stems, stems_definition, stems_imports)
 
 
-def import_suffixes():
+def import_suffixes() -> None:
     with open(resources_directory + '/suffixes.txt') as f:
 
         i = 0
-        obj = {}
-        data = []
+        obj: Unique = {}
+        data: Sequence[Unique] = []
 
         for line in f:
 
@@ -172,12 +143,12 @@ def import_suffixes():
     dump_file('suffixes.py', data)
 
 
-def import_prefixes():
+def import_prefixes() -> None:
     with open(resources_directory + '/prefixes.txt') as f:
 
         i = 0
-        obj = {}
-        data = []
+        obj: Unique = {}
+        data: Sequence[Unique] = []
 
         for line in f:
 
@@ -200,12 +171,12 @@ def import_prefixes():
     dump_file('prefixes.py', data)
 
 
-def import_uniques():
+def import_uniques() -> None:
     with open(resources_directory + '/UNIQUES.LAT') as f:
 
         i = 0
-        obj = {}
-        data = dict()
+        obj: Unique = {}
+        data: dict[str, Sequence[Unique]] = dict()
         for line in f:
 
             if i == 0:
@@ -241,10 +212,10 @@ def import_uniques():
         else:
             data[orth] = [est]
 
-    dump_file('uniques.py', data, uniques_intro, uniques_definition)
+    dump_file('uniques.py', data, uniques_definition, uniques_imports)
 
 
-def import_inflects():
+def import_inflects() -> None:
     with open(resources_directory + '/INFLECTS.LAT') as f:
 
         i = 0
@@ -292,12 +263,12 @@ def import_inflects():
             })
 
     reordered = reorder_inflects(data)
-    dump_file('inflects.py', reordered, inflects_intro, inflects_definition)
+    dump_file('inflects.py', reordered, inflects_definition, inflects_imports)
 
 
-def reorder_inflects(data):
+def reorder_inflects(data: list[dict[str, Any]]) -> dict[int, dict[str, Any]]:
     keys = (x for x in range(8))  # assuming all endings are between 0 and 7 in length
-    result = {key: dict() for key in keys}
+    result: dict[int, dict[str, Any]] = {key: dict() for key in keys}
     for item in data:
         end = item['ending']
         store = result[len(end)]
@@ -310,23 +281,11 @@ def reorder_inflects(data):
     return result
 
 
-def parse_infl_type(s):
-    if len(s.strip()) > 0:
-        n = s.strip().split(" ")
-        for i, v in enumerate(n):
-            try:
-                n[i] = int(v)
-            except ValueError:
-                pass
-
-    return n
-
-
-def create_init_file():
+def create_init_file() -> None:
     dump_file("__init__.py")
 
 
-def generate_all_dicts():
+def generate_all_dicts() -> None:
     create_init_file()
     import_dicts()
     import_suffixes()

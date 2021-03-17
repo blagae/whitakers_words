@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+# due to expected obsolescence of this file, we will not prioritize type hinting it
 """
 formatter.py
 

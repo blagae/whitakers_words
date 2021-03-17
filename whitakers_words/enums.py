@@ -82,7 +82,7 @@ class Degree(Enum):
     X = "Unknown"
 
 
-# this is kind of a bad idea, because we can't use Person.1
+# this has its problems, because we can't use Person.1, but we can use Person['1']
 Person = Enum(value="Person", names=[('0', 0), ('1', 1), ('2', 2), ('3', 3)])
 
 

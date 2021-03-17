@@ -63,7 +63,7 @@ class AdverbTest(unittest.TestCase):
         result = self.par.parse("melius")
 
         # response syntax and basics
-        self.assertEqual(len(result['defs']), 2)  # there is only one definition
+        self.assertEqual(len(result['defs']), 1)  # there is only one definition
         self.assertTrue(len(result['defs'][0]))  # defs does not contain an empty dictionary
         self.assertEqual(len(result['defs'][0]['infls']), 1)  # there is only one inflection
 

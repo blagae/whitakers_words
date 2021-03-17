@@ -4,17 +4,19 @@ from enum import Enum
 
 from whitakers_words.generated.dict_ids import dict_ids as wordlist
 from whitakers_words.generated.dict_keys import dict_keys as wordkeys
-from whitakers_words.generated.stems import stems, Stem
-from whitakers_words.generated.uniques import uniques, Unique
-from whitakers_words.generated.inflects import inflects, Inflect
-from whitakers_words.data.addons import addons, Addon
+from whitakers_words.generated.stems import stems
+from whitakers_words.generated.uniques import uniques
+from whitakers_words.generated.inflects import inflects
+from whitakers_words.data.addons import addons
+from whitakers_words.datatypes import Addon, Inflect, Stem, Unique
 from whitakers_words.enums import get_enum_value, WordType
 
 
-class Inflection(object):
-    def __init__(self, infl: Inflect):
+class Inflection:
+    def __init__(self, infl: Inflect, stem_lemma: str):
         self.wordType = get_enum_value("WordType", infl["pos"])
         self.category = infl['n']
+        self.stem = stem_lemma
         self.affix = infl["ending"]
         self.features: dict[str, Enum] = {}
         self.analyse_features(infl["form"])
@@ -35,8 +37,20 @@ class Inflection(object):
         for idx, feature in enumerate(features):  # TODO will break horribly
             self.features[lst[idx]] = get_enum_value(lst[idx], feature)
 
+    def has_feature(self, feature: Enum) -> bool:
+        return (type(feature).__name__ in self.features and
+                self.features[type(feature).__name__] == feature)
 
-class Lexeme(object):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Inflection):
+            return NotImplemented
+        return (self.affix == other.affix and
+                self.wordType == other.wordType and
+                self.category == other.category and
+                self.features == other.features)
+
+
+class Lexeme:
     def __init__(self, stem: Stem):
         self.id = stem['wid']
         self.category = stem['n']
@@ -51,14 +65,14 @@ class Lexeme(object):
         self.senses = dict_word["senses"]
 
 
-class Enclitic(object):
+class Enclitic:
     def __init__(self, enclitic: Addon):
         self.text = enclitic['orth']
         self.position = enclitic['pos']
         self.meaning = enclitic['senses']
 
 
-class Analysis(object):
+class Analysis:
     def __init__(self, lexeme: Lexeme, inflections: list[Inflection] = [], enclitic: Enclitic = None):
         self.lexeme = lexeme
         self.root = ""
@@ -69,7 +83,7 @@ class Analysis(object):
         self.lexeme.lookup_stem()
 
 
-class Form(object):
+class Form:
     def __init__(self, text: str, enclitic: Enclitic = None):
         self.text = text
         self.analyses: dict[int, Analysis] = {}
@@ -118,15 +132,16 @@ class Form(object):
                 stem_lemma = self.text[:-ending_length]
             else:
                 stem_lemma = self.text
-            if stem_lemma in stems and stem_lemma == 'am':
+            if stem_lemma in stems:
                 stem_list = stems[stem_lemma]
                 for stem_cand in stem_list:
                     if self.check_match(stem_cand, infl_cand):
                         word_id = stem_cand['wid']
-                        inflection = Inflection(infl_cand)
+                        inflection = Inflection(infl_cand, stem_lemma)
                         # If there's already a matched stem with that orthography
                         if word_id in matched_stems:
-                            matched_stems[word_id].inflections.append(inflection)
+                            if inflection not in matched_stems[word_id].inflections:
+                                matched_stems[word_id].inflections.append(inflection)
                         else:
                             matched_stems[word_id] = Analysis(Lexeme(stem_cand), [inflection])
         return matched_stems
@@ -146,7 +161,7 @@ class Form(object):
                 else:
                     return stem['orth'] == wrd['parts'][0]
             return False
-        basic_match = len(stem['n']) and infl['n'][0] == stem['n'][0]
+        basic_match = len(stem['n']) > 0 and (infl['n'][0] == stem['n'][0] or infl['n'][0] == 0)
         if stem['pos'] == 'N':
             if infl['n'] == stem['n'] or (infl['n'][0] == stem['n'][0] and infl['n'][-1] == 0):
                 return infl['form'][-1] == stem['form'][0] or infl['form'][-1] == 'C'
@@ -166,7 +181,7 @@ class Form(object):
                 return False
             if stem['form'][-1] == 'X':
                 try:
-                    wrd = self.wordlist[stem['wid']]
+                    wrd = wordlist[stem['wid']]
                     if not wrd:
                         return False  # probably an entry with a lot of meanings
                 except IndexError:
@@ -184,12 +199,12 @@ degrees = {
 }
 
 
-def get_degree(parts: list[str], stem: str) -> str:  # TODO replace
+def get_degree(parts: Sequence[str], stem: str) -> list[str]:  # TODO replace
     val = [key for (key, value) in degrees.items() if value['id'] == parts.index(stem)]
     return val
 
 
-class Word(object):
+class Word:
     def __init__(self, text: str):
         self.text = text
         self.forms = self.split_form_enclitic()
@@ -233,6 +248,6 @@ class Word(object):
         return [item for form in self.forms for item in form.analyses.values()]
 
 
-class NewParser(object):
+class NewParser:
     def parse(self, text: str) -> Word:
         return Word(text).analyse()

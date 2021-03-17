@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+# due to expected obsolescence of this file, we will not prioritize type hinting it
 """
 parse.py (relating to Words's parse.adb)
 
@@ -12,7 +14,6 @@ __license__ = "MIT License. See LICENSE."
 import re
 from copy import deepcopy
 
-from whitakers_words.exceptions import WordsException
 from whitakers_words.formatter import format_output, get_degree
 
 from whitakers_words.generated.dict_ids import dict_ids
@@ -21,6 +22,10 @@ from whitakers_words.generated.stems import stems
 from whitakers_words.generated.uniques import uniques
 from whitakers_words.generated.inflects import inflects
 from whitakers_words.data.addons import addons
+
+
+class WordsException(Exception):
+    pass
 
 
 class Parser:

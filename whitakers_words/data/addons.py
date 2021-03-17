@@ -84,14 +84,8 @@ that ADDONS are not coded but left text for easy change.
 
 """
 
-from typing import Sequence, TypedDict
-
-
-class Addon(TypedDict, total=False):
-    orth: str
-    pos: str
-    senses: Sequence[str]
-    form: str  # not always available
+from typing import Sequence
+from whitakers_words.datatypes import Addon
 
 
 addons: dict[str, Sequence[Addon]] = {
