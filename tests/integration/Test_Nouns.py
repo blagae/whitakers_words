@@ -1,4 +1,5 @@
-from whitakers_words.parse import Parser
+from whitakers_words.parser import Parser
+from whitakers_words.enums import Case, Gender, Number, WordType
 
 import unittest
 
@@ -10,27 +11,19 @@ class NounTest(unittest.TestCase):
         cls.par = Parser()
 
     def test_regionem(self):
-        """
-        expected = {'word': 'regionem',
-                    'defs': [{'orth': ['regio', 'region'],
-                              'senses': ['area, region', 'neighborhood', 'district, country', 'direction'],
-                              'infls': [{'stem': 'region', 'ending': 'em', 'pos': 'noun', 'decl': 3,
-                                         'form': {'case': 'accusative', 'number': 'singular', 'gender': 'feminine'}}]}]}
-        """
         result = self.par.parse("regionem")
+        self.assertEqual(len(result.forms), 1)
+        self.assertEqual(len(result.forms[0].analyses), 1)
+        for key, analysis in result.forms[0].analyses.items():
+            self.assertEqual(analysis.lexeme.roots[0], 'regio')  # wid == 20451
+            self.assertEqual(analysis.lexeme.wordType, WordType.N)
 
-        # response syntax and basics
-        self.assertEqual(len(result['defs']), 1)  # there is only one definition
-        self.assertTrue(len(result['defs'][0]))  # defs does not contain an empty dictionary
-        self.assertEqual(len(result['defs'][0]['infls']), 1)  # there is only one inflection
-
-        # response splitting
-        infl = result['defs'][0]['infls'][0]
-        self.assertEqual(infl['stem'], 'region')
-        self.assertEqual(infl['ending'], 'em')
-        self.assertEqual(infl['pos'], 'noun')
-
-        # response details
-        form = infl['form']
-        expected_form = {'case': 'accusative', 'number': 'singular', 'gender': 'feminine'}
-        self.assertEqual(form, expected_form)
+            self.assertEqual(len(analysis.inflections), 1)
+            # common properties and features
+            for inflection in analysis.inflections:
+                self.assertEqual(inflection.stem, 'region')
+                self.assertEqual(inflection.affix, 'em')
+                self.assertEqual(inflection.wordType, WordType.N)
+                self.assertTrue(inflection.has_feature(Case.ACC))
+                self.assertTrue(inflection.has_feature(Number.S))
+                self.assertTrue(inflection.has_feature(Gender.C))  # TODO fix gender on nouns

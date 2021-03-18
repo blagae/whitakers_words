@@ -1,4 +1,0 @@
-nose
-coverage
-flake8
-mypy

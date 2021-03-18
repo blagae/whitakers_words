@@ -1,4 +1,5 @@
-from whitakers_words.parse import Parser
+from whitakers_words.parser import Parser
+from whitakers_words.enums import Degree, WordType
 
 import unittest
 
@@ -10,71 +11,34 @@ class AdverbTest(unittest.TestCase):
         cls.par = Parser()
 
     def test_bene(self):
-        """
-        expected = {'word': 'bene',
-                    'defs': [{'orth': ['bene', 'melius', 'optime'],
-                              'senses': ['well, very, quite, rightly, agreeably, cheaply, in good style',
-                                         'better', 'best'],
-                              'infls': [{'stem': 'bene', 'ending': '', 'pos': 'adverb',
-                                         'form': {'degree': 'positive'}}]}]}
-        """
         result = self.par.parse("bene")
+        self.assertEqual(len(result.forms), 1)
+        self.assertEqual(len(result.forms[0].analyses), 1)
+        for key, analysis in result.forms[0].analyses.items():
+            self.assertEqual(analysis.lexeme.roots[0], 'bene')  # wid == 6360
+            self.assertEqual(analysis.lexeme.wordType, WordType.ADV)
 
-        # response syntax and basics
-        self.assertEqual(len(result['defs']), 1)  # there is only one definition
-        self.assertTrue(len(result['defs'][0]))  # defs does not contain an empty dictionary
-        self.assertEqual(len(result['defs'][0]['infls']), 1)  # there is only one inflection
-
-        # response splitting
-        infl = result['defs'][0]['infls'][0]
-        self.assertEqual(infl['stem'], 'bene')
-        self.assertEqual(infl['ending'], '')
-        self.assertEqual(infl['pos'], 'adverb')
-
-        # response details
-        form = infl['form']
-        expected_form = {'degree': 'positive'}
-        self.assertEqual(form, expected_form)
+            self.assertEqual(len(analysis.inflections), 1)
+            # common properties and features
+            for inflection in analysis.inflections:
+                self.assertEqual(inflection.stem, 'bene')
+                self.assertEqual(inflection.affix, '')
+                self.assertEqual(inflection.wordType, WordType.ADV)
+                self.assertTrue(inflection.has_feature(Degree.POS))
 
     def test_melius(self):
-        """
-        expected = {'word': 'melius',
-                    'defs': [{'orth': ['bene', 'melius', 'optime'],
-                              'senses': ['well, very, quite, rightly, agreeably, cheaply, in good style',
-                                         'better', 'best'],
-                              'infls': [{'stem': 'melius', 'ending': '', 'pos': 'adverb',
-                                         'form': {'degree': 'comparative'}}]},
-                             {'orth': ['bon', 'bon', 'meli', 'opti'],
-                              'senses': ['good, honest, brave, noble, kind, pleasant, right, useful',
-                                         'valid', 'healthy'],
-                              'infls': [{'stem': 'meli', 'ending': 'us', 'pos': 'adjective',
-                                         'form': {'case': 'nominative', 'number': 'singular',
-                                                  'gender': 'neuter', 'degree': 'comparative'},
-                                         'decl': 1},
-                                        {'stem': 'meli', 'ending': 'us', 'pos': 'adjective',
-                                         'form': {'case': 'accusative', 'number': 'singular',
-                                                  'gender': 'neuter', 'degree': 'comparative'},
-                                         'decl': 1},
-                                        {'stem': 'meli', 'ending': 'us', 'pos': 'adjective',
-                                         'form': {'case': 'vocative', 'number': 'singular',
-                                                  'gender': 'neuter', 'degree': 'comparative'},
-                                         'decl': 1}]}]}
-        """
         result = self.par.parse("melius")
 
-        # response syntax and basics
-        self.assertEqual(len(result['defs']), 1)  # there is only one definition
-        self.assertTrue(len(result['defs'][0]))  # defs does not contain an empty dictionary
-        self.assertEqual(len(result['defs'][0]['infls']), 1)  # there is only one inflection
+        self.assertEqual(len(result.forms), 1)
+        self.assertEqual(len(result.forms[0].analyses), 2)  # see Test_Adjectives.test_melius
+        analysis = result.forms[0].analyses[6360]
+        self.assertEqual(analysis.lexeme.roots[0], 'bene')  # wid == 6360
+        self.assertEqual(analysis.lexeme.wordType, WordType.ADV)
 
-        # response splitting
-        # TODO don't depend on order of results
-        infl = result['defs'][0]['infls'][0]
-        self.assertEqual(infl['stem'], 'melius')
-        self.assertEqual(infl['ending'], '')
-        self.assertEqual(infl['pos'], 'adverb')
-
-        # response details
-        form = infl['form']
-        expected_form = {'degree': 'comparative'}
-        self.assertEqual(form, expected_form)
+        self.assertEqual(len(analysis.inflections), 1)
+        # common properties and features
+        for inflection in analysis.inflections:
+            self.assertEqual(inflection.stem, 'melius')
+            self.assertEqual(inflection.affix, '')
+            self.assertEqual(inflection.wordType, WordType.ADV)
+            self.assertTrue(inflection.has_feature(Degree.COMP))

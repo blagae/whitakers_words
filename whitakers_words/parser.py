@@ -61,8 +61,9 @@ class Lexeme:
     def lookup_stem(self) -> None:
         """Find the word id mentioned in the stem in the dictionary"""
         dict_word = wordlist[self.id]
-        self.roots = dict_word["parts"]
-        self.senses = dict_word["senses"]
+        if dict_word:  # guard for empty entries
+            self.roots = dict_word["parts"]
+            self.senses = dict_word["senses"]
 
 
 class Enclitic:
@@ -110,11 +111,13 @@ class Form:
                 viable_inflections.extend(infl)
 
         # Get viable combinations of stem + endings (+ enclitics)
-        self.analyses = self.match_stems_inflections(viable_inflections)
+        analyses = self.match_stems_inflections(viable_inflections)
 
-        for analysis in self.analyses.values():
+        for analysis in analyses.values():
             analysis.enclitic = self.enclitic
             analysis.lookup_stem()
+        # only use analyses where the lexeme was found
+        self.analyses = dict(filter(lambda x: x[1].lexeme.roots, analyses.items()))
 
         # TODO reimplement reduce
 
@@ -165,6 +168,7 @@ class Form:
         if stem['pos'] == 'N':
             if infl['n'] == stem['n'] or (infl['n'][0] == stem['n'][0] and infl['n'][-1] == 0):
                 return infl['form'][-1] == stem['form'][0] or infl['form'][-1] == 'C'
+            return False
         elif stem['pos'] == 'ADV':
             if stem['form'] == ['X']:
                 try:
@@ -207,16 +211,19 @@ def get_degree(parts: Sequence[str], stem: str) -> list[str]:  # TODO replace
 class Word:
     def __init__(self, text: str):
         self.text = text
-        self.forms = self.split_form_enclitic()
+        self.forms: Sequence[Form] = []
 
     def analyse(self) -> 'Word':
-        for form in self.forms:
+        form_candidates = self.split_form_enclitic()
+        for form in form_candidates:
             if form.text in uniques:
                 for unique_form in uniques[form.text]:
                     form.analyse_unique(unique_form)
             # Get regular words
             else:
                 form.analyse()
+        # only use forms that get at least one valid analysis
+        self.forms = list(filter(lambda form: form.analyses, form_candidates))
         return self
 
     def split_form_enclitic(self) -> Sequence[Form]:
@@ -248,6 +255,6 @@ class Word:
         return [item for form in self.forms for item in form.analyses.values()]
 
 
-class NewParser:
+class Parser:
     def parse(self, text: str) -> Word:
         return Word(text).analyse()

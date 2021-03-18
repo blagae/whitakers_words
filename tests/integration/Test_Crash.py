@@ -1,4 +1,4 @@
-from whitakers_words.parse import Parser
+from whitakers_words.parser import Parser
 
 import unittest
 
