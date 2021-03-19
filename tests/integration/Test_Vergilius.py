@@ -1,6 +1,6 @@
-from whitakers_words.parser import Parser
-
 import unittest
+
+from whitakers_words.parser import Parser
 
 
 class VergiliusTest(unittest.TestCase):

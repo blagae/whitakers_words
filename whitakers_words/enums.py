@@ -1,7 +1,7 @@
-from enum import Enum
-from typing import Type
 import inspect
 import sys
+from enum import Enum
+from typing import Type
 
 
 def get_enum_or_dict(name: str) -> Type[Enum]:

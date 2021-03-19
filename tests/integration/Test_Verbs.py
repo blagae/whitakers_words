@@ -1,7 +1,7 @@
-from whitakers_words.parser import Parser
-from whitakers_words.enums import Mood, Number, Person, Tense, Voice, WordType
-
 import unittest
+
+from whitakers_words.enums import Mood, Number, Person, Tense, Voice, WordType
+from whitakers_words.parser import Parser
 
 
 class VerbTest(unittest.TestCase):

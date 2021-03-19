@@ -14,14 +14,13 @@ __license__ = "MIT License. See LICENSE."
 import re
 from copy import deepcopy
 
+from whitakers_words.data.addons import addons
 from whitakers_words.formatter import format_output, get_degree
-
 from whitakers_words.generated.dict_ids import dict_ids
 from whitakers_words.generated.dict_keys import dict_keys
+from whitakers_words.generated.inflects import inflects
 from whitakers_words.generated.stems import stems
 from whitakers_words.generated.uniques import uniques
-from whitakers_words.generated.inflects import inflects
-from whitakers_words.data.addons import addons
 
 
 class WordsException(Exception):

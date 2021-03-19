@@ -7,8 +7,9 @@ Format the data from the input files from Whitaker's Words into python dictionar
 
 import json
 import os
-from pkg_resources import resource_filename
 from typing import Any, Sequence, Union
+
+from pkg_resources import resource_filename
 
 from .datatypes import DictEntry, Stem, Unique
 

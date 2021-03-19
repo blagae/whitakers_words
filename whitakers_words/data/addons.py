@@ -85,8 +85,8 @@ that ADDONS are not coded but left text for easy change.
 """
 
 from typing import Sequence
-from whitakers_words.datatypes import Addon
 
+from whitakers_words.datatypes import Addon
 
 addons: dict[str, Sequence[Addon]] = {
     #

@@ -1,15 +1,15 @@
 import re
-from typing import List, Sequence
 from enum import Enum
+from typing import List, Sequence
 
-from whitakers_words.generated.dict_ids import dict_ids as wordlist
-from whitakers_words.generated.dict_keys import dict_keys as wordkeys
-from whitakers_words.generated.stems import stems
-from whitakers_words.generated.uniques import uniques
-from whitakers_words.generated.inflects import inflects
 from whitakers_words.data.addons import addons
 from whitakers_words.datatypes import Addon, Inflect, Stem, Unique
-from whitakers_words.enums import get_enum_value, WordType
+from whitakers_words.enums import WordType, get_enum_value
+from whitakers_words.generated.dict_ids import dict_ids as wordlist
+from whitakers_words.generated.dict_keys import dict_keys as wordkeys
+from whitakers_words.generated.inflects import inflects
+from whitakers_words.generated.stems import stems
+from whitakers_words.generated.uniques import uniques
 
 
 class Inflection:

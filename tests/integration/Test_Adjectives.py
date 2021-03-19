@@ -1,7 +1,7 @@
-from whitakers_words.parser import Parser
-from whitakers_words.enums import Case, Degree, Gender, Number, WordType
-
 import unittest
+
+from whitakers_words.enums import Case, Degree, Gender, Number, WordType
+from whitakers_words.parser import Parser
 
 
 class AdjectiveTest(unittest.TestCase):

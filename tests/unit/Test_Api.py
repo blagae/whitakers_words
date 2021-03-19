@@ -1,6 +1,6 @@
-from whitakers_words.old_parser import Parser
-
 import unittest
+
+from whitakers_words.old_parser import Parser
 
 
 class MinimalDictionaryParseTest(unittest.TestCase):
