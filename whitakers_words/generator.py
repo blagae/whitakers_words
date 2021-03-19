@@ -111,8 +111,8 @@ def import_dicts() -> None:
 
     keys = list(set(keys))
     keys.sort()
-    dump_file('dict_keys.py', keys, dictkeys_definition)
-    dump_file('dict_ids.py', ids, dictentry_definition, dictentry_imports)
+    dump_file('wordkeys.py', keys, dictkeys_definition)
+    dump_file('wordlist.py', ids, dictentry_definition, dictentry_imports)
     dump_file('stems.py', stems, stems_definition, stems_imports)
 
 

@@ -1,15 +1,15 @@
 import re
 from enum import Enum
-from typing import Any, Sequence
+from typing import Any, Sequence, Union
 
 from whitakers_words.data.addons import addons
 from whitakers_words.datatypes import Addon, DictEntry, Inflect, Stem, Unique
 from whitakers_words.enums import WordType, get_enum_value
-from whitakers_words.generated.dict_ids import dict_ids as wordlist
-from whitakers_words.generated.dict_keys import dict_keys as wordkeys
 from whitakers_words.generated.inflects import inflects
 from whitakers_words.generated.stems import stems
 from whitakers_words.generated.uniques import uniques
+from whitakers_words.generated.wordkeys import wordkeys
+from whitakers_words.generated.wordlist import wordlist
 
 
 class DataLayer:
@@ -63,7 +63,7 @@ class Inflection:
 class Lexeme:
     def __init__(self, stem: Stem):
         self.id = stem['wid']
-        self.category = stem['n']
+        self.category: Sequence[Union[str, int]] = stem['n']
         self.roots: Sequence[str] = []
         self.senses: Sequence[str] = []
         self.wordType = get_enum_value("WordType", stem["pos"])
@@ -106,7 +106,7 @@ class Form:
         self.enclitic = enclitic
 
     def analyse_unique(self, unique_form: Unique) -> None:
-        self.analyses = [Analysis(UniqueLexeme(unique_form), [])]
+        self.analyses = {0: Analysis(UniqueLexeme(unique_form), [])}
 
     def analyse(self, data: DataLayer) -> None:
         """
@@ -212,7 +212,7 @@ class Word:
         self.forms: Sequence[Form] = []
 
     def analyse(self, data: DataLayer) -> 'Word':
-        form_candidates = self.split_form_enclitic()
+        form_candidates = self.split_form_enclitic(data)
         for form in form_candidates:
             if form.text in data.uniques:
                 for unique_form in data.uniques[form.text]:
@@ -224,30 +224,31 @@ class Word:
         self.forms = list(filter(lambda form: form.analyses, form_candidates))
         return self
 
-    def split_form_enclitic(self) -> Sequence[Form]:
+    def split_form_enclitic(self, data: DataLayer) -> Sequence[Form]:
         """Split enclitic ending from word"""
         result = [Form(self.text)]  # TODO form with enclitic will fail to be parsed
 
         # Test the different tackons / packons as specified in addons.py
-        result.extend(self.find_enclitic('tackons'))
+        result.extend(self.find_enclitic('tackons', data))
 
         # which list do we get info from
         if self.text.startswith("qu"):
-            result.extend(self.find_enclitic('packons'))
+            result.extend(self.find_enclitic('packons', data))
         else:
-            result.extend(self.find_enclitic('not_packons'))
+            result.extend(self.find_enclitic('not_packons', data))
         return result
 
-    def find_enclitic(self, list_name: str) -> Sequence[Form]:
-        if list_name in addons:
-            for affix in addons[list_name]:
+    def find_enclitic(self, list_name: str, data: DataLayer) -> Sequence[Form]:
+        result = []
+        if list_name in data.addons:
+            for affix in data.addons[list_name]:
                 affix_text = affix['orth']
                 if self.text.endswith(affix_text):
                     base = re.sub(affix_text + "$", "", self.text)
                     # an enclitic without a base is not an enclitic
                     if base:
-                        return [Form(base, Enclitic(affix))]
-        return []
+                        result.append(Form(base, Enclitic(affix)))
+        return result
 
     def get_analyses(self) -> Sequence[Analysis]:
         return [item for form in self.forms for item in form.analyses.values()]
