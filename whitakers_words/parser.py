@@ -1,6 +1,6 @@
 import re
 from enum import Enum
-from typing import List, Sequence
+from typing import Sequence
 
 from whitakers_words.data.addons import addons
 from whitakers_words.datatypes import Addon, Inflect, Stem, Unique
@@ -97,7 +97,7 @@ class Form:
         """
         Find all possible endings that may apply, so without checking congruence between word type and ending type
         """
-        viable_inflections: List[Inflect] = []
+        viable_inflections: list[Inflect] = []
 
         # the word may be undeclined, so add this as an option if the full form exists in the list of words
         if self.text in wordkeys:
@@ -251,7 +251,7 @@ class Word:
                         return [Form(base, Enclitic(affix))]
         return []
 
-    def analyses(self) -> Sequence[Analysis]:
+    def get_analyses(self) -> Sequence[Analysis]:
         return [item for form in self.forms for item in form.analyses.values()]
 
 
