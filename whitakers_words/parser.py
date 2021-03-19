@@ -1,15 +1,25 @@
 import re
 from enum import Enum
-from typing import Sequence
+from typing import Any, Sequence
 
 from whitakers_words.data.addons import addons
-from whitakers_words.datatypes import Addon, Inflect, Stem, Unique
+from whitakers_words.datatypes import Addon, DictEntry, Inflect, Stem, Unique
 from whitakers_words.enums import WordType, get_enum_value
 from whitakers_words.generated.dict_ids import dict_ids as wordlist
 from whitakers_words.generated.dict_keys import dict_keys as wordkeys
 from whitakers_words.generated.inflects import inflects
 from whitakers_words.generated.stems import stems
 from whitakers_words.generated.uniques import uniques
+
+
+class DataLayer:
+    def __init__(self, **kwargs: Any):
+        self.wordlist = kwargs['wordlist'] if 'wordlist' in kwargs else wordlist
+        self.wordkeys = kwargs['wordkeys'] if 'wordkeys' in kwargs else wordkeys
+        self.stems = kwargs['stems'] if 'stems' in kwargs else stems
+        self.uniques = kwargs['uniques'] if 'uniques' in kwargs else uniques
+        self.inflects = kwargs['inflects'] if 'inflects' in kwargs else inflects
+        self.addons = kwargs['addons'] if 'addons' in kwargs else addons
 
 
 class Inflection:
@@ -58,13 +68,6 @@ class Lexeme:
         self.senses: Sequence[str] = []
         self.wordType = get_enum_value("WordType", stem["pos"])
 
-    def lookup_stem(self) -> None:
-        """Find the word id mentioned in the stem in the dictionary"""
-        dict_word = wordlist[self.id]
-        if dict_word:  # guard for empty entries
-            self.roots = dict_word["parts"]
-            self.senses = dict_word["senses"]
-
 
 class Enclitic:
     def __init__(self, enclitic: Addon):
@@ -80,8 +83,11 @@ class Analysis:
         self.inflections = inflections
         self.enclitic = enclitic
 
-    def lookup_stem(self) -> None:
-        self.lexeme.lookup_stem()
+    def lookup_stem(self, wordlist: Sequence[DictEntry]) -> None:
+        dict_word = wordlist[self.lexeme.id]
+        if dict_word:  # guard for empty entries
+            self.lexeme.roots = dict_word["parts"]
+            self.lexeme.senses = dict_word["senses"]
 
 
 class Form:
@@ -93,35 +99,35 @@ class Form:
     def analyse_unique(self, unique_form: Unique) -> None:
         pass  # TODO
 
-    def analyse(self) -> None:
+    def analyse(self, data: DataLayer) -> None:
         """
         Find all possible endings that may apply, so without checking congruence between word type and ending type
         """
         viable_inflections: list[Inflect] = []
 
         # the word may be undeclined, so add this as an option if the full form exists in the list of words
-        if self.text in wordkeys:
-            viable_inflections.extend(inflects["0"][''])
+        if self.text in data.wordkeys:
+            viable_inflections.extend(data.inflects["0"][''])
 
         # Check against inflection list
         for inflect_length in range(1, min(8, len(self.text))):
             end_of_word = self.text[-inflect_length:]
-            if str(inflect_length) in inflects and end_of_word in inflects[str(inflect_length)]:
-                infl = inflects[str(inflect_length)][end_of_word]
+            if str(inflect_length) in data.inflects and end_of_word in data.inflects[str(inflect_length)]:
+                infl = data.inflects[str(inflect_length)][end_of_word]
                 viable_inflections.extend(infl)
 
         # Get viable combinations of stem + endings (+ enclitics)
-        analyses = self.match_stems_inflections(viable_inflections)
+        analyses = self.match_stems_inflections(viable_inflections, data)
 
         for analysis in analyses.values():
             analysis.enclitic = self.enclitic
-            analysis.lookup_stem()
+            analysis.lookup_stem(data.wordlist)
         # only use analyses where the lexeme was found
         self.analyses = dict(filter(lambda x: x[1].lexeme.roots, analyses.items()))
 
         # TODO reimplement reduce
 
-    def match_stems_inflections(self, viable_inflections: Sequence[Inflect]) -> dict[int, Analysis]:
+    def match_stems_inflections(self, viable_inflections: Sequence[Inflect], data: DataLayer) -> dict[int, Analysis]:
         """
         For each inflection that was a theoretical match, remove the inflection from the end of the word string
         and then check the resulting stem against the list of stems loaded in __init__
@@ -135,10 +141,11 @@ class Form:
                 stem_lemma = self.text[:-ending_length]
             else:
                 stem_lemma = self.text
-            if stem_lemma in stems:
-                stem_list = stems[stem_lemma]
+            if stem_lemma in data.stems:
+                stem_list = data.stems[stem_lemma]
                 for stem_cand in stem_list:
-                    if self.check_match(stem_cand, infl_cand):
+                    wrd = data.wordlist[stem_cand['wid']]
+                    if wrd and self.check_match(stem_cand, infl_cand, wrd):
                         word_id = stem_cand['wid']
                         inflection = Inflection(infl_cand, stem_lemma)
                         # If there's already a matched stem with that orthography
@@ -149,16 +156,10 @@ class Form:
                             matched_stems[word_id] = Analysis(Lexeme(stem_cand), [inflection])
         return matched_stems
 
-    def check_match(self, stem: Stem, infl: Inflect) -> bool:  # TODO rewrite to be readable
+    def check_match(self, stem: Stem, infl: Inflect, wrd: DictEntry) -> bool:  # TODO rewrite to be readable
         """ Do custom checking mechanisms to see if the inflection and stem identify as the same part of speech """
         if infl['pos'] != stem['pos']:
             if infl['pos'] == "VPAR" and stem['pos'] == "V":
-                try:
-                    wrd = wordlist[stem['wid']]
-                    if not wrd:
-                        return False  # probably an entry with a lot of meanings
-                except IndexError:
-                    return False  # must be part of uniques
                 if infl['form'][0] == "PERF":
                     return stem['orth'] == wrd['parts'][-1]
                 else:
@@ -171,12 +172,6 @@ class Form:
             return False
         elif stem['pos'] == 'ADV':
             if stem['form'] == ['X']:
-                try:
-                    wrd = wordlist[stem['wid']]
-                    if not wrd:
-                        return False  # probably an entry with a lot of meanings
-                except IndexError:
-                    return False  # must be part of uniques
                 if stem['orth'] in wrd['parts']:
                     return get_degree(wrd['parts'], stem['orth']) == infl['form']
             return stem['form'] == infl['form']
@@ -184,12 +179,6 @@ class Form:
             if not basic_match:
                 return False
             if stem['form'][-1] == 'X':
-                try:
-                    wrd = wordlist[stem['wid']]
-                    if not wrd:
-                        return False  # probably an entry with a lot of meanings
-                except IndexError:
-                    return False  # must be part of uniques
                 if stem['orth'] in wrd['parts']:
                     return get_degree(wrd['parts'][1:], stem['orth'])[0] == infl['form'][-1]
             return stem['form'] == infl['form']  # TODO we're now only checking pos/comp/super
@@ -213,15 +202,15 @@ class Word:
         self.text = text
         self.forms: Sequence[Form] = []
 
-    def analyse(self) -> 'Word':
+    def analyse(self, data: DataLayer) -> 'Word':
         form_candidates = self.split_form_enclitic()
         for form in form_candidates:
-            if form.text in uniques:
-                for unique_form in uniques[form.text]:
+            if form.text in data.uniques:
+                for unique_form in data.uniques[form.text]:
                     form.analyse_unique(unique_form)
             # Get regular words
             else:
-                form.analyse()
+                form.analyse(data)
         # only use forms that get at least one valid analysis
         self.forms = list(filter(lambda form: form.analyses, form_candidates))
         return self
@@ -256,5 +245,8 @@ class Word:
 
 
 class Parser:
+    def __init__(self, **kwargs: Any):
+        self.data = DataLayer(**kwargs)
+
     def parse(self, text: str) -> Word:
-        return Word(text).analyse()
+        return Word(text).analyse(self.data)
