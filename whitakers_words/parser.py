@@ -69,6 +69,15 @@ class Lexeme:
         self.wordType = get_enum_value("WordType", stem["pos"])
 
 
+class UniqueLexeme(Lexeme):
+    def __init__(self, unique: Unique):
+        self.id = 0
+        self.category = unique['form'][:3].split()
+        self.roots = []
+        self.senses = unique['senses']
+        self.wordType = get_enum_value("WordType", unique["pos"])
+
+
 class Enclitic:
     def __init__(self, enclitic: Addon):
         self.text = enclitic['orth']
@@ -97,7 +106,7 @@ class Form:
         self.enclitic = enclitic
 
     def analyse_unique(self, unique_form: Unique) -> None:
-        pass  # TODO
+        self.analyses = [Analysis(UniqueLexeme(unique_form), [])]
 
     def analyse(self, data: DataLayer) -> None:
         """
