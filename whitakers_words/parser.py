@@ -36,8 +36,10 @@ class Inflection:
         self.analyse_features(infl["form"])
 
     def analyse_features(self, features: Sequence[str]) -> None:
-        if self.wordType in [WordType.N, WordType.PRON, WordType.NUM]:
+        if self.wordType in [WordType.N, WordType.NUM]:
             lst = ["Case", "Number", "Gender"]
+        elif self.wordType == WordType.PRON:
+            lst = ["Case", "Number", "Gender", "PronounType"]
         elif self.wordType == WordType.ADJ:
             lst = ["Case", "Number", "Gender", "Degree"]
         elif self.wordType == WordType.V:

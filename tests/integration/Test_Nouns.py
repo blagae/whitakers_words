@@ -27,3 +27,15 @@ class NounTest(unittest.TestCase):
                 self.assertTrue(inflection.has_feature(Case.ACC))
                 self.assertTrue(inflection.has_feature(Number.S))
                 self.assertTrue(inflection.has_feature(Gender.C))  # TODO fix gender on nouns
+
+    def test_noun(self):
+        self.par.parse("templum")
+
+    def test_regina(self):
+        self.par.parse("regina")
+
+    def test_abacus(self):
+        print(self.par.parse("abacus"))
+
+    def test_peccata(self):
+        print(self.par.parse("peccata"))

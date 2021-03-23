@@ -90,4 +90,29 @@ class Degree(Enum):
 Person = Enum(value="Person", names=[('0', 0), ('1', 1), ('2', 2), ('3', 3)])
 
 
+class PronounType(Enum):
+    REFLEX = "Reflexive"
+    DEMONS = "Demonstrative"
+    INDEF = "Indefinite"
+    PERS = "Personal"
+    INTERR = "Interrogative"
+    REL = "Relative"
+    ADJECT = "Adjectival"
+    X = "Unknown"
+
+
+# TODO other types
+"""
+subtypes = {
+    "N": ["M", "N", "T", "P", "F", "W", "C", "A", "L", "G", "X"],
+    "PREP": ["ABL", "ACC", "GEN"], "ADJ": ["POS", "X", "SUPER", "COMP"],
+    "V": ["INTRANS", "TRANS", "X", "SEMIDEP", "DEP", "TO_BEING", "IMPERS", "DAT", "ABL", "PERFDEF"],
+    "ADV": ["POS", "X", "SUPER", "COMP"],
+    "PRON": ["INDEF", "ADJECT", "PERS", "DEMONS", "X", "REL", "INTERR", "REFLEX"],
+    "NUM": ["CARD", "X", "DIST", "ORD", "ADVERB"],
+    "PACK": ["REL", "INTERR", "INDEF", "ADJECT"]
+}
+"""
+
+
 names = inspect.getmembers(sys.modules[__name__], inspect.isclass)

@@ -98,3 +98,23 @@ class AdjectiveTest(unittest.TestCase):
         self.assertTrue(Case.VOC in other_features)
         self.assertTrue(Case.ACC in other_features)
         self.assertTrue(Case.NOM in other_features)
+
+    def test_anceps(self):
+        result = self.par.parse("anceps")
+        self.assertEqual(len(result.forms), 1)
+        self.assertEqual(len(result.forms[0].analyses), 1)
+        for key, analysis in result.forms[0].analyses.items():
+            self.assertEqual(analysis.lexeme.roots[0], 'anceps')  # wid == 3372
+            self.assertEqual(analysis.lexeme.wordType, WordType.ADJ)
+
+            self.assertEqual(len(analysis.inflections), 3)
+            for inflection in analysis.inflections:
+                self.assertEqual(inflection.stem, 'anceps')
+                self.assertEqual(inflection.affix, '')
+                self.assertEqual(inflection.wordType, WordType.ADJ)
+                self.assertTrue(inflection.has_feature(Degree.POS))
+                self.assertTrue(inflection.has_feature(Number.S))
+
+            other_features = [x.features['Case'] for x in analysis.inflections]
+            self.assertTrue(Case.VOC in other_features)
+            self.assertTrue(Case.NOM in other_features)

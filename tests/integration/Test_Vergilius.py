@@ -4,10 +4,6 @@ from whitakers_words.parser import Parser
 
 
 class VergiliusTest(unittest.TestCase):
-    """
-    A test class that makes sure the most basic common use cases don't crash
-    These tests do not verify anything, they're just meant to provide basic protection against unforeseen crashes
-    """
 
     @classmethod
     def setUpClass(cls):
