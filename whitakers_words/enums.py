@@ -81,6 +81,10 @@ class Degree(Enum):
     SUPER = "Superlative"
     X = "Unknown"
 
+    @classmethod
+    def get_degree_list(cls) -> list[str]:
+        return [x.name for x in Degree]
+
 
 # this has its problems, because we can't use Person.1, but we can use Person['1']
 Person = Enum(value="Person", names=[('0', 0), ('1', 1), ('2', 2), ('3', 3)])

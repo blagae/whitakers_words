@@ -4,7 +4,7 @@ from typing import Any, Sequence, Union
 
 from whitakers_words.data.addons import addons
 from whitakers_words.datatypes import Addon, DictEntry, Inflect, Stem, Unique
-from whitakers_words.enums import WordType, get_enum_value
+from whitakers_words.enums import Degree, WordType, get_enum_value
 from whitakers_words.generated.inflects import inflects
 from whitakers_words.generated.stems import stems
 from whitakers_words.generated.uniques import uniques
@@ -12,14 +12,18 @@ from whitakers_words.generated.wordkeys import wordkeys
 from whitakers_words.generated.wordlist import wordlist
 
 
-class DataLayer:
+class WordsException(Exception):
+    pass
+
+
+class _DataLayer:
     def __init__(self, **kwargs: Any):
-        self.wordlist = kwargs['wordlist'] if 'wordlist' in kwargs else wordlist
-        self.wordkeys = kwargs['wordkeys'] if 'wordkeys' in kwargs else wordkeys
-        self.stems = kwargs['stems'] if 'stems' in kwargs else stems
-        self.uniques = kwargs['uniques'] if 'uniques' in kwargs else uniques
-        self.inflects = kwargs['inflects'] if 'inflects' in kwargs else inflects
-        self.addons = kwargs['addons'] if 'addons' in kwargs else addons
+        self.wordlist: Sequence[DictEntry] = kwargs.get('wordlist', wordlist)
+        self.wordkeys: list[str] = kwargs.get('wordkeys', wordkeys)
+        self.stems: dict[str, Sequence[Stem]] = kwargs.get('stems', stems)
+        self.uniques: dict[str, Sequence[Unique]] = kwargs.get('uniques', uniques)
+        self.inflects: dict[str, dict[str, Sequence[Inflect]]] = kwargs.get('inflects', inflects)
+        self.addons: dict[str, Sequence[Addon]] = kwargs.get('addons', addons)
 
 
 class Inflection:
@@ -44,7 +48,7 @@ class Inflection:
             lst = ["Degree"]
         else:
             return
-        for idx, feature in enumerate(features):  # TODO will break horribly
+        for idx, feature in enumerate(features[:len(lst)]):  # TODO will break horribly
             self.features[lst[idx]] = get_enum_value(lst[idx], feature)
 
     def has_feature(self, feature: Enum) -> bool:
@@ -60,6 +64,17 @@ class Inflection:
                 self.features == other.features)
 
 
+class UniqueInflection(Inflection):
+    def __init__(self, unique: Unique):
+        self.wordType = get_enum_value("WordType", unique["pos"])
+        if "n" in unique:
+            self.category = unique["n"]
+        self.stem = unique["orth"]
+        self.affix = ""
+        self.features: dict[str, Enum] = {}
+        self.analyse_features(unique["form"])
+
+
 class Lexeme:
     def __init__(self, stem: Stem):
         self.id = stem['wid']
@@ -72,7 +87,7 @@ class Lexeme:
 class UniqueLexeme(Lexeme):
     def __init__(self, unique: Unique):
         self.id = 0
-        self.category = unique['form'][:3].split()
+        self.category = []
         self.roots = []
         self.senses = unique['senses']
         self.wordType = get_enum_value("WordType", unique["pos"])
@@ -86,7 +101,7 @@ class Enclitic:
 
 
 class Analysis:
-    def __init__(self, lexeme: Lexeme, inflections: list[Inflection] = [], enclitic: Enclitic = None):
+    def __init__(self, lexeme: Lexeme, inflections: list[Inflection], enclitic: Enclitic = None):
         self.lexeme = lexeme
         self.root = ""
         self.inflections = inflections
@@ -106,9 +121,9 @@ class Form:
         self.enclitic = enclitic
 
     def analyse_unique(self, unique_form: Unique) -> None:
-        self.analyses = {0: Analysis(UniqueLexeme(unique_form), [])}
+        self.analyses = {0: Analysis(UniqueLexeme(unique_form), [UniqueInflection(unique_form)])}
 
-    def analyse(self, data: DataLayer) -> None:
+    def analyse(self, data: _DataLayer) -> None:
         """
         Find all possible endings that may apply, so without checking congruence between word type and ending type
         """
@@ -136,7 +151,7 @@ class Form:
 
         # TODO reimplement reduce
 
-    def match_stems_inflections(self, viable_inflections: Sequence[Inflect], data: DataLayer) -> dict[int, Analysis]:
+    def match_stems_inflections(self, viable_inflections: Sequence[Inflect], data: _DataLayer) -> dict[int, Analysis]:
         """
         For each inflection that was a theoretical match, remove the inflection from the end of the word string
         and then check the resulting stem against the list of stems loaded in __init__
@@ -145,9 +160,8 @@ class Form:
         # For each of the inflections that is a match, strip the inflection from the end of the word
         # and look up the stripped word (w) in the stems
         for infl_cand in viable_inflections:
-            ending_length = len(infl_cand['ending'])
-            if ending_length:
-                stem_lemma = self.text[:-ending_length]
+            if infl_cand['ending']:
+                stem_lemma = self.text[:-len(infl_cand['ending'])]
             else:
                 stem_lemma = self.text
             if stem_lemma in data.stems:
@@ -182,28 +196,19 @@ class Form:
         elif stem['pos'] == 'ADV':
             if stem['form'] == ['X']:
                 if stem['orth'] in wrd['parts']:
-                    return get_degree(wrd['parts'], stem['orth']) == infl['form']
+                    return self.get_degree(wrd['parts'], stem['orth']) == infl['form'][-1]
             return stem['form'] == infl['form']
         elif stem['pos'] == 'ADJ':
             if not basic_match:
                 return False
             if stem['form'][-1] == 'X':
                 if stem['orth'] in wrd['parts']:
-                    return get_degree(wrd['parts'][1:], stem['orth'])[0] == infl['form'][-1]
+                    return self.get_degree(wrd['parts'][1:], stem['orth']) == infl['form'][-1]
             return stem['form'] == infl['form']  # TODO we're now only checking pos/comp/super
         return basic_match
 
-
-degrees = {
-    "POS": {"id": 0, "name": "positive"},
-    "COMP": {"id": 1, "name": "comparative"},
-    "SUPER": {"id": 2, "name": "superlative"}
-}
-
-
-def get_degree(parts: Sequence[str], stem: str) -> list[str]:  # TODO replace
-    val = [key for (key, value) in degrees.items() if value['id'] == parts.index(stem)]
-    return val
+    def get_degree(self, parts: Sequence[str], stem: str) -> str:
+        return Degree.get_degree_list()[parts.index(stem)]
 
 
 class Word:
@@ -211,7 +216,7 @@ class Word:
         self.text = text
         self.forms: Sequence[Form] = []
 
-    def analyse(self, data: DataLayer) -> 'Word':
+    def analyse(self, data: _DataLayer) -> 'Word':
         form_candidates = self.split_form_enclitic(data)
         for form in form_candidates:
             if form.text in data.uniques:
@@ -224,7 +229,7 @@ class Word:
         self.forms = list(filter(lambda form: form.analyses, form_candidates))
         return self
 
-    def split_form_enclitic(self, data: DataLayer) -> Sequence[Form]:
+    def split_form_enclitic(self, data: _DataLayer) -> Sequence[Form]:
         """Split enclitic ending from word"""
         result = [Form(self.text)]  # TODO form with enclitic will fail to be parsed
 
@@ -238,7 +243,7 @@ class Word:
             result.extend(self.find_enclitic('not_packons', data))
         return result
 
-    def find_enclitic(self, list_name: str, data: DataLayer) -> Sequence[Form]:
+    def find_enclitic(self, list_name: str, data: _DataLayer) -> Sequence[Form]:
         result = []
         if list_name in data.addons:
             for affix in data.addons[list_name]:
@@ -256,7 +261,9 @@ class Word:
 
 class Parser:
     def __init__(self, **kwargs: Any):
-        self.data = DataLayer(**kwargs)
+        self.data = _DataLayer(**kwargs)
 
     def parse(self, text: str) -> Word:
+        if not text.isalpha():
+            raise WordsException("Text to be parsed must be a single Latin word")
         return Word(text).analyse(self.data)

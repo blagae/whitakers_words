@@ -16,8 +16,8 @@ from copy import deepcopy
 
 from whitakers_words.data.addons import addons
 from whitakers_words.formatter import format_output, get_degree
-from whitakers_words.generated.dict_ids import dict_ids
-from whitakers_words.generated.dict_keys import dict_keys
+from whitakers_words.generated.wordkeys import wordkeys
+from whitakers_words.generated.wordlist import wordlist
 from whitakers_words.generated.inflects import inflects
 from whitakers_words.generated.stems import stems
 from whitakers_words.generated.uniques import uniques
@@ -31,8 +31,8 @@ class Parser:
 
     def __init__(self, **kwargs):
         """Provide a modular structure for loading the parser data"""
-        self.wordlist = kwargs['wordlist'] if 'wordlist' in kwargs else dict_ids
-        self.wordkeys = kwargs['wordkeys'] if 'wordkeys' in kwargs else dict_keys
+        self.wordlist = kwargs['wordlist'] if 'wordlist' in kwargs else wordlist
+        self.wordkeys = kwargs['wordkeys'] if 'wordkeys' in kwargs else wordkeys
         self.stems = kwargs['stems'] if 'stems' in kwargs else stems
         self.uniques = kwargs['uniques'] if 'uniques' in kwargs else uniques
         self.inflects = kwargs['inflects'] if 'inflects' in kwargs else inflects

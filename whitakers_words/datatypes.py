@@ -20,8 +20,9 @@ class Inflect(TypedDict):
 class Unique(TypedDict, total=False):
     orth: str
     pos: str
-    form: str
+    form: Sequence[str]
     senses: Sequence[str]
+    n: Sequence[int]
 
 
 class DictEntry(TypedDict, total=False):
@@ -38,4 +39,4 @@ class Addon(TypedDict, total=False):
     orth: str
     pos: str
     senses: Sequence[str]
-    form: str  # not always available
+    form: str

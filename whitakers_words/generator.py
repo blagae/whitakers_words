@@ -75,7 +75,7 @@ def import_dicts() -> None:
             new_senses = []
             for sense in senses:
                 sense = sense.strip()
-                if len(sense):
+                if sense:
                     new_senses.append(sense)
             item: DictEntry = {
                 'id': i + 1,
@@ -184,9 +184,10 @@ def import_uniques() -> None:
                 obj['orth'] = line.strip()
 
             elif i == 1:
-                space = line.find(" ")
-                obj['pos'] = line[:space].strip()
-                obj['form'] = line[space:52].strip()
+                ite = line.split()
+                obj['pos'] = ite[0]
+                obj['n'] = [int(x) for x in ite[1:3]]
+                obj['form'] = ite[3:-5]
 
             elif i == 2:
                 obj['senses'] = [line.strip()]

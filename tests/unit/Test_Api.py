@@ -43,16 +43,16 @@ class MinimalDictionaryParseTest(unittest.TestCase):
         self.assertEqual(result.forms, [])
 
     def test_minimal_unique_with_result(self):
-        word: Unique = {'orth': 'word', 'pos': 'NUM', 'form': 'a cdef', 'senses': []}
+        word: Unique = {'orth': 'word', 'pos': 'PREP', 'n': [], 'form': 'a cdef', 'senses': []}
         self.prs.data.uniques['word'] = [word]
         result = self.prs.parse("word")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        self.assertEqual(result.forms[0].analyses[0].lexeme.category, ['a', 'c'])
-        self.assertEqual(result.forms[0].analyses[0].lexeme.wordType, WordType.NUM)
+        self.assertEqual(result.forms[0].analyses[0].lexeme.category, [])
+        self.assertEqual(result.forms[0].analyses[0].lexeme.wordType, WordType.PREP)
 
     def test_minimal_unique_with_addon(self):
-        word = {'orth': 'wor', 'pos': 'NUM', 'form': 'abc', 'senses': []}
+        word = {'orth': 'wor', 'pos': 'PREP', 'form': 'abc', 'senses': []}
         self.prs.data.uniques['wor'] = [word]
         self.prs.data.addons['tackons'] = [{'orth': 'd', 'pos': '', 'senses': []}]
         result = self.prs.parse("word")
@@ -60,8 +60,8 @@ class MinimalDictionaryParseTest(unittest.TestCase):
         self.assertEqual(result.forms[0].enclitic.text, 'd')
         self.assertEqual(result.forms[0].text, 'wor')
         self.assertEqual(len(result.forms[0].analyses), 1)
-        self.assertEqual(result.forms[0].analyses[0].lexeme.category, ['abc'])
-        self.assertEqual(result.forms[0].analyses[0].lexeme.wordType, WordType.NUM)
+        self.assertEqual(result.forms[0].analyses[0].lexeme.category, [])
+        self.assertEqual(result.forms[0].analyses[0].lexeme.wordType, WordType.PREP)
 
 
 class MinimalDictionaryAnalyzeFormsTest(unittest.TestCase):

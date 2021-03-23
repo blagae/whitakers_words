@@ -16,9 +16,6 @@ class CrashTest(unittest.TestCase):
     def test_unique(self):
         self.par.parse("quodcumque")
 
-    def test_esse(self):
-        self.par.parse("sum")
-
     def test_regular(self):
         self.par.parse("cecidit")
 
