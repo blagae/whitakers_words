@@ -4,12 +4,13 @@ from typing import Any, Sequence, Union
 
 from whitakers_words.data.addons import addons
 from whitakers_words.datatypes import Addon, DictEntry, Inflect, Stem, Unique
-from whitakers_words.enums import Degree, WordType, get_enum_value
+from whitakers_words.enums import WordType, get_enum_value
 from whitakers_words.generated.inflects import inflects
 from whitakers_words.generated.stems import stems
 from whitakers_words.generated.uniques import uniques
 from whitakers_words.generated.wordkeys import wordkeys
 from whitakers_words.generated.wordlist import wordlist
+from whitakers_words.matcher import Matcher
 
 
 class WordsException(Exception):
@@ -170,7 +171,7 @@ class Form:
                 stem_list = data.stems[stem_lemma]
                 for stem_cand in stem_list:
                     wrd = data.wordlist[stem_cand['wid']]
-                    if wrd and self.check_match(stem_cand, infl_cand, wrd):
+                    if wrd and Matcher(stem_cand, infl_cand).check(wrd):
                         word_id = stem_cand['wid']
                         inflection = Inflection(infl_cand, stem_lemma)
                         # If there's already a matched stem with that orthography
@@ -180,37 +181,6 @@ class Form:
                         else:
                             matched_stems[word_id] = Analysis(Lexeme(stem_cand), [inflection])
         return matched_stems
-
-    def check_match(self, stem: Stem, infl: Inflect, wrd: DictEntry) -> bool:  # TODO rewrite to be readable
-        """ Do custom checking mechanisms to see if the inflection and stem identify as the same part of speech """
-        if infl['pos'] != stem['pos']:
-            if infl['pos'] == "VPAR" and stem['pos'] == "V":
-                if infl['form'][0] == "PERF":
-                    return stem['orth'] == wrd['parts'][-1]
-                else:
-                    return stem['orth'] == wrd['parts'][0]
-            return False
-        basic_match = len(stem['n']) > 0 and (infl['n'][0] == stem['n'][0] or infl['n'][0] == 0)
-        if stem['pos'] == 'N':
-            if infl['n'] == stem['n'] or (infl['n'][0] == stem['n'][0] and infl['n'][-1] == 0):
-                return infl['form'][-1] == stem['form'][0] or infl['form'][-1] == 'C'
-            return False
-        elif stem['pos'] == 'ADV':
-            if stem['form'] == ['X']:
-                if stem['orth'] in wrd['parts']:
-                    return self.get_degree(wrd['parts'], stem['orth']) == infl['form'][-1]
-            return stem['form'] == infl['form']
-        elif stem['pos'] == 'ADJ':
-            if not basic_match:
-                return False
-            if stem['form'][-1] == 'X':
-                if stem['orth'] in wrd['parts']:
-                    return self.get_degree(wrd['parts'][1:], stem['orth']) == infl['form'][-1]
-            return stem['form'] == infl['form']  # TODO we're now only checking pos/comp/super
-        return basic_match
-
-    def get_degree(self, parts: Sequence[str], stem: str) -> str:
-        return Degree.get_degree_list()[parts.index(stem)]
 
 
 class Word:

@@ -224,7 +224,7 @@ def import_inflects() -> None:
         data = []
         for i, text in enumerate(f):
             line = text.strip()
-            if not len(line) > 0 or line.startswith('--'):
+            if not line or line.startswith('--'):
                 continue
             comment = ''
 

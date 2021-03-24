@@ -86,8 +86,8 @@ class Degree(Enum):
         return [x.name for x in Degree]
 
 
-# this has its problems, because we can't use Person.1, but we can use Person['1']
-Person = Enum(value="Person", names=[('0', 0), ('1', 1), ('2', 2), ('3', 3)])
+# this has its problems, because we can't use Person.1, but we can use Person["1"]
+Person = Enum(value="Person", names=[("0", 0), ("1", 1), ("2", 2), ("3", 3)])
 
 
 class PronounType(Enum):
