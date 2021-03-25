@@ -19,6 +19,8 @@ class Matcher:
             self.function = _adv_checker
         elif stem["pos"] == "ADJ":
             self.function = _adj_checker
+        elif stem["pos"] == "V":
+            self.function = _verb_checker
         else:
             self.function = _basic_matcher
 
@@ -58,11 +60,20 @@ def _adv_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
     return stem["form"] == infl["form"]
 
 
+def _verb_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
+    if (infl["n"] == stem["n"] or infl["n"][0] == 0 or
+            (infl["n"][0] == stem["n"][0] and infl["n"][1] == 0)):
+        if infl["form"][0] in ["PERF", "FUTP", "PLUP"]:
+            return stem["orth"] == word["parts"][2]
+        return stem["orth"] == word["parts"][1]
+    return False
+
+
 def _basic_matcher(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
     if stem["n"]:
         return (infl["n"] == stem["n"] or infl["n"][0] == 0 or
                 (infl["n"][0] == stem["n"][0] and infl["n"][1] == 0))
-    return False
+    return True
 
 
 def get_degree(parts: Sequence[str], stem: str) -> str:

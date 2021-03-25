@@ -42,3 +42,54 @@ class VerbTest(unittest.TestCase):
             self.assertEqual(analysis.inflections[0].affix, 'ebar')
             self.assertEqual(analysis.inflections[0].wordType, WordType.V)
             self.assertEqual(analysis.inflections[0].features, expected_features)
+
+    def test_tulisti(self):
+        result = self.par.parse("tulisti")
+        # response syntax and basics
+        self.assertEqual(len(result.forms), 1)
+        self.assertEqual(len(result.forms[0].analyses), 1)
+        for key, analysis in result.forms[0].analyses.items():
+            self.assertEqual(analysis.lexeme.roots[0], 'fer')  # wid == 32642
+            self.assertEqual(analysis.lexeme.wordType, WordType.V)
+
+            self.assertEqual(len(analysis.inflections), 1)
+            expected_features = {'Mood': Mood.IND, 'Number': Number.S, 'Person': Person['2'],
+                                 'Tense': Tense.PERF, 'Voice': Voice.ACTIVE}
+            self.assertEqual(analysis.inflections[0].stem, 'tul')
+            self.assertEqual(analysis.inflections[0].affix, 'isti')
+            self.assertEqual(analysis.inflections[0].wordType, WordType.V)
+            self.assertEqual(analysis.inflections[0].features, expected_features)
+
+    def test_amavisse(self):
+        result = self.par.parse("amavisse")
+        # response syntax and basics
+        self.assertEqual(len(result.forms), 1)
+        self.assertEqual(len(result.forms[0].analyses), 1)
+        for key, analysis in result.forms[0].analyses.items():
+            self.assertEqual(analysis.lexeme.roots[0], 'am')  # wid == 32642
+            self.assertEqual(analysis.lexeme.wordType, WordType.V)
+
+            self.assertEqual(len(analysis.inflections), 1)
+            expected_features = {'Mood': Mood.INF, 'Number': Number.X, 'Person': Person['0'],
+                                 'Tense': Tense.PERF, 'Voice': Voice.ACTIVE}
+            self.assertEqual(analysis.inflections[0].stem, 'amav')
+            self.assertEqual(analysis.inflections[0].affix, 'isse')
+            self.assertEqual(analysis.inflections[0].wordType, WordType.V)
+            self.assertEqual(analysis.inflections[0].features, expected_features)
+
+    def test_abiri(self):
+        result = self.par.parse("abiri")
+        # response syntax and basics
+        self.assertEqual(len(result.forms), 1)
+        self.assertEqual(len(result.forms[0].analyses), 1)
+        for key, analysis in result.forms[0].analyses.items():
+            self.assertEqual(analysis.lexeme.roots[0], 'abe')  # wid == 32642
+            self.assertEqual(analysis.lexeme.wordType, WordType.V)
+
+            self.assertEqual(len(analysis.inflections), 1)
+            expected_features = {'Mood': Mood.INF, 'Number': Number.X, 'Person': Person['0'],
+                                 'Tense': Tense.PRES, 'Voice': Voice.PASSIVE}
+            self.assertEqual(analysis.inflections[0].stem, 'abi')
+            self.assertEqual(analysis.inflections[0].affix, 'ri')
+            self.assertEqual(analysis.inflections[0].wordType, WordType.V)
+            self.assertEqual(analysis.inflections[0].features, expected_features)
