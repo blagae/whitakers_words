@@ -101,6 +101,14 @@ class PronounType(Enum):
     X = "Unknown"
 
 
+class Zomg(Enum):
+    AGE = 0
+    AREA = 1
+    GEO = 2
+    FREQ = 3
+    SOURCE = 4
+
+
 # TODO other types
 """
 subtypes = {

@@ -18,6 +18,7 @@ class WordsException(Exception):
 
 
 class _DataLayer:
+    
     def __init__(self, **kwargs: Any):
         self.wordlist: Sequence[DictEntry] = kwargs.get('wordlist', wordlist)
         self.wordkeys: list[str] = kwargs.get('wordkeys', wordkeys)
@@ -25,6 +26,14 @@ class _DataLayer:
         self.uniques: dict[str, Sequence[Unique]] = kwargs.get('uniques', uniques)
         self.inflects: dict[str, dict[str, Sequence[Inflect]]] = kwargs.get('inflects', inflects)
         self.addons: dict[str, Sequence[Addon]] = kwargs.get('addons', addons)
+        self.subset(kwargs)
+
+    def subset(self, kwargs):
+        # AGE, AREA, GEO, FREQ, SOURCE
+        self.stems = dict(filter(fo_real, self.stems.items()))
+        
+def fo_real(item):
+    return item[1] and list(filter(lambda x: x["props"][3] <= "A", item[1]))
 
 
 class Inflection:
@@ -51,7 +60,7 @@ class Inflection:
             lst = ["Degree"]
         else:
             return
-        for idx, feature in enumerate(features[:len(lst)]):  # TODO will break horribly
+        for idx, feature in enumerate(features[:len(lst)]):
             self.features[lst[idx]] = get_enum_value(lst[idx], feature)
 
     def has_feature(self, feature: Enum) -> bool:
@@ -100,7 +109,7 @@ class Enclitic:
     def __init__(self, enclitic: Addon):
         self.text = enclitic['orth']
         self.position = enclitic['pos']
-        self.meaning = enclitic['senses']
+        self.senses = enclitic['senses']
 
 
 class Analysis:

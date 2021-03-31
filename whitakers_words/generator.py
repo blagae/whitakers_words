@@ -59,6 +59,8 @@ def import_dicts() -> None:
 
             raw_form = line[83:100].strip()
 
+            properties = line[100:110].split()
+
             n: Sequence[int] = []
             form: Sequence[Union[str, int]] = []
             for v in raw_form.split():
@@ -84,7 +86,8 @@ def import_dicts() -> None:
                 'pos': pos,
                 'form': form,
                 'n': n,
-                'senses': new_senses
+                'senses': new_senses,
+                'props': properties
             }
             for part in parts:
                 stem: Stem = {
@@ -92,7 +95,8 @@ def import_dicts() -> None:
                     'pos': pos,
                     'form': form,
                     'n': n,
-                    'wid': i + 1
+                    'wid': i + 1,
+                    'props': properties
                 }
                 if part in stems:
                     items = stems[part]
