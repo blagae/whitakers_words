@@ -86,8 +86,7 @@ def import_dicts() -> None:
                 'pos': pos,
                 'form': form,
                 'n': n,
-                'senses': new_senses,
-                'props': properties
+                'senses': new_senses
             }
             for part in parts:
                 stem: Stem = {

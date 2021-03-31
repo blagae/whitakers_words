@@ -7,6 +7,7 @@ class Stem(TypedDict):
     form: Sequence[Union[str, int]]
     n: Sequence[int]
     wid: int
+    props: list[str]
 
 
 class Inflect(TypedDict):

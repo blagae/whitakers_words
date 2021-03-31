@@ -8,7 +8,7 @@ class EncliticTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.par = Parser()
+        cls.par = Parser(frequency="X")
 
     def test_unique(self):
         result = self.par.parse("quodcumque")
@@ -35,7 +35,6 @@ class EncliticTest(unittest.TestCase):
             for inflection in analysis.inflections:
                 self.assertEqual(inflection.stem, 'poll')
                 self.assertEqual(inflection.affix, 'i')
-
 
     def test_be_ne(self):
         result = self.par.parse("bene")

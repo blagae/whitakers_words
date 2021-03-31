@@ -101,7 +101,7 @@ class PronounType(Enum):
     X = "Unknown"
 
 
-class Zomg(Enum):
+class FilterCriteria(Enum):
     AGE = 0
     AREA = 1
     GEO = 2

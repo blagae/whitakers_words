@@ -1,6 +1,6 @@
 import re
 from enum import Enum
-from typing import Any, Sequence, Union
+from typing import Any, Sequence, Tuple, Union
 
 from whitakers_words.data.addons import addons
 from whitakers_words.datatypes import Addon, DictEntry, Inflect, Stem, Unique
@@ -18,7 +18,7 @@ class WordsException(Exception):
 
 
 class _DataLayer:
-    
+
     def __init__(self, **kwargs: Any):
         self.wordlist: Sequence[DictEntry] = kwargs.get('wordlist', wordlist)
         self.wordkeys: list[str] = kwargs.get('wordkeys', wordkeys)
@@ -26,14 +26,20 @@ class _DataLayer:
         self.uniques: dict[str, Sequence[Unique]] = kwargs.get('uniques', uniques)
         self.inflects: dict[str, dict[str, Sequence[Inflect]]] = kwargs.get('inflects', inflects)
         self.addons: dict[str, Sequence[Addon]] = kwargs.get('addons', addons)
-        self.subset(kwargs)
 
-    def subset(self, kwargs):
-        # AGE, AREA, GEO, FREQ, SOURCE
-        self.stems = dict(filter(fo_real, self.stems.items()))
-        
-def fo_real(item):
-    return item[1] and list(filter(lambda x: x["props"][3] <= "A", item[1]))
+        self.age: str = kwargs.get('age', "A")
+        self.area: str = kwargs.get('area', "A")
+        self.geo: str = kwargs.get('geo', "A")
+        self.frequency: str = kwargs.get('frequency', "A")
+        self.source: str = kwargs.get('source', "A")
+        self.create_subsets()
+
+    def create_subsets(self) -> None:
+        self.stems = dict(filter(self.filter_stems, self.stems.items()))
+
+    def filter_stems(self, item: Tuple[str, Sequence[Stem]]) -> bool:
+        # TODO use all filters: AGE, AREA, GEO, FREQ, SOURCE
+        return item[1] and list(filter(lambda x: x["props"][3] <= self.frequency, item[1]))
 
 
 class Inflection:
