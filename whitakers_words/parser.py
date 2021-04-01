@@ -1,45 +1,15 @@
 import re
 from enum import Enum
-from typing import Any, Sequence, Tuple, Union
+from typing import Any, Sequence, Union
 
-from whitakers_words.data.addons import addons
+from whitakers_words.datalayer import DataLayer
 from whitakers_words.datatypes import Addon, DictEntry, Inflect, Stem, Unique
 from whitakers_words.enums import WordType, get_enum_value
-from whitakers_words.generated.inflects import inflects
-from whitakers_words.generated.stems import stems
-from whitakers_words.generated.uniques import uniques
-from whitakers_words.generated.wordkeys import wordkeys
-from whitakers_words.generated.wordlist import wordlist
 from whitakers_words.matcher import Matcher
 
 
 class WordsException(Exception):
     pass
-
-
-class _DataLayer:
-
-    def __init__(self, **kwargs: Any):
-        self.wordlist: Sequence[DictEntry] = kwargs.get('wordlist', wordlist)
-        self.wordkeys: list[str] = kwargs.get('wordkeys', wordkeys)
-        self.stems: dict[str, Sequence[Stem]] = kwargs.get('stems', stems)
-        self.uniques: dict[str, Sequence[Unique]] = kwargs.get('uniques', uniques)
-        self.inflects: dict[str, dict[str, Sequence[Inflect]]] = kwargs.get('inflects', inflects)
-        self.addons: dict[str, Sequence[Addon]] = kwargs.get('addons', addons)
-
-        self.age: str = kwargs.get('age', "A")
-        self.area: str = kwargs.get('area', "A")
-        self.geo: str = kwargs.get('geo', "A")
-        self.frequency: str = kwargs.get('frequency', "A")
-        self.source: str = kwargs.get('source', "A")
-        self.create_subsets()
-
-    def create_subsets(self) -> None:
-        self.stems = dict(filter(self.filter_stems, self.stems.items()))
-
-    def filter_stems(self, item: Tuple[str, Sequence[Stem]]) -> bool:
-        # TODO use all filters: AGE, AREA, GEO, FREQ, SOURCE
-        return item[1] and list(filter(lambda x: x["props"][3] <= self.frequency, item[1]))
 
 
 class Inflection:
@@ -141,7 +111,7 @@ class Form:
     def analyse_unique(self, unique_form: Unique) -> None:
         self.analyses = {0: Analysis(UniqueLexeme(unique_form), [UniqueInflection(unique_form)])}
 
-    def analyse(self, data: _DataLayer) -> None:
+    def analyse(self, data: DataLayer) -> None:
         """
         Find all possible endings that may apply, so without checking congruence between word type and ending type
         """
@@ -169,7 +139,7 @@ class Form:
 
         # TODO reimplement reduce
 
-    def match_stems_inflections(self, viable_inflections: Sequence[Inflect], data: _DataLayer) -> dict[int, Analysis]:
+    def match_stems_inflections(self, viable_inflections: Sequence[Inflect], data: DataLayer) -> dict[int, Analysis]:
         """
         For each inflection that was a theoretical match, remove the inflection from the end of the word string
         and then check the resulting stem against the list of stems loaded in __init__
@@ -203,7 +173,7 @@ class Word:
         self.text = text
         self.forms: Sequence[Form] = []
 
-    def analyse(self, data: _DataLayer) -> 'Word':
+    def analyse(self, data: DataLayer) -> 'Word':
         form_candidates = self.split_form_enclitic(data)
         for form in form_candidates:
             if form.text in data.uniques:
@@ -216,7 +186,7 @@ class Word:
         self.forms = list(filter(lambda form: form.analyses, form_candidates))
         return self
 
-    def split_form_enclitic(self, data: _DataLayer) -> Sequence[Form]:
+    def split_form_enclitic(self, data: DataLayer) -> Sequence[Form]:
         """Split enclitic ending from word"""
         result = [Form(self.text)]  # TODO form with enclitic will fail to be parsed
 
@@ -230,7 +200,7 @@ class Word:
             result.extend(self.find_enclitic('not_packons', data))
         return result
 
-    def find_enclitic(self, list_name: str, data: _DataLayer) -> Sequence[Form]:
+    def find_enclitic(self, list_name: str, data: DataLayer) -> Sequence[Form]:
         result = []
         if list_name in data.addons:
             for affix in data.addons[list_name]:
@@ -248,7 +218,7 @@ class Word:
 
 class Parser:
     def __init__(self, **kwargs: Any):
-        self.data = _DataLayer(**kwargs)
+        self.data = DataLayer(**kwargs)
 
     def parse(self, text: str) -> Word:
         if not text.isalpha():

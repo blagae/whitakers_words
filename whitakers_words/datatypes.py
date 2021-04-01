@@ -16,6 +16,7 @@ class Inflect(TypedDict):
     form: Sequence[str]
     n: Sequence[int]
     note: str
+    props: Sequence[str]
 
 
 class Unique(TypedDict, total=False):

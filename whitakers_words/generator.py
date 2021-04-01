@@ -241,6 +241,7 @@ def import_inflects() -> None:
                 ending = ''
             pos = info[0]
             n = info[1:3]
+            properties = info[-2:]
             if pos == 'ADV':
                 n = info[-4:-2]
                 form = [info[1]]
@@ -264,7 +265,8 @@ def import_inflects() -> None:
                 'n': [int(i) for i in n],
                 'note': comment,
                 'pos': pos,
-                'form': form
+                'form': form,
+                'props': properties
             })
 
     reordered = reorder_inflects(data)
