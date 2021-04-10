@@ -118,3 +118,7 @@ class AdjectiveTest(unittest.TestCase):
             other_features = [x.features['Case'] for x in analysis.inflections]
             self.assertTrue(Case.VOC in other_features)
             self.assertTrue(Case.NOM in other_features)
+
+    def test_acer(self):
+        result = self.par.parse("acer")
+        self.assertEqual(len(result.forms), 1)

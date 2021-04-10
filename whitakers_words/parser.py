@@ -110,7 +110,10 @@ class Form:
         self.enclitic = enclitic
 
     def analyse_unique(self, unique_form: Unique) -> None:
-        self.analyses = {0: Analysis(UniqueLexeme(unique_form), [UniqueInflection(unique_form)])}
+        if self.analyses:
+            self.analyses.get(0).inflections.append(UniqueInflection(unique_form))
+        else:
+            self.analyses = {0: Analysis(UniqueLexeme(unique_form), [UniqueInflection(unique_form)])}
 
     def analyse(self, data: DataLayer) -> None:
         """

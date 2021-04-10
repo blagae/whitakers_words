@@ -77,4 +77,7 @@ def _basic_matcher(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
 
 
 def get_degree(parts: Sequence[str], stem: str) -> str:
-    return Degree.get_degree_list()[parts.index(stem)]
+    try:
+        return Degree.get_degree_list()[parts.index(stem)]
+    except ValueError:
+        return Degree.POS
