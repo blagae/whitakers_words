@@ -262,11 +262,12 @@ def import_inflects() -> None:
                 raise Exception()
             data.append({
                 'ending': ending,
-                'n': [int(i) for i in n],
+                'n': [int(x) for x in n],
                 'note': comment,
                 'pos': pos,
                 'form': form,
-                'props': properties
+                'props': properties,
+                'iid': i
             })
 
     reordered = reorder_inflects(data)

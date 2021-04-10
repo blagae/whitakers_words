@@ -20,6 +20,7 @@ class Inflection:
         self.affix = infl["ending"]
         self.features: dict[str, Enum] = {}
         self.analyse_features(infl["form"])
+        self.id = infl["iid"]
 
     def analyse_features(self, features: Sequence[str]) -> None:
         if self.wordType in [WordType.N, WordType.NUM]:
