@@ -111,7 +111,7 @@ class Form:
 
     def analyse_unique(self, unique_form: Unique) -> None:
         if self.analyses:
-            self.analyses.get(0).inflections.append(UniqueInflection(unique_form))
+            self.analyses[0].inflections.append(UniqueInflection(unique_form))
         else:
             self.analyses = {0: Analysis(UniqueLexeme(unique_form), [UniqueInflection(unique_form)])}
 

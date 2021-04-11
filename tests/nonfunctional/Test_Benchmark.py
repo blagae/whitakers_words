@@ -1,7 +1,6 @@
 import unittest
-from timeit import default_timer as timer
 from datetime import timedelta
-
+from timeit import default_timer as timer
 
 from whitakers_words.parser import Parser
 

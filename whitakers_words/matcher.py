@@ -1,4 +1,5 @@
 from typing import Callable, Sequence
+
 from whitakers_words.datatypes import DictEntry, Inflect, Stem
 from whitakers_words.enums import Degree
 
@@ -80,4 +81,4 @@ def get_degree(parts: Sequence[str], stem: str) -> str:
     try:
         return Degree.get_degree_list()[parts.index(stem)]
     except ValueError:
-        return Degree.POS
+        return Degree.POS.name
