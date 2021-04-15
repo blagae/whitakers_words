@@ -172,12 +172,12 @@ class Form:
         return matched_stems
 
 
-class Word:
+class WhitakerWord:
     def __init__(self, text: str):
         self.text = text
         self.forms: Sequence[Form] = []
 
-    def analyse(self, data: DataLayer) -> 'Word':
+    def analyse(self, data: DataLayer) -> 'WhitakerWord':
         form_candidates = self.split_form_enclitic(data)
         for form in form_candidates:
             if form.text in data.uniques:
@@ -224,7 +224,7 @@ class Parser:
     def __init__(self, **kwargs: Any):
         self.data = DataLayer(**kwargs)
 
-    def parse(self, text: str) -> Word:
+    def parse(self, text: str) -> WhitakerWord:
         if not text.isalpha():
             raise WordsException("Text to be parsed must be a single Latin word")
-        return Word(text).analyse(self.data)
+        return WhitakerWord(text).analyse(self.data)
