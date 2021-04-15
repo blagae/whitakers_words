@@ -41,7 +41,7 @@ setup(
                   *find_namespace_packages(include=["whitakers_words", "whitakers_words.*"],
                                            exclude=["whitakers_words.tests", "whitakers_words.tests.*"])]),
     url='https://github.com/blagae/whitakers_words',
-    version='0.3.0',
-    zip_safe=True,
-    package_data={"whitakers_words.data": ["*.*"]}
+    version='0.4.0',
+    zip_safe=False,
+    package_data={'whitakers_words': ['py.typed'], "whitakers_words.data": ["*.*"]}
 )

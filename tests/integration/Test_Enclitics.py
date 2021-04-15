@@ -52,3 +52,14 @@ class EncliticTest(unittest.TestCase):
                 self.assertEqual(inflection.affix, '')
                 self.assertEqual(inflection.wordType, WordType.INTERJ)
                 self.assertFalse(inflection.features)
+
+    def test_cuique(self):
+        result = self.par.parse("cuique")
+        self.assertEqual(len(result.forms), 1)  # also bene
+        self.assertEqual(result.forms[0].enclitic.text, 'que')
+        # TODO self.assertEqual(len(result.forms[0].analyses), 1)
+
+    def test_recentiave(self):
+        result = self.par.parse("recentiave")
+        self.assertEqual(len(result.forms), 1)
+        self.assertEqual(result.forms[0].enclitic.text, 've')
