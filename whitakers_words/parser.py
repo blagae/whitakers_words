@@ -142,7 +142,7 @@ class Form:
         # only use analyses where the lexeme was found
         self.analyses = dict(filter(lambda x: x[1].lexeme.roots, analyses.items()))
 
-        # TODO reimplement reduce
+        # TODO reimplement reduce (see old_parser)
 
     def match_stems_inflections(self, viable_inflections: Sequence[Inflect], data: DataLayer) -> dict[int, Analysis]:
         """
@@ -193,7 +193,7 @@ class WhitakerWord:
 
     def split_form_enclitic(self, data: DataLayer) -> Sequence[Form]:
         """Split enclitic ending from word"""
-        result = [Form(self.text)]  # TODO form with enclitic will fail to be parsed
+        result = [Form(self.text)]
 
         # Test the different tackons / packons as specified in addons.py
         result.extend(self.find_enclitic('tackons', data))

@@ -51,7 +51,7 @@ def _adj_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
     if stem["form"][-1] == "X":
         if stem["orth"] in word["parts"]:
             return get_degree(word["parts"][1:], stem["orth"]) == infl["form"][-1]
-    return stem["form"][-1] == infl["form"][-1]  # TODO we're now only checking pos/comp/super
+    return stem["form"][-1] == infl["form"][-1]
 
 
 def _adv_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
