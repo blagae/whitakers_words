@@ -2,7 +2,7 @@
 
 ## Project history
 
-`whitakers_words` is a port of William Whitaker's original Ada code to Python for future maintenance and improvement.
+`whitakers_words` is a port of William Whitaker's original Ada code to Python 3 for future maintenance and improvement.
 You can find the current state of development that started with the original Whitaker's Words, written in Ada, on
 [Martin Keegan's Github repository](https://github.com/mk270/whitakers-words).
 More information about William Whitaker and the Words program is available there.  
@@ -16,11 +16,12 @@ A number of (proposed) functions have been deleted:
 * the promise of english-to-latin lookups has been abandoned
 * multi-word lookups are no longer possible
 
-Other changes include:
+It has also seen significant improvement in usability and performance:
 
 * `format_data` has been renamed to `generator`. It is now a data feeding program which reads Whitaker's file lists into Python dictionaries and lists
-* `generator` logic is called upon installation of the project as a dependency (`python setup.py install`)
+* `generator` logic is called upon installation of the project, through `python setup.py install` or `pip install .`
 * inefficient dictionary loops (`O(n)`) have been replaced by lookups (`O(log n)`)
+* the default output is no longer a JSON dictionary, but rather a hierarchy of Python objects.
 * tests were added
 
 ## Project status
@@ -28,8 +29,8 @@ Other changes include:
 This project is far from production-ready. Known issues are:
 
 * `prefixes.py` and `suffixes.py` are not being used in program logic right now
-* there is no longer a response builder which outputs JSON
-* `INFLECTS.LAT` has two sets of two numbers to indicate declination etc; the only one I use right now is the first one.
+* there is no longer a response builder which can output to JSON
+* `INFLECTS.LAT` has two sets of two numbers to indicate declination etc; only the first one is used right now.
 * there is as of yet no way to filter for e.g. pre-classical inflections
 * pronoun analysis provides terribly incorrect results
 
@@ -51,18 +52,23 @@ result = parser.parse("regemque")
 ```
 
 The resulting value is a `WhitakerWord` object, structured as followed:
+
 ```
 WhitakerWord:
-  - forms:
-    enclitic: que
-    - analyses:
-      lexeme: (rex, regis)
-      inflections:
-        - em (Accusative Singular Common)
-      enclitic: que
+  text: regemque
+  forms:
+    - enclitic: que
+      analyses:
+        - lexeme: (rex, regis)
+          inflections:
+            - root: reg
+              affix: em (Accusative Singular Common)
+          enclitic: que
 ```
 
 ## Install instructions
+
+The prerequisites are simple: have python3 installed with pip.
 
 If you have cloned the repository, you can just use
 
@@ -78,10 +84,12 @@ If you have a requirements file, then this is a valid format for the dependency:
 
 # Development
 
-## virtualenv
+## virtual environment
 
 You are advised to use `virtualenv` or `venv` when modifying any code. The project currently runs on Python 3.9,
-using some improvements of the type hinting system, but it could probably run on older versions as well.
+using some improvements of the type hinting system, but it could probably run on older versions as well with minimal modifications.
+
+The folder `venv/` is ignored by the git config, so this is the suggested name for your venv.
 
 ## Test instructions
 
@@ -100,8 +108,8 @@ This commands runs the tests, checks for PEP8 compliance with `flake8`, and for 
 
 ## Project metadata
 
-* The program logic is detailed [here](./project_structure.md). Since the project is in flux, this may be somewhat out of date.
-* There are a number of TODO items throughout the code base, but I'll also try and keep the [TODO](./TODO.md) file up to date.
+* The program logic is detailed [here](./project_structure.md). Since the project is in flux, some details may be out of date at any given time.
+* There are a number of TODO items throughout the code base, but I'll also try and keep the [TODO](./TODO.md) file up to date with more high-level items.
 
 ## Roadmap
 

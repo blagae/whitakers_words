@@ -23,6 +23,9 @@ class Inflection:
         self.analyse_features(infl["form"])
         self.id = infl["iid"]
 
+    def __repr__(self) -> str:
+        return repr(self.__dict__)
+
     def analyse_features(self, features: Sequence[str]) -> None:
         if self.wordType in [WordType.N, WordType.NUM]:
             lst = ["Case", "Number", "Gender"]
@@ -73,6 +76,8 @@ class Lexeme:
         self.senses: Sequence[str] = []
         self.wordType = get_enum_value("WordType", stem["pos"])
 
+    def __repr__(self) -> str:
+        return repr(self.__dict__)
 
 class UniqueLexeme(Lexeme):
     def __init__(self, unique: Unique):
@@ -89,6 +94,9 @@ class Enclitic:
         self.position = enclitic['pos']
         self.senses = enclitic['senses']
 
+    def __repr__(self) -> str:
+        return repr(self.__dict__)
+
 
 class Analysis:
     def __init__(self, lexeme: Lexeme, inflections: list[Inflection], enclitic: Enclitic = None):
@@ -96,6 +104,9 @@ class Analysis:
         self.root = ""
         self.inflections = inflections
         self.enclitic = enclitic
+
+    def __repr__(self) -> str:
+        return repr(self.__dict__)
 
     def lookup_stem(self, wordlist: Sequence[DictEntry]) -> None:
         dict_word = wordlist[self.lexeme.id]
@@ -110,6 +121,9 @@ class Form:
         self.analyses: dict[int, Analysis] = {}
         self.enclitic = enclitic
 
+    def __repr__(self) -> str:
+        return repr(self.__dict__)
+
     def analyse_unique(self, unique_form: Unique) -> None:
         if self.analyses:
             self.analyses[0].inflections.append(UniqueInflection(unique_form))
@@ -123,8 +137,8 @@ class Form:
         viable_inflections: list[Inflect] = []
 
         # the word may be undeclined, so add this as an option if the full form exists in the list of words
-        if self.text in data.wordkeys:
-            viable_inflections.extend(data.inflects["0"][''])
+        if self.text in data.wordkeys:  # TODO is it possible to make wordkeys a set or dict ?
+            viable_inflections.extend(data.inflects["0"][''])  # TODO maybe a separate list for the undeclined zero-length "Inflections" ?
 
         # Check against inflection list
         for inflect_length in range(1, min(8, len(self.text))):
@@ -178,6 +192,9 @@ class WhitakerWord:
         self.text = text
         self.forms: Sequence[Form] = []
 
+    def __repr__(self) -> str:
+        return repr(self.__dict__)
+
     def analyse(self, data: DataLayer) -> 'WhitakerWord':
         form_candidates = self.split_form_enclitic(data)
         for form in form_candidates:
@@ -224,6 +241,9 @@ class WhitakerWord:
 class Parser:
     def __init__(self, **kwargs: Any):
         self.data = DataLayer(**kwargs)
+
+    def __repr__(self) -> str:
+        return f"Parser(frequency=\"{self.data.frequency}\")"
 
     def parse(self, text: str) -> WhitakerWord:
         if not text.isalpha():
