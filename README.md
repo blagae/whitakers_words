@@ -40,6 +40,8 @@ There are certainly many more major problems to be found. Feel free to create Gi
 
 This project is under the MIT license. The license was taken over from the
 [Luke Hollis project](https://github.com/ArchimedesDigital/open_words).
+The original Whitaker's Words project had a very 'liberal' license that was ostensibly written by William Whitaker himself;
+the canonical MIT license seems to be quite close to the intent Mr. Whitaker had.
 
 # Usage
 
@@ -51,7 +53,7 @@ parser = Parser()
 result = parser.parse("regemque")
 ```
 
-The resulting value is a `WhitakerWord` object, structured as followed:
+The resulting value is a `WhitakerWord` object, structured as follows:
 
 ```
 WhitakerWord:

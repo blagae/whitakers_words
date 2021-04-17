@@ -122,3 +122,20 @@ class AdjectiveTest(unittest.TestCase):
     def test_acer(self):
         result = self.par.parse("acer")
         self.assertEqual(len(result.forms), 1)
+        self.assertEqual(len(result.forms[0].analyses), 3)
+        for key, analysis in result.forms[0].analyses.items():
+            if analysis.lexeme.wordType == WordType.ADJ:
+                self.assertEqual(analysis.lexeme.roots[0], 'acer')  # wid == 3372
+
+                self.assertEqual(len(analysis.inflections), 2)
+                for inflection in analysis.inflections:
+                    self.assertEqual(inflection.stem, 'acer')
+                    self.assertEqual(inflection.affix, '')
+                    self.assertEqual(inflection.wordType, WordType.ADJ)
+                    self.assertTrue(inflection.has_feature(Degree.POS))
+                    self.assertTrue(inflection.has_feature(Number.S))
+                    self.assertTrue(inflection.has_feature(Gender.M))  # TODO Gender.F is also valid ?
+
+                other_features = [x.features['Case'] for x in analysis.inflections]
+                self.assertTrue(Case.VOC in other_features)
+                self.assertTrue(Case.NOM in other_features)

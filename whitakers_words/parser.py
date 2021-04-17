@@ -79,6 +79,7 @@ class Lexeme:
     def __repr__(self) -> str:
         return repr(self.__dict__)
 
+
 class UniqueLexeme(Lexeme):
     def __init__(self, unique: Unique):
         self.id = 0
@@ -138,7 +139,8 @@ class Form:
 
         # the word may be undeclined, so add this as an option if the full form exists in the list of words
         if self.text in data.wordkeys:  # TODO is it possible to make wordkeys a set or dict ?
-            viable_inflections.extend(data.inflects["0"][''])  # TODO maybe a separate list for the undeclined zero-length "Inflections" ?
+            # TODO maybe a separate list for the undeclined zero-length "Inflections" ?
+            viable_inflections.extend(data.inflects["0"][''])
 
         # Check against inflection list
         for inflect_length in range(1, min(8, len(self.text))):
