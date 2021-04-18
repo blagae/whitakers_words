@@ -72,7 +72,6 @@ class NounTest(unittest.TestCase):
             self.assertTrue([Case.ABL] in other_features)
             self.assertTrue([Case.LOC] in other_features)
 
-
     def test_abacus_empty(self):
         result = self.par.parse("abacus")
         # this result is empty because abacus is not a common enough word for the default parser

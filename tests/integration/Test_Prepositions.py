@@ -38,7 +38,7 @@ class PrepositionTest(unittest.TestCase):
             self.assertEqual(analysis.lexeme.roots[0], 'de')
             self.assertEqual(analysis.lexeme.wordType, WordType.PREP)
 
-            # self.assertEqual(len(analysis.inflections), 1)  
+            # self.assertEqual(len(analysis.inflections), 1)
             inflection = analysis.inflections[0]
             self.assertEqual(inflection.stem, 'de')
             self.assertEqual(inflection.affix, '')
