@@ -12,7 +12,6 @@ class WordsException(Exception):
     pass
 
 
-# TODO dunder methods everywhere
 class Inflection:
     def __init__(self, infl: Inflect, stem_lemma: str):
         self.wordType = get_enum_value("WordType", infl["pos"])

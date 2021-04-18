@@ -9,7 +9,6 @@ class PronounTest(unittest.TestCase):
     def setUpClass(cls):
         cls.par = Parser()
 
-    # TODO write actual tests
     def test_pronoun(self):
         result = self.par.parse("se")
         self.assertEqual(len(result.forms), 1)

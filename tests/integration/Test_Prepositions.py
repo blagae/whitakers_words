@@ -10,7 +10,6 @@ class PrepositionTest(unittest.TestCase):
     def setUpClass(cls):
         cls.par = Parser()
 
-    # TODO write actual tests
     def test_preposition(self):
         result = self.par.parse("super")
         self.assertEqual(len(result.forms), 1)
