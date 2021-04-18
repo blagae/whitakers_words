@@ -189,7 +189,7 @@ class Form:
         return matched_stems
 
 
-class WhitakerWord:
+class Word:
     def __init__(self, text: str):
         self.text = text
         self.forms: Sequence[Form] = []
@@ -197,7 +197,7 @@ class WhitakerWord:
     def __repr__(self) -> str:
         return repr(self.__dict__)
 
-    def analyse(self, data: DataLayer) -> 'WhitakerWord':
+    def analyse(self, data: DataLayer) -> 'Word':
         form_candidates = self.split_form_enclitic(data)
         for form in form_candidates:
             if form.text in data.uniques:
@@ -247,7 +247,7 @@ class Parser:
     def __repr__(self) -> str:
         return f"Parser(frequency=\"{self.data.frequency}\")"
 
-    def parse(self, text: str) -> WhitakerWord:
+    def parse(self, text: str) -> Word:
         if not text.isalpha():
             raise WordsException("Text to be parsed must be a single Latin word")
-        return WhitakerWord(text).analyse(self.data)
+        return Word(text).analyse(self.data)

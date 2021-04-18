@@ -2,7 +2,7 @@ import unittest
 
 from whitakers_words.datatypes import DictEntry, Unique
 from whitakers_words.enums import WordType
-from whitakers_words.parser import Form, Parser, WhitakerWord
+from whitakers_words.parser import Form, Parser, Word
 
 
 class MinimalDictionaryParseTest(unittest.TestCase):
@@ -81,13 +81,13 @@ class MinimalDictionarySplitFormEnclitic(unittest.TestCase):
         self.prs = Parser(wordlist=[], addons=dict(), stems=dict(), uniques=dict(), inflects=dict(), wordkeys=dict())
 
     def test_empty(self):
-        forms = WhitakerWord("word").split_form_enclitic(self.prs.data)
+        forms = Word("word").split_form_enclitic(self.prs.data)
         self.assertEqual(len(forms), 1)
         self.assertEqual(forms[0].text, "word")
 
     def test_tackon(self):
         self.prs.data.addons['tackons'] = [{'orth': 'd', 'pos': '', 'senses': []}]
-        forms = WhitakerWord("word").split_form_enclitic(self.prs.data)
+        forms = Word("word").split_form_enclitic(self.prs.data)
         self.assertEqual(len(forms), 2)
         self.assertEqual(forms[0].text, "word")
         self.assertEqual(forms[1].text, "wor")
@@ -95,7 +95,7 @@ class MinimalDictionarySplitFormEnclitic(unittest.TestCase):
 
     def test_packon(self):
         self.prs.data.addons['packons'] = [{'orth': 'd', 'pos': '', 'senses': []}]
-        forms = WhitakerWord("quword").split_form_enclitic(self.prs.data)
+        forms = Word("quword").split_form_enclitic(self.prs.data)
         self.assertEqual(len(forms), 2)
         self.assertEqual(forms[0].text, "quword")
         self.assertEqual(forms[1].text, "quwor")
@@ -103,7 +103,7 @@ class MinimalDictionarySplitFormEnclitic(unittest.TestCase):
 
     def test_not_packon(self):
         self.prs.data.addons['not_packons'] = [{'orth': 'd', 'pos': '', 'senses': []}]
-        forms = WhitakerWord("word").split_form_enclitic(self.prs.data)
+        forms = Word("word").split_form_enclitic(self.prs.data)
         self.assertEqual(len(forms), 2)
         self.assertEqual(forms[0].text, "word")
         self.assertEqual(forms[1].text, "wor")
@@ -111,20 +111,20 @@ class MinimalDictionarySplitFormEnclitic(unittest.TestCase):
 
     def test_nonexisting_not_packon(self):
         self.prs.data.addons['packons'] = [{'orth': 'd', 'pos': '', 'senses': []}]
-        forms = WhitakerWord("word").split_form_enclitic(self.prs.data)
+        forms = Word("word").split_form_enclitic(self.prs.data)
         self.assertEqual(len(forms), 1)
         self.assertEqual(forms[0].text, "word")
 
     def test_nonexisting_packon(self):
         self.prs.data.addons['not_packons'] = [{'orth': 'd', 'pos': '', 'senses': []}]
-        forms = WhitakerWord("quword").split_form_enclitic(self.prs.data)
+        forms = Word("quword").split_form_enclitic(self.prs.data)
         self.assertEqual(len(forms), 1)
         self.assertEqual(forms[0].text, "quword")
 
     def test_double_tackon(self):
         self.prs.data.addons['tackons'] = [{'orth': 'd', 'pos': '', 'senses': []},
                                            {'orth': 'rd', 'pos': '', 'senses': []}]
-        forms = WhitakerWord("word").split_form_enclitic(self.prs.data)
+        forms = Word("word").split_form_enclitic(self.prs.data)
         self.assertEqual(len(forms), 3)
         self.assertEqual(forms[0].text, "word")
         self.assertEqual(forms[1].text, "wor")
@@ -135,7 +135,7 @@ class MinimalDictionarySplitFormEnclitic(unittest.TestCase):
     def test_double_packon(self):
         self.prs.data.addons['packons'] = [{'orth': 'd', 'pos': '', 'senses': []},
                                            {'orth': 'rd', 'pos': '', 'senses': []}]
-        forms = WhitakerWord("quword").split_form_enclitic(self.prs.data)
+        forms = Word("quword").split_form_enclitic(self.prs.data)
         self.assertEqual(len(forms), 3)
         self.assertEqual(forms[0].text, "quword")
         self.assertEqual(forms[1].text, "quwor")
@@ -146,7 +146,7 @@ class MinimalDictionarySplitFormEnclitic(unittest.TestCase):
     def test_double_not_packon(self):
         self.prs.data.addons['not_packons'] = [{'orth': 'd', 'pos': '', 'senses': []},
                                                {'orth': 'rd', 'pos': '', 'senses': []}]
-        forms = WhitakerWord("word").split_form_enclitic(self.prs.data)
+        forms = Word("word").split_form_enclitic(self.prs.data)
         self.assertEqual(len(forms), 3)
         self.assertEqual(forms[0].text, "word")
         self.assertEqual(forms[1].text, "wor")

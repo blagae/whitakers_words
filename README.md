@@ -53,10 +53,10 @@ parser = Parser()
 result = parser.parse("regemque")
 ```
 
-The resulting value is a `WhitakerWord` object, structured as follows:
+The resulting value is a `Word` object, structured as follows:
 
 ```
-WhitakerWord:
+Word:
   text: regemque
   forms:
     - enclitic: que

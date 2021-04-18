@@ -34,7 +34,7 @@ More tests are always welcome, because:
 * Once you've discovered a bug, you can try fixing it ! That way, you get to know the code base better
 * Once the bug has been fixed, the test you wrote actively prevents the bug from reoccurring
 
-# changes to whitakers_words implementation code
+# TODOs in the implementation
 
 ## parser
 

@@ -31,9 +31,9 @@ by using the dictionary's keywords that are used in its initialization.
 This is prominently used in the unit tests, to test the API with a "minimal" dictionary.
 If you want to do this, then you will have to recreate the data structure of the list(s) and/or dict(s) that you want to override.
 
-## WhitakerWord
+## Word
 
-The `Parser` will `parse()` a single word, and create a `WhitakerWord`, which is a container object with a number of `Form`s.
+The `Parser` will `parse()` a single word, and create a `Word`, which is a container object with a number of `Form`s.
 If the word contains a valid enclitic, then a `Form` is created that separates the enclitic.
 In some cases, there may be several `Form`s (e.g. *quoque* can be formed as both *quo* + *que* and a full lexical word from the dictionary).
 
