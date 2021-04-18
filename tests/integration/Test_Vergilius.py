@@ -32,7 +32,7 @@ class VergiliusTest(unittest.TestCase):
                 self.assertTrue([Case.VOC] in other_features)
                 self.assertTrue([Case.ACC] in other_features)
             else:
-                # self.assertEqual(len(analysis.inflections), 1)  # TODO fix VPAR
+                self.assertEqual(len(analysis.inflections), 1)
                 inflection = analysis.inflections[0]
                 self.assertEqual(inflection.stem, 'arm')
                 self.assertEqual(inflection.affix, 'a')

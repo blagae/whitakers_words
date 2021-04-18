@@ -34,7 +34,7 @@ def _dummy_false(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
 
 
 def _vpar_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
-    if infl["form"][0] == "PERF":
+    if infl["form"][3] == "PERF":
         return stem["orth"] == word["parts"][-1]
     return stem["orth"] == word["parts"][0]
 

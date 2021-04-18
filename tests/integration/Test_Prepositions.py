@@ -33,15 +33,14 @@ class PrepositionTest(unittest.TestCase):
     def test_de(self):
         result = self.par.parse("de")
         self.assertEqual(len(result.forms), 1)
-        # self.assertEqual(len(result.forms[0].analyses), 1)  # TODO fix VPAR
+        self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
             self.assertEqual(analysis.lexeme.roots[0], 'de')
             self.assertEqual(analysis.lexeme.wordType, WordType.PREP)
 
-            # self.assertEqual(len(analysis.inflections), 1)
+            self.assertEqual(len(analysis.inflections), 1)
             inflection = analysis.inflections[0]
             self.assertEqual(inflection.stem, 'de')
             self.assertEqual(inflection.affix, '')
             self.assertEqual(inflection.wordType, WordType.PREP)
             self.assertEqual(inflection.features, {})
-            return  # TODO delete when VPAR is fixed

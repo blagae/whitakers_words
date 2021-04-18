@@ -82,21 +82,21 @@ class NounTest(unittest.TestCase):
         result = self.par.parse("peccata")
 
         self.assertEqual(len(result.forms), 1)
-        self.assertEqual(len(result.forms[0].analyses), 1)
+        self.assertEqual(len(result.forms[0].analyses), 2)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'peccat')  # wid == 20451
-            self.assertEqual(analysis.lexeme.wordType, WordType.N)
+            self.assertIn(analysis.lexeme.wordType, [WordType.N, WordType.V])
+            if analysis.lexeme.wordType == WordType.N:
+                self.assertEqual(analysis.lexeme.roots[0], 'peccat')  # wid == 20451
+                self.assertEqual(len(analysis.inflections), 3)
+                # common properties and features
+                for inflection in analysis.inflections:
+                    self.assertEqual(inflection.stem, 'peccat')
+                    self.assertEqual(inflection.affix, 'a')
+                    self.assertEqual(inflection.wordType, WordType.N)
+                    self.assertTrue(inflection.has_feature(Number.P))
+                    # self.assertTrue(inflection.has_feature(Gender.M))  # TODO fix gender on nouns
 
-            self.assertEqual(len(analysis.inflections), 3)
-            # common properties and features
-            for inflection in analysis.inflections:
-                self.assertEqual(inflection.stem, 'peccat')
-                self.assertEqual(inflection.affix, 'a')
-                self.assertEqual(inflection.wordType, WordType.N)
-                self.assertTrue(inflection.has_feature(Number.P))
-                # self.assertTrue(inflection.has_feature(Gender.M))  # TODO fix gender on nouns
-
-            other_features = [[x.features['Case']] for x in analysis.inflections]
-            self.assertTrue([Case.NOM] in other_features)
-            self.assertTrue([Case.VOC] in other_features)
-            self.assertTrue([Case.ACC] in other_features)
+                other_features = [[x.features['Case']] for x in analysis.inflections]
+                self.assertTrue([Case.NOM] in other_features)
+                self.assertTrue([Case.VOC] in other_features)
+                self.assertTrue([Case.ACC] in other_features)

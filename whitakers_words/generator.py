@@ -249,13 +249,13 @@ def import_inflects() -> None:
                 n = info[-4:-2]
                 form = info[1:-2]
 
-            elif pos == 'V':
+            elif pos in ('V', 'VPAR'):
                 form = info[3:8]
 
             elif pos == 'ADJ':
                 form = info[3:7]
 
-            elif pos in ('N', 'VPAR', 'SUPINE', 'PRON', 'NUM'):
+            elif pos in ('N', 'SUPINE', 'PRON', 'NUM'):
                 form = info[3:6]
 
             else:

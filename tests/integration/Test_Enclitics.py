@@ -27,7 +27,7 @@ class EncliticTest(unittest.TestCase):
         result = self.par.parse("pollice")
         self.assertEqual(len(result.forms), 2)  # also pollice
         self.assertEqual(result.forms[1].enclitic.text, 'ce')
-        self.assertEqual(len(result.forms[1].analyses), 3)
+        self.assertEqual(len(result.forms[1].analyses), 2)
         for key, analysis in result.forms[1].analyses.items():
             self.assertEqual(analysis.lexeme.roots[0], 'poll')  # wid == 6360
 
