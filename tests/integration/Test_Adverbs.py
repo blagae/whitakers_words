@@ -12,7 +12,7 @@ class AdverbTest(unittest.TestCase):
 
     def test_bene(self):
         result = self.par.parse("bene")
-        self.assertEqual(len(result.forms), 1)  # also be (sheep bleating) + -ne enclitic
+        self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
             self.assertEqual(analysis.lexeme.roots[0], 'bene')  # wid == 6360

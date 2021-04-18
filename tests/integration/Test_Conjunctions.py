@@ -10,7 +10,6 @@ class ConjunctionTest(unittest.TestCase):
     def setUpClass(cls):
         cls.par = Parser()
 
-    # TODO write actual tests
     def test_immutable(self):
         result = self.par.parse("et")
         self.assertEqual(len(result.forms), 1)
