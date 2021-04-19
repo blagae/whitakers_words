@@ -11,13 +11,14 @@ def test_regem(self):
     self.assertEqual(len(result.forms), 1)
     self.assertEqual(len(result.forms[0].analyses), 1)
 
-    # there is only one entry, but it's easier to just iterate than to retrieve the element if you don't know the key
+    # there is only one entry here, but it's easier to just iterate than to retrieve the element if you don't know the key
     for key, analysis in result.forms[0].analyses.items():
         self.assertEqual(analysis.lexeme.roots[0], 'rex')
         self.assertEqual(analysis.lexeme.wordType, WordType.N)
 
         self.assertEqual(len(analysis.inflections), 1)
-        inflection = analysis.inflections[0]  # if there is more than one inflection for this analysis, look in the tests how we test for similar variants
+        # if there is more than one inflection for this analysis, look in the tests how we test for similar variants
+        inflection = analysis.inflections[0]
 
         self.assertEqual(inflection.stem, 'reg')
         self.assertEqual(inflection.affix, 'em')
@@ -52,14 +53,11 @@ More tests are always welcome, because:
 
 * clean up the entire file
 
-## formatter
-
-* rewrite JSON output module from scratch
-
 ## datalayer
 
 * do we need the filter() inception ?
 * allow filtering on other metadata than frequency
+* filtering on frequency should also filter the wordlist to prevent homonymic false positives
 
 ## enums
 

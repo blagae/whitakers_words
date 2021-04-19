@@ -220,6 +220,7 @@ def import_uniques() -> None:
     dump_file('uniques.py', data, uniques_definition, uniques_imports)
 
 
+# TODO use info[-5], it determines which stem the inflection latches onto
 def import_inflects() -> None:
     with open(resources_directory + '/INFLECTS.LAT') as f:
 
