@@ -22,7 +22,7 @@ class DataLayer:
         self.age: str = kwargs.get('age', "A")
         self.area: str = kwargs.get('area', "A")
         self.geo: str = kwargs.get('geo', "A")
-        self.frequency: str = kwargs.get('frequency', "A")
+        self.frequency: str = kwargs.get('frequency', "C")
         self.source: str = kwargs.get('source', "A")
         self.create_subsets()
 
