@@ -2,6 +2,7 @@ from typing import Any, Sequence, Tuple
 
 from whitakers_words.data.addons import addons
 from whitakers_words.datatypes import Addon, DictEntry, Inflect, Stem, Unique
+from whitakers_words.generated.empty import empty
 from whitakers_words.generated.inflects import inflects
 from whitakers_words.generated.stems import stems
 from whitakers_words.generated.uniques import uniques
@@ -18,6 +19,7 @@ class DataLayer:
         self.uniques: dict[str, Sequence[Unique]] = kwargs.get('uniques', uniques)
         self.inflects: dict[str, dict[str, Sequence[Inflect]]] = kwargs.get('inflects', inflects)
         self.addons: dict[str, Sequence[Addon]] = kwargs.get('addons', addons)
+        self.empty: dict[str, Sequence[Inflect]] = kwargs.get('empty', empty)
 
         self.age: str = kwargs.get('age', "A")
         self.area: str = kwargs.get('area', "A")

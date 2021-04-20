@@ -1,6 +1,6 @@
 import unittest
 
-from whitakers_words.enums import Case, Number, Gender, WordType
+from whitakers_words.enums import Case, Gender, Number, WordType
 from whitakers_words.parser import Parser
 
 

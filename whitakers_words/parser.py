@@ -137,9 +137,12 @@ class Form:
         viable_inflections: list[Inflect] = []
 
         # the word may be undeclined, so add this as an option if the full form exists in the list of words
-        if self.text in data.wordkeys:
-            # TODO make a separate list for the undeclined zero-length "Inflections"
-            viable_inflections.extend(data.inflects["0"][''])
+        if self.text in data.wordkeys and self.text in data.stems:
+            stem_list = data.stems[self.text]
+            wordtypes = [x["pos"] for x in stem_list]
+            # no need to check for VPAR, because there are no empty VPAR endings
+            for wordtype in wordtypes:
+                viable_inflections.extend(data.empty[wordtype])
 
         # Check against inflection list
         for inflect_length in range(1, min(8, len(self.text))):

@@ -39,7 +39,6 @@ More tests are always welcome, because:
 
 ## parser
 
-* create shortcut for undeclined words, so that we don't need to check 60+ empty declensions for each word
 * see if there is a more elegant way to insert the data layer into relevant methods
 * decide if class names are OK
 

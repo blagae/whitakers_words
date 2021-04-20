@@ -5,7 +5,7 @@ Format the data from the input files from Whitaker's Words into python dictionar
 """
 import json
 import os
-from typing import Any, Sequence, Union
+from typing import Any, Sequence, Tuple, Union
 
 from pkg_resources import resource_filename
 
@@ -213,22 +213,34 @@ class Generator:
                     'iid': i
                 })
 
-        reordered = self.reorder_inflects(data)
+        empty, reordered = self.reorder_inflects(data)
+        self.dump_file('empty.py', empty, "dict[str, Sequence[Inflect]]", "Inflect")
         self.dump_file('inflects.py', reordered, "dict[str, dict[str, Sequence[Inflect]]]", "Inflect")
 
-    def reorder_inflects(self, data: list[dict[str, Any]]) -> dict[int, dict[str, Any]]:
-        keys = (x for x in range(8))  # assuming all endings are between 0 and 7 in length
+    def reorder_inflects(self, data: list[dict[str, Any]]) -> Tuple[dict[str, list[Any]], dict[int, dict[str, Any]]]:
+        keys = (x for x in range(1, 8))  # assuming all endings are at most 7 characters long
+        empty: dict[str, list[Any]] = {}
         result: dict[int, dict[str, Any]] = {key: dict() for key in keys}
         for item in data:
-            end = item['ending']
-            store = result[len(end)]
-            if end in store:
-                items = store[end]
-                items.append(item)
-                store[end] = items
+            if item['ending']:
+                end = item['ending']
+                store = result[len(end)]
+                if end in store:
+                    items = store[end]
+                    items.append(item)
+                    store[end] = items
+                else:
+                    store[end] = [item]
             else:
-                store[end] = [item]
-        return result
+                pos = item["pos"]
+                if pos in empty:
+                    items = empty[pos]
+                    items.append(item)
+                    empty[pos] = items
+                else:
+                    empty[pos] = [item]
+                pass
+        return empty, result
 
     def create_init_file(self) -> None:
         self.dump_file("__init__.py")
