@@ -2,10 +2,10 @@ import re
 from enum import Enum
 from typing import Any, Sequence, Union
 
-from whitakers_words.datalayer import DataLayer
-from whitakers_words.datatypes import Addon, DictEntry, Inflect, Stem, Unique
-from whitakers_words.enums import WordType, get_enum_value
-from whitakers_words.matcher import Matcher
+from .datalayer import DataLayer
+from .datatypes import Addon, DictEntry, Inflect, Stem, Unique
+from .enums import WordType, get_enum_value
+from .matcher import Matcher
 
 
 class WordsException(Exception):
@@ -137,8 +137,8 @@ class Form:
         viable_inflections: list[Inflect] = []
 
         # the word may be undeclined, so add this as an option if the full form exists in the list of words
-        if self.text in data.wordkeys:  # TODO is it possible to make wordkeys a set or dict ?
-            # TODO maybe a separate list for the undeclined zero-length "Inflections" ?
+        if self.text in data.wordkeys:
+            # TODO make a separate list for the undeclined zero-length "Inflections"
             viable_inflections.extend(data.inflects["0"][''])
 
         # Check against inflection list

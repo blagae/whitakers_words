@@ -49,10 +49,6 @@ More tests are always welcome, because:
 * do we need the lambda
 * fix pronoun matching (use pronoun types from enums ?)
 
-## generator
-
-* clean up the entire file
-
 ## datalayer
 
 * do we need the filter() inception ?

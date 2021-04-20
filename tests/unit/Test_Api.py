@@ -9,14 +9,14 @@ class MinimalDictionaryParseTest(unittest.TestCase):
 
     def setUp(self):
         # make sure to create a new Parser for each test
-        self.prs = Parser(wordlist=[], addons=dict(), stems=dict(), uniques=dict(), inflects=dict(), wordkeys=dict())
+        self.prs = Parser(wordlist=[], addons=dict(), stems=dict(), uniques=dict(), inflects=dict(), wordkeys=set())
 
     def test_empty(self):
         result = self.prs.parse("word")
         self.assertEqual(result.forms, [])
 
     def test_minimal_functional(self):
-        self.prs.data.wordkeys["word"] = {""}
+        self.prs.data.wordkeys.add("")
         self.prs.data.inflects["0"] = {'': [{'ending': ''}]}
         result = self.prs.parse("word")
         self.assertEqual(result.forms, [])
@@ -24,7 +24,7 @@ class MinimalDictionaryParseTest(unittest.TestCase):
     def test_minimal_with_result(self):
         word: DictEntry = {'orth': 'word', 'pos': 'NUM', 'n': ['a'], 'form': 'abc',
                            'wid': 0, 'parts': ['word'], 'senses': []}
-        self.prs.data.wordkeys["word"] = word
+        self.prs.data.wordkeys.add("word")
         self.prs.data.inflects["0"] = {'': [{'ending': '', 'pos': 'NUM', 'n': ['a'], 'form': '', 'iid': 0}]}
         self.prs.data.stems["word"] = [word]
         self.prs.data.wordlist.append(word)
@@ -67,7 +67,7 @@ class MinimalDictionaryParseTest(unittest.TestCase):
 class MinimalDictionaryAnalyzeFormsTest(unittest.TestCase):
     def setUp(self):
         # make sure to create a new Parser for each test
-        self.prs = Parser(wordlist=[], addons=dict(), stems=dict(), uniques=dict(), inflects=dict(), wordkeys=dict())
+        self.prs = Parser(wordlist=[], addons=dict(), stems=dict(), uniques=dict(), inflects=dict(), wordkeys=set())
 
     def test_empty(self):
         form = Form("word")
@@ -78,7 +78,7 @@ class MinimalDictionaryAnalyzeFormsTest(unittest.TestCase):
 class MinimalDictionarySplitFormEnclitic(unittest.TestCase):
     def setUp(self):
         # make sure to create a new Parser for each test
-        self.prs = Parser(wordlist=[], addons=dict(), stems=dict(), uniques=dict(), inflects=dict(), wordkeys=dict())
+        self.prs = Parser(wordlist=[], addons=dict(), stems=dict(), uniques=dict(), inflects=dict(), wordkeys=set())
 
     def test_empty(self):
         forms = Word("word").split_form_enclitic(self.prs.data)

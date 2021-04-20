@@ -13,7 +13,7 @@ class DataLayer:
 
     def __init__(self, **kwargs: Any):
         self.wordlist: Sequence[DictEntry] = kwargs.get('wordlist', wordlist)
-        self.wordkeys: list[str] = kwargs.get('wordkeys', wordkeys)
+        self.wordkeys: set[str] = set(kwargs.get('wordkeys', wordkeys))  # input may be a set or a list
         self.stems: dict[str, Sequence[Stem]] = kwargs.get('stems', stems)
         self.uniques: dict[str, Sequence[Unique]] = kwargs.get('uniques', uniques)
         self.inflects: dict[str, dict[str, Sequence[Inflect]]] = kwargs.get('inflects', inflects)
