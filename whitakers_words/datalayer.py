@@ -1,13 +1,13 @@
 from typing import Any, Sequence, Tuple
 
-from whitakers_words.data.addons import addons
-from whitakers_words.datatypes import Addon, DictEntry, Inflect, Stem, Unique
-from whitakers_words.generated.empty import empty
-from whitakers_words.generated.inflects import inflects
-from whitakers_words.generated.stems import stems
-from whitakers_words.generated.uniques import uniques
-from whitakers_words.generated.wordkeys import wordkeys
-from whitakers_words.generated.wordlist import wordlist
+from .data.addons import addons
+from .datatypes import Addon, DictEntry, Inflect, Stem, Unique
+from .generated.empty import empty
+from .generated.inflects import inflects
+from .generated.stems import stems
+from .generated.uniques import uniques
+from .generated.wordkeys import wordkeys
+from .generated.wordlist import wordlist
 
 
 class DataLayer:

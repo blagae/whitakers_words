@@ -27,7 +27,7 @@ class Generator:
                 if "Sequence" in definition:
                     out.write("from typing import Sequence\n\n")
                 if imports:
-                    out.write(f"from whitakers_words.datatypes import {imports}\n\n")
+                    out.write(f"from ..datatypes import {imports}\n\n")
                 local_def = f": {definition}" if definition else ""
                 out.write(f"{name[:-3]}{local_def} = ")
                 json.dump(obj, out)
@@ -156,7 +156,7 @@ class Generator:
                     obj = {}
                     counter = 0
 
-        from whitakers_words.data.esse import esse
+        from .data.esse import esse
         for est in esse:
             orth = est['orth']
             if orth in data:

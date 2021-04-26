@@ -67,7 +67,6 @@ More tests are always welcome, because:
 
 ## integration
 
-* fix dummy tests in integration
 * many more tests are needed
 
 ## nonfunctional

@@ -1,7 +1,7 @@
 from typing import Callable, Sequence
 
-from whitakers_words.datatypes import DictEntry, Inflect, Stem
-from whitakers_words.enums import Degree
+from .datatypes import DictEntry, Inflect, Stem
+from .enums import Degree
 
 
 class Matcher:

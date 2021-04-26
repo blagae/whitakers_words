@@ -6,7 +6,8 @@ into lists and dictionaries that can be used very efficiently by the rest of the
 The output is stored as large Python files in the `whitakers_words.generated` package.
 We generate them on install instead of adding them to version control,
 because it is always possible that the format of the generated files changes,
-and it's much more intuitive to do this in generator code than in a big wall of text.
+and it's much more intuitive to read the changes in the generator script
+than in seeing a thousand random changes in a wall of text.
 
 If you are cloning the project and trying to run the files, first install the package locally:
 

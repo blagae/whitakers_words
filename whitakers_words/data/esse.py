@@ -1,4 +1,4 @@
-from whitakers_words.datatypes import Unique
+from ..datatypes import Unique
 
 esse: list[Unique] = [
     {"orth": "sum", "pos": "V", "form": ["PRES", "ACTIVE", "IND", "1", "S"],
