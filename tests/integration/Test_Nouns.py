@@ -36,7 +36,7 @@ class NounTest(unittest.TestCase):
             self.assertEqual(analysis.lexeme.roots[0], 'templ')  # wid == 20451
             self.assertEqual(analysis.lexeme.wordType, WordType.N)
 
-            self.assertEqual(len(analysis.inflections), 4)
+            self.assertEqual(len(analysis.inflections), 3)
             # common properties and features
             for inflection in analysis.inflections:
                 self.assertEqual(inflection.stem, 'templ')
@@ -72,8 +72,8 @@ class NounTest(unittest.TestCase):
             self.assertTrue([Case.ABL] in other_features)
             self.assertTrue([Case.LOC] in other_features)
 
-    def test_abacus_empty(self):
-        result = self.par.parse("abacus")
+    def test_temptatio_empty(self):
+        result = self.par.parse("temptatio")
         # this result is empty because abacus is not a common enough word for the default parser
         # if the default is ever changed, this test will start failing, so fix the test then
         self.assertEqual(len(result.forms), 0)
@@ -100,3 +100,24 @@ class NounTest(unittest.TestCase):
                 self.assertTrue([Case.NOM] in other_features)
                 self.assertTrue([Case.VOC] in other_features)
                 self.assertTrue([Case.ACC] in other_features)
+
+    def test_acer(self):
+        result = self.par.parse("acer")
+        self.assertEqual(len(result.forms), 1)
+        self.assertEqual(len(result.forms[0].analyses), 2)
+        for key, analysis in result.forms[0].analyses.items():
+            if analysis.lexeme.wordType == WordType.N:
+                self.assertEqual(analysis.lexeme.roots[0], 'acer')  # wid == 3372
+
+                self.assertEqual(len(analysis.inflections), 3)
+                for inflection in analysis.inflections:
+                    self.assertEqual(inflection.stem, 'acer')
+                    self.assertEqual(inflection.affix, '')
+                    self.assertEqual(inflection.wordType, WordType.N)
+                    self.assertTrue(inflection.has_feature(Number.S))
+                    # self.assertTrue(inflection.has_feature(Gender.N))  # TODO fix gender on nouns
+
+                other_features = [x.features['Case'] for x in analysis.inflections]
+                self.assertTrue(Case.VOC in other_features)
+                self.assertTrue(Case.NOM in other_features)
+                self.assertTrue(Case.ACC in other_features)

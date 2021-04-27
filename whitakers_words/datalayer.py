@@ -41,7 +41,7 @@ class DataLayer:
 
     def filter_inflections(self, item: Inflect) -> bool:
         # TODO use all filters: [AGE, FREQ]
-        return item["props"][1] <= self.frequency
+        return item["props"][1] <= 'B'  # TODO make configurable again
 
     def filter_stems(self, item: Tuple[str, Sequence[Stem]]) -> bool:
         # TODO use all filters: [AGE, AREA, GEO, FREQ, SOURCE]

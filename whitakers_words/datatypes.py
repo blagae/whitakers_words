@@ -18,6 +18,7 @@ class Inflect(TypedDict):
     note: str
     props: Sequence[str]
     iid: int
+    stem: int
 
 
 class Unique(TypedDict, total=False):

@@ -169,7 +169,6 @@ class Generator:
         self.dump_file('uniques.py', data, "dict[str, Sequence[Unique]]", "Unique")
 
     def import_inflects(self) -> None:
-        # TODO use info[-5], it determines which stem the inflection latches onto
         with open(self.resources + '/INFLECTS.LAT') as f:
             data = []
             for i, text in enumerate(f):
@@ -184,8 +183,10 @@ class Generator:
                 info = line.split()
 
                 ending = info[-3]
+                used_stem = info[-5]
                 if not ending.isalpha():
                     ending = ''
+                    used_stem = info[-4]
                 pos = info[0]
                 n = info[1:3]
                 properties = info[-2:]
@@ -210,7 +211,8 @@ class Generator:
                     'pos': pos,
                     'form': form,
                     'props': properties,
-                    'iid': i
+                    'iid': i,
+                    'stem': int(used_stem) - 1  # go zero-based
                 })
 
         empty, reordered = self.reorder_inflects(data)

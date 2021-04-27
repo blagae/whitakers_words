@@ -139,7 +139,7 @@ class Form:
         # the word may be undeclined, so add this as an option if the full form exists in the list of words
         if self.text in data.wordkeys and self.text in data.stems:
             stem_list = data.stems[self.text]
-            wordtypes = [x["pos"] for x in stem_list]
+            wordtypes = {x["pos"] for x in stem_list}
             # no need to check for VPAR, because there are no empty VPAR endings
             for wordtype in wordtypes:
                 viable_inflections.extend(data.empty[wordtype])

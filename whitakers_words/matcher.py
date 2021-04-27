@@ -29,22 +29,27 @@ class Matcher:
         return self.function(self.stem, self.infl, word)
 
 
+def _check_right_stem(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
+    return len(word["parts"]) > infl["stem"] and stem["orth"] == word["parts"][infl["stem"]]
+
+
 def _dummy_false(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
     return False
 
 
 def _vpar_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
-    if infl["form"][3] == "PERF":
-        return stem["orth"] == word["parts"][-1]
-    return stem["orth"] == word["parts"][0]
+    return _check_right_stem(stem, infl, word)
 
 
 def _noun_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
-    if infl["n"] == stem["n"] or (infl["n"][0] == stem["n"][0] and infl["n"][-1] == 0):
-        return infl["form"][-1] == stem["form"][0] or infl["form"][-1] == "C"
+    if _check_right_stem(stem, infl, word):
+        if infl["n"] == stem["n"] or (infl["n"][0] == stem["n"][0] and infl["n"][-1] == 0):
+            return (infl["form"][-1] in ("X", stem["form"][0]) or
+                    (infl["form"][-1] == "C" and stem["form"][0] in ("F", "M")))
     return False
 
 
+# TODO clear up situation with "ADJ X" vs "ADJ POS"
 def _adj_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
     if not _basic_matcher(stem, infl, word):
         return False
@@ -62,12 +67,7 @@ def _adv_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
 
 
 def _verb_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
-    if (infl["n"] == stem["n"] or infl["n"][0] == 0 or
-            (infl["n"][0] == stem["n"][0] and infl["n"][1] == 0)):
-        if infl["form"][0] in ["PERF", "FUTP", "PLUP"]:
-            return stem["orth"] == word["parts"][2]
-        return stem["orth"] == word["parts"][1]
-    return False
+    return _basic_matcher(stem, infl, word) and _check_right_stem(stem, infl, word)
 
 
 def _basic_matcher(stem: Stem, infl: Inflect, word: DictEntry) -> bool:

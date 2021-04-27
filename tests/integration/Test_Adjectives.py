@@ -37,24 +37,25 @@ class AdjectiveTest(unittest.TestCase):
     def test_bonorum(self):
         result = self.par.parse("bonorum")
         self.assertEqual(len(result.forms), 1)
-        self.assertEqual(len(result.forms[0].analyses), 1)
+        self.assertEqual(len(result.forms[0].analyses), 3)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'bon')  # wid == 6825
-            self.assertEqual(analysis.lexeme.wordType, WordType.ADJ)
+            if analysis.lexeme.wordType == WordType.ADJ:
+                self.assertEqual(analysis.lexeme.roots[0], 'bon')  # wid == 6825
+                self.assertEqual(analysis.lexeme.wordType, WordType.ADJ)
 
-            self.assertEqual(len(analysis.inflections), 2)
-            # common properties and features
-            for inflection in analysis.inflections:
-                self.assertEqual(inflection.stem, 'bon')
-                self.assertEqual(inflection.affix, 'orum')
-                self.assertEqual(inflection.wordType, WordType.ADJ)
-                self.assertTrue(inflection.has_feature(Degree.POS))
-                self.assertTrue(inflection.has_feature(Case.GEN))
-                self.assertTrue(inflection.has_feature(Number.P))
+                self.assertEqual(len(analysis.inflections), 2)
+                # common properties and features
+                for inflection in analysis.inflections:
+                    self.assertEqual(inflection.stem, 'bon')
+                    self.assertEqual(inflection.affix, 'orum')
+                    self.assertEqual(inflection.wordType, WordType.ADJ)
+                    self.assertTrue(inflection.has_feature(Degree.POS))
+                    self.assertTrue(inflection.has_feature(Case.GEN))
+                    self.assertTrue(inflection.has_feature(Number.P))
 
-            other_features = [x.features['Gender'] for x in analysis.inflections]
-            self.assertTrue(Gender.M in other_features)
-            self.assertTrue(Gender.N in other_features)
+                other_features = [x.features['Gender'] for x in analysis.inflections]
+                self.assertTrue(Gender.M in other_features)
+                self.assertTrue(Gender.N in other_features)
 
     def test_felicium(self):
         result = self.par.parse("felicium")
@@ -122,7 +123,7 @@ class AdjectiveTest(unittest.TestCase):
     def test_acer(self):
         result = self.par.parse("acer")
         self.assertEqual(len(result.forms), 1)
-        self.assertEqual(len(result.forms[0].analyses), 3)
+        self.assertEqual(len(result.forms[0].analyses), 2)
         for key, analysis in result.forms[0].analyses.items():
             if analysis.lexeme.wordType == WordType.ADJ:
                 self.assertEqual(analysis.lexeme.roots[0], 'acer')  # wid == 3372
@@ -134,7 +135,7 @@ class AdjectiveTest(unittest.TestCase):
                     self.assertEqual(inflection.wordType, WordType.ADJ)
                     self.assertTrue(inflection.has_feature(Degree.POS))
                     self.assertTrue(inflection.has_feature(Number.S))
-                    self.assertTrue(inflection.has_feature(Gender.M))  # TODO Gender.F is also valid ?
+                    self.assertTrue(inflection.has_feature(Gender.M))
 
                 other_features = [x.features['Case'] for x in analysis.inflections]
                 self.assertTrue(Case.VOC in other_features)
