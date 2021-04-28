@@ -38,14 +38,21 @@ class Generator:
         ids: Sequence[DictEntry] = [{}]
         stems: dict[str, Sequence[Stem]] = dict()
         previous_item: DictEntry = {}
+
+        parts_slicer = slice(None, 76)
+        pos_slicer = slice(76, 83)
+        form_slicer = slice(83, 100)
+        properties_slicer = slice(100, 110)
+        sense_slicer = slice(109, None)
+
         with open(self.resources + '/DICTLINE.GEN', encoding="ISO-8859-1") as f:
             for i, line in enumerate(f):
 
-                parts = line[:76].replace("zzz", "-").split()
+                parts = line[parts_slicer].replace("zzz", "-").split()
                 orth = parts[0]
-                pos = line[76:83].strip()
-                raw_form = line[83:100].strip()
-                properties = line[100:110].split()
+                pos = line[pos_slicer].strip()
+                raw_form = line[form_slicer].strip()
+                properties = line[properties_slicer].split()
 
                 n: Sequence[int] = []
                 form: Sequence[Union[str, int]] = []
@@ -59,7 +66,7 @@ class Generator:
                     except ValueError:
                         form.append(v)
 
-                senses = [sense.strip() for sense in line[109:].strip().split(";") if sense]
+                senses = [sense.strip() for sense in line[sense_slicer].strip().split(";") if sense]
 
                 item: DictEntry = {
                     'id': i + 1,
@@ -85,7 +92,7 @@ class Generator:
                         stems[part] = items
                     else:
                         stems[part] = [stem]
-                if senses[0][0] == '|':
+                if senses[0].startswith("|"):
                     senses[0] = senses[0].replace("|", "")
                     previous_item['senses'].extend(senses)
                     ids.append(dict())
@@ -111,8 +118,9 @@ class Generator:
                         obj['orth'] = line.replace(affix.upper(), "").strip()
 
                     elif counter == 1:
-                        obj['pos'] = line[0].strip()
-                        obj['form'] = line[0:].strip()
+                        split_line = line.strip().split()
+                        obj['pos'] = split_line[0]
+                        obj['form'] = split_line
 
                     elif counter == 2:
                         obj['senses'] = line.strip().split()

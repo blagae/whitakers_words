@@ -1,6 +1,7 @@
 import hashlib
 import os
 
+
 def hash_file(filepath: str) -> str:
     file_hash = hashlib.md5()
     with open(filepath, 'rb') as f:
@@ -12,9 +13,11 @@ def hash_file(filepath: str) -> str:
     return file_hash.hexdigest()
 
 
-def hash_generated_files():
+def hash_generated_files() -> dict[str, str]:
     folder = 'whitakers_words/generated/'
+    result: dict[str, str] = dict()
     for f in os.listdir(folder):
         if not f.startswith("__"):
             value = hash_file(folder + f)
-            yield (f, value)
+            result[f] = value
+    return result
