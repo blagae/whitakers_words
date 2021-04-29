@@ -87,9 +87,7 @@ class Generator:
                         'props': properties
                     }
                     if part in stems:
-                        items = stems[part]
-                        items.append(stem)
-                        stems[part] = items
+                        stems[part].append(stem)
                     else:
                         stems[part] = [stem]
                 if senses[0].startswith("|"):
@@ -156,9 +154,7 @@ class Generator:
                 if counter == 3:
                     orth = obj['orth']
                     if orth in data:
-                        items = data[orth]
-                        items.append(obj)
-                        data[orth] = items
+                        data[orth].append(obj)
                     else:
                         data[orth] = [obj]
                     obj = {}
@@ -168,9 +164,7 @@ class Generator:
         for est in esse:
             orth = est['orth']
             if orth in data:
-                items = data[orth]
-                items.append(est)
-                data[orth] = items
+                data[orth].append(est)
             else:
                 data[orth] = [est]
 
@@ -236,17 +230,13 @@ class Generator:
                 end = item['ending']
                 store = result[len(end)]
                 if end in store:
-                    items = store[end]
-                    items.append(item)
-                    store[end] = items
+                    store[end].append(item)
                 else:
                     store[end] = [item]
             else:
                 pos = item["pos"]
                 if pos in empty:
-                    items = empty[pos]
-                    items.append(item)
-                    empty[pos] = items
+                    empty[pos].append(item)
                 else:
                     empty[pos] = [item]
                 pass

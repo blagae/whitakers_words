@@ -21,3 +21,8 @@ def hash_generated_files() -> dict[str, str]:
             value = hash_file(folder + f)
             result[f] = value
     return result
+
+
+if __name__ == "__main__":
+    for x in hash_generated_files().items():
+        print(x)

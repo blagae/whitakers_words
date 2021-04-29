@@ -8,8 +8,7 @@ try:
     from whitakers_words.generated.stems import stems  # noqa: F401
     from whitakers_words.generated.uniques import uniques  # noqa: F401
 except ModuleNotFoundError:
-    from whitakers_words.generator import generate_all_dicts
-
+    from whitakers_words.datagenerator import generate_all_dicts
     generate_all_dicts()
 
 setup(
@@ -38,8 +37,7 @@ setup(
     so that it may continue to be useful to Latin students and philologists for years to come.""",
     name='whitakers_words',
     packages=list(["whitakers_words.generated",
-                  *find_namespace_packages(include=["whitakers_words", "whitakers_words.*"],
-                                           exclude=["whitakers_words.tests", "whitakers_words.tests.*"])]),
+                  *find_namespace_packages(include=["whitakers_words", "whitakers_words.*"])]),
     url='https://github.com/blagae/whitakers_words',
     version='0.4.0',
     zip_safe=False,
