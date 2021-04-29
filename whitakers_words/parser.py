@@ -26,8 +26,11 @@ class Inflection:
         return repr(self.__dict__)
 
     def analyse_features(self, features: Sequence[str]) -> None:
-        if self.wordType in [WordType.N, WordType.NUM]:
+        # TODO patterns are emerging
+        if self.wordType == WordType.N:
             lst = ["Case", "Number", "Gender"]
+        elif self.wordType == WordType.NUM:
+            lst = ["Case", "Number", "Gender", "NumeralType"]
         elif self.wordType == WordType.PRON:
             lst = ["Case", "Number", "Gender", "PronounType"]
         elif self.wordType == WordType.ADJ:

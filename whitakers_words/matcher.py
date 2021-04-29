@@ -1,7 +1,7 @@
 from typing import Callable, Sequence
 
 from .datatypes import DictEntry, Inflect, Stem
-from .enums import Degree
+from .enums import Degree, NumeralType
 
 
 class Matcher:
@@ -22,6 +22,8 @@ class Matcher:
             self.function = _adj_checker
         elif stem["pos"] == "V":
             self.function = _verb_checker
+        elif stem["pos"] == "NUM":
+            self.function = _numeral_checker
         else:
             self.function = _basic_matcher
 
@@ -70,6 +72,12 @@ def _verb_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
     return _basic_matcher(stem, infl, word) and _check_right_stem(stem, infl, word)
 
 
+def _numeral_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
+    return (_basic_matcher(stem, infl, word) and
+            (stem["form"][0] == infl["form"][-1] or
+             (stem["form"][0] == 'X' and get_numeral_type(word["parts"], stem["orth"]) == infl["form"][-1])))
+
+
 def _basic_matcher(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
     if stem["n"]:
         return (infl["n"] == stem["n"] or infl["n"][0] == 0 or
@@ -82,3 +90,10 @@ def get_degree(parts: Sequence[str], stem: str) -> str:
         return Degree.get_degree_list()[parts.index(stem)]
     except ValueError:
         return Degree.POS.name
+
+
+def get_numeral_type(parts: Sequence[str], stem: str):
+    try:
+        return NumeralType.get_type_list()[parts.index(stem)]
+    except ValueError:
+        return NumeralType.CARD.name

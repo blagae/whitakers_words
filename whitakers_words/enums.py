@@ -101,6 +101,18 @@ class PronounType(Enum):
     X = "Unknown"
 
 
+class NumeralType(Enum):
+    CARD = "Cardinal"
+    ORD = "Ordinal"
+    DIST = "Distributive"
+    ADVERB = "Adverbial"
+    X = "All"
+
+    @classmethod
+    def get_type_list(cls) -> list[str]:
+        return [x.name for x in NumeralType]
+
+
 class FilterCriteria(Enum):
     AGE = 0
     AREA = 1

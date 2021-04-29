@@ -22,10 +22,10 @@ class MinimalDictionaryParseTest(unittest.TestCase):
         self.assertEqual(result.forms, [])
 
     def test_minimal_with_result(self):
-        word: DictEntry = {'orth': 'word', 'pos': 'NUM', 'n': ['a'], 'form': 'abc',
+        word: DictEntry = {'orth': 'word', 'pos': 'NUM', 'n': ['a'], 'form': ['CARD'],
                            'wid': 0, 'parts': ['word'], 'senses': []}
         self.prs.data.wordkeys.add("word")
-        self.prs.data.empty = {'NUM': [{'ending': '', 'pos': 'NUM', 'n': ['a'], 'form': '', 'iid': 0, 'stem': 0}]}
+        self.prs.data.empty = {'NUM': [{'ending': '', 'pos': 'NUM', 'n': ['a'], 'form': ['X', 'X', 'X', 'CARD'], 'iid': 0, 'stem': 0}]}
         self.prs.data.stems["word"] = [word]
         self.prs.data.wordlist.append(word)
         result = self.prs.parse("word")

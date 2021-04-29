@@ -200,9 +200,9 @@ class Generator:
                     form = info[1:-2]
                 elif pos in ('V', 'VPAR'):
                     form = info[3:8]
-                elif pos == 'ADJ':
+                elif pos in ('ADJ', 'NUM'):
                     form = info[3:7]
-                elif pos in ('N', 'SUPINE', 'PRON', 'NUM'):
+                elif pos in ('N', 'SUPINE', 'PRON'):
                     form = info[3:6]
                 else:
                     raise Exception()
