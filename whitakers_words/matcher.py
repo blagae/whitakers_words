@@ -92,7 +92,7 @@ def get_degree(parts: Sequence[str], stem: str) -> str:
         return Degree.POS.name
 
 
-def get_numeral_type(parts: Sequence[str], stem: str):
+def get_numeral_type(parts: Sequence[str], stem: str) -> str:
     try:
         return NumeralType.get_type_list()[parts.index(stem)]
     except ValueError:

@@ -2,8 +2,8 @@ from setuptools import find_namespace_packages, setup
 
 try:
     from whitakers_words.data.addons import addons  # noqa: F401
-    from whitakers_words.generated.dict_ids import dict_ids  # noqa: F401
-    from whitakers_words.generated.dict_keys import dict_keys  # noqa: F401
+    from whitakers_words.generated.wordkeys import wordkeys  # noqa: F401
+    from whitakers_words.generated.wordlist import wordlist  # noqa: F401
     from whitakers_words.generated.inflects import inflects  # noqa: F401
     from whitakers_words.generated.stems import stems  # noqa: F401
     from whitakers_words.generated.uniques import uniques  # noqa: F401
