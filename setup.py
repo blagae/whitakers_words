@@ -41,5 +41,10 @@ setup(
     url='https://github.com/blagae/whitakers_words',
     version='0.5.0',
     zip_safe=False,
-    package_data={'whitakers_words': ['py.typed'], "whitakers_words.data": ["*.*"]}
+    package_data={'whitakers_words': ['py.typed'], "whitakers_words.data": ["*.*"]},
+    entry_points={
+        'console_scripts': [
+            'whitaker=whitakers_words.cli:whitaker'
+        ]
+    }
 )

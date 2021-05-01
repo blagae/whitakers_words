@@ -1,3 +1,4 @@
+click
 pytest
 tox
 wheel
