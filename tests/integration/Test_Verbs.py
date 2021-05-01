@@ -93,3 +93,20 @@ class VerbTest(unittest.TestCase):
             self.assertEqual(analysis.inflections[0].affix, 'ri')
             self.assertEqual(analysis.inflections[0].wordType, WordType.V)
             self.assertEqual(analysis.inflections[0].features, expected_features)
+
+    def test_decet(self):
+        result = self.par.parse("decet")
+        # response syntax and basics
+        self.assertEqual(len(result.forms), 1)
+        self.assertEqual(len(result.forms[0].analyses), 1)
+        for key, analysis in result.forms[0].analyses.items():
+            self.assertEqual(analysis.lexeme.roots[0], 'dec')  # wid == 32642
+            self.assertEqual(analysis.lexeme.wordType, WordType.V)
+
+            self.assertEqual(len(analysis.inflections), 1)
+            expected_features = {'Mood': Mood.IND, 'Number': Number.S, 'Person': Person['3'],
+                                 'Tense': Tense.PRES, 'Voice': Voice.ACTIVE}
+            self.assertEqual(analysis.inflections[0].stem, 'dec')
+            self.assertEqual(analysis.inflections[0].affix, 'et')
+            self.assertEqual(analysis.inflections[0].wordType, WordType.V)
+            self.assertEqual(analysis.inflections[0].features, expected_features)

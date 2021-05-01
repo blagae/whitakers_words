@@ -71,7 +71,24 @@ def _adv_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
 
 
 def _verb_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
+    if stem["form"][0] in ("IMPERS", "DEP", "SEMIDEP", "PERFDEF"):
+        if not _special_verb_checker(stem, infl, word):
+            return False
     return _basic_matcher(stem, infl, word) and _check_right_stem(stem, infl, word)
+
+
+def _special_verb_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
+    if stem["form"][0] == "IMPERS":  # e.g. decet
+        return infl["form"][-2] == "3"
+    if stem["form"][0] == "DEP":  # e.g. tueri
+        return infl["form"][1] == "PASSIVE"
+    if stem["form"][0] == "SEMIDEP":  # e.g. audeo, ausus sum
+        if infl["form"][1] == "PASSIVE":
+            return infl["form"][0] in ("PERF", "FUTP", "PLUP")  # TODO will this ever hit ?
+        return infl["form"][0] in ("PRES", "IMP", "FUT")
+    if stem["form"][0] == "PERFDEF":  # e.g. coepisse
+        return infl["form"][0] in ("PERF", "FUTP", "PLUP")
+    return True
 
 
 def _numeral_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:

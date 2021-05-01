@@ -113,6 +113,19 @@ class NumeralType(Enum):
         return [x.name for x in NumeralType]
 
 
+class VerbType(Enum):
+    TO_BEING = "To Be"
+    SEMIDEP = "Semideponent"
+    DEP = "Deponent"
+    IMPERS = "Impersonal"
+    PERFDEF = "Perfect Defective"
+    ABL = "Ablative"
+    DAT = "Dative"
+    INTRANS = "Intransitive"
+    TRANS = "Transitive"
+    X = "Default"
+
+
 class FilterCriteria(Enum):
     AGE = 0
     AREA = 1
@@ -215,11 +228,7 @@ class Source(Enum):
 """
 subtypes = {
     "N": ["M", "N", "T", "P", "F", "W", "C", "A", "L", "G", "X"],
-    "PREP": ["ABL", "ACC", "GEN"], "ADJ": ["POS", "X", "SUPER", "COMP"],
-    "V": ["INTRANS", "TRANS", "X", "SEMIDEP", "DEP", "TO_BEING", "IMPERS", "DAT", "ABL", "PERFDEF"],
-    "ADV": ["POS", "X", "SUPER", "COMP"],
-    "PRON": ["INDEF", "ADJECT", "PERS", "DEMONS", "X", "REL", "INTERR", "REFLEX"],
-    "NUM": ["CARD", "X", "DIST", "ORD", "ADVERB"],
+    "PREP": ["ABL", "ACC", "GEN"],
     "PACK": ["REL", "INTERR", "INDEF", "ADJECT"]
 }
 """
