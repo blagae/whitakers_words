@@ -82,75 +82,84 @@ class MinimalDictionarySplitFormEnclitic(unittest.TestCase):
         self.prs = Parser(wordlist=[], addons=dict(), stems=dict(), uniques=dict(), inflects=dict(), wordkeys=set())
 
     def test_empty(self):
-        forms = Word("word").split_form_enclitic(self.prs.data)
-        self.assertEqual(len(forms), 1)
-        self.assertEqual(forms[0].text, "word")
+        word = Word("word")
+        word.split_form_enclitic(self.prs.data)
+        self.assertEqual(len(word.forms), 1)
+        self.assertEqual(word.forms[0].text, "word")
 
     def test_tackon(self):
         self.prs.data.addons['tackons'] = [{'orth': 'd', 'pos': '', 'senses': []}]
-        forms = Word("word").split_form_enclitic(self.prs.data)
-        self.assertEqual(len(forms), 2)
-        self.assertEqual(forms[0].text, "word")
-        self.assertEqual(forms[1].text, "wor")
-        self.assertEqual(forms[1].enclitic.text, "d")
+        word = Word("word")
+        word.split_form_enclitic(self.prs.data)
+        self.assertEqual(len(word.forms), 2)
+        self.assertEqual(word.forms[0].text, "word")
+        self.assertEqual(word.forms[1].text, "wor")
+        self.assertEqual(word.forms[1].enclitic.text, "d")
 
     def test_packon(self):
         self.prs.data.addons['packons'] = [{'orth': 'd', 'pos': '', 'senses': []}]
-        forms = Word("quword").split_form_enclitic(self.prs.data)
-        self.assertEqual(len(forms), 2)
-        self.assertEqual(forms[0].text, "quword")
-        self.assertEqual(forms[1].text, "quwor")
-        self.assertEqual(forms[1].enclitic.text, "d")
+        word = Word("quword")
+        word.split_form_enclitic(self.prs.data)
+        self.assertEqual(len(word.forms), 2)
+        self.assertEqual(word.forms[0].text, "quword")
+        self.assertEqual(word.forms[1].text, "quwor")
+        self.assertEqual(word.forms[1].enclitic.text, "d")
 
     def test_not_packon(self):
         self.prs.data.addons['not_packons'] = [{'orth': 'd', 'pos': '', 'senses': []}]
-        forms = Word("word").split_form_enclitic(self.prs.data)
-        self.assertEqual(len(forms), 2)
-        self.assertEqual(forms[0].text, "word")
-        self.assertEqual(forms[1].text, "wor")
-        self.assertEqual(forms[1].enclitic.text, "d")
+        word = Word("word")
+        word.split_form_enclitic(self.prs.data)
+        self.assertEqual(len(word.forms), 2)
+        self.assertEqual(word.forms[0].text, "word")
+        self.assertEqual(word.forms[1].text, "wor")
+        self.assertEqual(word.forms[1].enclitic.text, "d")
 
     def test_nonexisting_not_packon(self):
         self.prs.data.addons['packons'] = [{'orth': 'd', 'pos': '', 'senses': []}]
-        forms = Word("word").split_form_enclitic(self.prs.data)
-        self.assertEqual(len(forms), 1)
-        self.assertEqual(forms[0].text, "word")
+        word = Word("word")
+        word.split_form_enclitic(self.prs.data)
+        self.assertEqual(len(word.forms), 1)
+        self.assertEqual(word.forms[0].text, "word")
 
     def test_nonexisting_packon(self):
         self.prs.data.addons['not_packons'] = [{'orth': 'd', 'pos': '', 'senses': []}]
-        forms = Word("quword").split_form_enclitic(self.prs.data)
-        self.assertEqual(len(forms), 1)
-        self.assertEqual(forms[0].text, "quword")
+        word = Word("quword")
+        word.split_form_enclitic(self.prs.data)
+        self.assertEqual(len(word.forms), 1)
+        self.assertEqual(word.forms[0].text, "quword")
 
     def test_double_tackon(self):
         self.prs.data.addons['tackons'] = [{'orth': 'd', 'pos': '', 'senses': []},
                                            {'orth': 'rd', 'pos': '', 'senses': []}]
-        forms = Word("word").split_form_enclitic(self.prs.data)
-        self.assertEqual(len(forms), 3)
-        self.assertEqual(forms[0].text, "word")
-        self.assertEqual(forms[1].text, "wor")
-        self.assertEqual(forms[1].enclitic.text, "d")
-        self.assertEqual(forms[2].text, "wo")
-        self.assertEqual(forms[2].enclitic.text, "rd")
+        word = Word("word")
+        word.split_form_enclitic(self.prs.data)
+        self.assertEqual(len(word.forms), 3)
+        self.assertEqual(word.forms[0].text, "word")
+        self.assertEqual(word.forms[1].text, "wor")
+        self.assertEqual(word.forms[1].enclitic.text, "d")
+        self.assertEqual(word.forms[2].text, "wo")
+        self.assertEqual(word.forms[2].enclitic.text, "rd")
 
     def test_double_packon(self):
         self.prs.data.addons['packons'] = [{'orth': 'd', 'pos': '', 'senses': []},
                                            {'orth': 'rd', 'pos': '', 'senses': []}]
-        forms = Word("quword").split_form_enclitic(self.prs.data)
-        self.assertEqual(len(forms), 3)
-        self.assertEqual(forms[0].text, "quword")
-        self.assertEqual(forms[1].text, "quwor")
-        self.assertEqual(forms[1].enclitic.text, "d")
-        self.assertEqual(forms[2].text, "quwo")
-        self.assertEqual(forms[2].enclitic.text, "rd")
+        word = Word("quword")
+        word.split_form_enclitic(self.prs.data)
+        self.assertEqual(len(word.forms), 3)
+        self.assertEqual(word.forms[0].text, "quword")
+        self.assertEqual(word.forms[1].text, "quwor")
+        self.assertEqual(word.forms[1].enclitic.text, "d")
+        self.assertEqual(word.forms[2].text, "quwo")
+        self.assertEqual(word.forms[2].enclitic.text, "rd")
 
     def test_double_not_packon(self):
         self.prs.data.addons['not_packons'] = [{'orth': 'd', 'pos': '', 'senses': []},
                                                {'orth': 'rd', 'pos': '', 'senses': []}]
-        forms = Word("word").split_form_enclitic(self.prs.data)
-        self.assertEqual(len(forms), 3)
-        self.assertEqual(forms[0].text, "word")
-        self.assertEqual(forms[1].text, "wor")
-        self.assertEqual(forms[1].enclitic.text, "d")
-        self.assertEqual(forms[2].text, "wo")
-        self.assertEqual(forms[2].enclitic.text, "rd")
+        word = Word("word")
+        word.split_form_enclitic(self.prs.data)
+        self.assertEqual(len(word.forms), 3)
+        self.assertEqual(word.forms[0].text, "word")
+        self.assertEqual(word.forms[1].text, "wor")
+        self.assertEqual(word.forms[1].enclitic.text, "d")
+        self.assertEqual(word.forms[2].text, "wo")
+        self.assertEqual(word.forms[2].enclitic.text, "rd")

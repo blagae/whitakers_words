@@ -160,10 +160,12 @@ class Form:
         for analysis in analyses.values():
             analysis.enclitic = self.enclitic
             analysis.lookup_stem(data.wordlist)
-        # only use analyses where the lexeme was found
-        self.analyses = dict(filter(lambda x: x[1].lexeme.roots, analyses.items()))
-
+        self.analyses = analyses
         # TODO reimplement reduce (see old_parser)
+
+    def filter_good_analyses(self) -> None:
+        # only use analyses where the lexeme was found
+        self.analyses = dict(filter(lambda x: x[1].lexeme.roots, self.analyses.items()))
 
     def match_stems_inflections(self, viable_inflections: Sequence[Inflect], data: DataLayer) -> dict[int, Analysis]:
         """
@@ -202,20 +204,23 @@ class Word:
     def __repr__(self) -> str:
         return repr(self.__dict__)
 
-    def analyse(self, data: DataLayer) -> 'Word':
-        form_candidates = self.split_form_enclitic(data)
-        for form in form_candidates:
+    def analyse(self, data: DataLayer, apply_filter: bool = True) -> None:
+        for form in self.forms:
             if form.text in data.uniques:
                 for unique_form in data.uniques[form.text]:
                     form.analyse_unique(unique_form)
             # Get regular words
             else:
                 form.analyse(data)
-        # only use forms that get at least one valid analysis
-        self.forms = list(filter(lambda form: form.analyses, form_candidates))
-        return self
+                # only use forms that get at least one valid analysis
+                if apply_filter:
+                    for form in self.forms:
+                        form.filter_good_analyses()
 
-    def split_form_enclitic(self, data: DataLayer) -> Sequence[Form]:
+    def filter_good_forms(self) -> None:
+        self.forms = list(filter(lambda form: form.analyses, self.forms))
+
+    def split_form_enclitic(self, data: DataLayer) -> None:
         """Split enclitic ending from word"""
         result = [Form(self.text)]
 
@@ -227,7 +232,7 @@ class Word:
             result.extend(self.find_enclitic('packons', data))
         else:
             result.extend(self.find_enclitic('not_packons', data))
-        return result
+        self.forms = result
 
     def find_enclitic(self, list_name: str, data: DataLayer) -> Sequence[Form]:
         result = []
@@ -252,7 +257,12 @@ class Parser:
     def __repr__(self) -> str:
         return f"Parser(frequency=\"{self.data.frequency}\")"
 
-    def parse(self, text: str) -> Word:
+    def parse(self, text: str, apply_filters: bool = True) -> Word:
         if not text.isalpha():
             raise WordsException("Text to be parsed must be a single Latin word")
-        return Word(text).analyse(self.data)
+        result = Word(text)
+        result.split_form_enclitic(self.data)
+        result.analyse(self.data, apply_filters)
+        if apply_filters:
+            result.filter_good_forms()
+        return result
