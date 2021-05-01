@@ -39,7 +39,7 @@ setup(
     packages=list(["whitakers_words.generated",
                   *find_namespace_packages(include=["whitakers_words", "whitakers_words.*"])]),
     url='https://github.com/blagae/whitakers_words',
-    version='0.4.0',
+    version='0.5.0',
     zip_safe=False,
     package_data={'whitakers_words': ['py.typed'], "whitakers_words.data": ["*.*"]}
 )
