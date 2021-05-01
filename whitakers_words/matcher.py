@@ -24,6 +24,8 @@ class Matcher:
             self.function = _verb_checker
         elif stem["pos"] == "NUM":
             self.function = _numeral_checker
+        elif stem["pos"] == "PRON":
+            self.function = _pronoun_checker
         else:
             self.function = _basic_matcher
 
@@ -76,6 +78,10 @@ def _numeral_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
     return (_basic_matcher(stem, infl, word) and
             (stem["form"][0] == infl["form"][-1] or
              (stem["form"][0] == 'X' and get_numeral_type(word["parts"], stem["orth"]) == infl["form"][-1])))
+
+
+def _pronoun_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
+    return _check_right_stem(stem, infl, word) and infl["n"] == stem["n"]
 
 
 def _basic_matcher(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
