@@ -214,8 +214,7 @@ class Word:
                 form.analyse(data)
                 # only use forms that get at least one valid analysis
                 if apply_filter:
-                    for form in self.forms:
-                        form.filter_good_analyses()
+                    form.filter_good_analyses()
 
     def filter_good_forms(self) -> None:
         self.forms = list(filter(lambda form: form.analyses, self.forms))
