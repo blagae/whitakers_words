@@ -8,33 +8,25 @@ class EncliticTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.par = Parser(frequency="X")
+        cls.par = Parser()
 
     def test_unique(self):
         result = self.par.parse("quodcumque")
-        self.assertEqual(len(result.forms), 1)  # also pollice
+        self.assertEqual(len(result.forms), 1)
         self.assertEqual(result.forms[0].enclitic.text, 'cumque')
-        self.assertEqual(len(result.forms[0].analyses), 6)
+        self.assertEqual(len(result.forms[0].analyses), 4)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertTrue(analysis.lexeme.roots[0] in ['qu', 'quod'])  # wid == 6360
+            self.assertTrue(analysis.lexeme.roots[0] == 'qu')  # wid == 6360
 
             # common properties and features
             for inflection in analysis.inflections:
-                self.assertTrue(inflection.stem in ['qu', 'quod'])
-                self.assertTrue(inflection.affix in ['', 'od'])
+                self.assertTrue(inflection.stem == 'qu')
+                self.assertTrue(inflection.affix == 'od')
 
     def test_optional_enclitic(self):
         result = self.par.parse("pollice")
-        self.assertEqual(len(result.forms), 2)  # also pollice
-        self.assertEqual(result.forms[1].enclitic.text, 'ce')
-        self.assertEqual(len(result.forms[1].analyses), 2)
-        for key, analysis in result.forms[1].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'poll')  # wid == 6360
-
-            # common properties and features
-            for inflection in analysis.inflections:
-                self.assertEqual(inflection.stem, 'poll')
-                self.assertEqual(inflection.affix, 'i')
+        self.assertEqual(len(result.forms), 1)  # cannot be analyzed as polli-ce
+        self.assertIsNone(result.forms[0].enclitic)
 
     def test_be_ne(self):
         result = self.par.parse("bene")
@@ -82,3 +74,27 @@ class EncliticTest(unittest.TestCase):
             self.assertTrue(inflection.has_feature(Case.ACC))
             self.assertTrue(inflection.has_feature(Number.S))
             self.assertTrue(inflection.has_feature(Gender.C))
+
+    def test_mecum(self):
+        result = self.par.parse("mecum")
+        self.assertEqual(len(result.forms), 1)
+        self.assertEqual(len(result.forms[0].analyses), 1)
+        self.assertEqual(result.forms[0].enclitic.text, 'cum')
+        for key, analysis in result.forms[0].analyses.items():
+            self.assertEqual(analysis.lexeme.roots[0], 'ego')
+            self.assertEqual(analysis.lexeme.wordType, WordType.PRON)
+
+            self.assertEqual(len(analysis.inflections), 2)
+            for inflection in analysis.inflections:
+                self.assertEqual(inflection.stem, 'm')
+                self.assertEqual(inflection.affix, 'e')
+                self.assertEqual(inflection.wordType, WordType.PRON)
+                self.assertTrue(inflection.has_feature(Number.S))
+                self.assertTrue(inflection.has_feature(Gender.C))
+            other_features = [[x.features['Case']] for x in analysis.inflections]   
+            self.assertTrue([Case.ABL] in other_features)
+            self.assertTrue([Case.ACC] in other_features)  # TODO fix false positive
+
+    def test_tertiuscum_empty(self):
+        result = self.par.parse("tertiuscum")
+        self.assertEqual(len(result.forms), 0)

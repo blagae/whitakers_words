@@ -94,7 +94,7 @@ class UniqueLexeme(Lexeme):
 class Enclitic:
     def __init__(self, enclitic: Addon):
         self.text = enclitic['orth']
-        self.position = enclitic['pos']
+        self.position = enclitic['pos'].split()
         self.senses = enclitic['senses']
 
     def __repr__(self) -> str:
@@ -165,7 +165,14 @@ class Form:
 
     def filter_good_analyses(self) -> None:
         # only use analyses where the lexeme was found
-        self.analyses = dict(filter(lambda x: x[1].lexeme.roots, self.analyses.items()))
+        self.analyses = dict(filter(self.filter_analysis, self.analyses.items()))
+
+    def filter_analysis(self, analysis) -> bool:
+        if analysis[1].enclitic:
+            enclitic = analysis[1].enclitic
+            # TODO fix packons for real
+            return enclitic.position[0] in ("X", "PACK") or enclitic.position[0] == analysis[1].lexeme.wordType.name
+        return bool(analysis[1].lexeme.roots)
 
     def match_stems_inflections(self, viable_inflections: Sequence[Inflect], data: DataLayer) -> dict[int, Analysis]:
         """
