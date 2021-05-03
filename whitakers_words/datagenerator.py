@@ -59,7 +59,7 @@ class Generator:
                 for v in raw_form.split():
                     try:
                         val = int(v)
-                        if val > 9:
+                        if len(n) >= 2:
                             form.append(val)
                         else:
                             n.append(val)
