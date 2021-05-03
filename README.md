@@ -29,10 +29,8 @@ It has also seen significant improvement in usability and performance:
 This project is far from production-ready. Known issues are:
 
 * `prefixes.py` and `suffixes.py` are not being used in program logic right now
-* there is no longer a response builder which can output to JSON
-* `INFLECTS.LAT` has two sets of two numbers to indicate declination etc; only the first one is used right now.
-* there is as of yet no way to filter for e.g. pre-classical inflections
-* pronoun analysis provides terribly incorrect results
+* the API does not yet support filtering for e.g. pre-classical inflections
+* question words are analyzed terribly wrong
 
 There are certainly many more major problems to be found. Feel free to create Github issues for any error you encounter.
 
@@ -40,10 +38,28 @@ There are certainly many more major problems to be found. Feel free to create Gi
 
 This project is under the MIT license. The license was taken over from the
 [Luke Hollis project](https://github.com/ArchimedesDigital/open_words).
-The original Whitaker's Words project had a very 'liberal' license that was ostensibly written by William Whitaker himself;
+The original Whitaker's Words project in Ada had a very 'liberal' license that was ostensibly written by William Whitaker himself;
 the canonical MIT license seems to be quite close to the intent Mr. Whitaker had.
 
 # Usage
+
+## Install instructions
+
+The prerequisites are simple: have python 3.9 installed with pip.
+
+If you have cloned the repository, you can just use
+
+    $ python setup.py install
+
+Otherwise, you will need to install from the Github repo, because there is no PyPi package for this project.
+
+    $ pip install git+https://github.com/blagae/whitakers_words.git#egg=whitakers_words
+
+If you have a requirements file, then this is a valid format for the dependency:
+
+    git+git://github.com/blagae/whitakers_words.git#egg=whitakers_words
+
+## Usage as a library in Python code
 
 To use the standard dictionary lookup, use the `Parser` class as follows:
 
@@ -68,21 +84,20 @@ Word:
           enclitic: que
 ```
 
-## Install instructions
+## Command line tool
 
-The prerequisites are simple: have python3 installed with pip.
+Since version 0.5, a command line tool called `whitaker` is available when you install the project.
+It can be called as follows:
 
-If you have cloned the repository, you can just use
+```
+$ whitaker parse regemque
+```
 
-    $ python setup.py install
+Some caveats when using this tool, as of version 0.5:
 
-Otherwise, you will need to install from the Github repo, because there is no PyPi package for this project.
-
-    $ pip install git+https://github.com/blagae/whitakers_words.git#egg=whitakers_words
-
-If you have a requirements file, then this is a valid format for the dependency:
-
-    git+git://github.com/blagae/whitakers_words.git#egg=whitakers_words
+* the tool is very basic and does not support a lot of options yet.
+* the output of the tool is simply the `repr()` in the Python code.
+* it is not guaranteed that the subcommands will remain the same.
 
 # Development
 
@@ -91,12 +106,14 @@ If you have a requirements file, then this is a valid format for the dependency:
 You are advised to use `virtualenv` or `venv` when modifying any code. The project currently runs on Python 3.9,
 using some improvements of the type hinting system, but it could probably run on older versions as well with minimal modifications.
 
-The folder `venv/` is ignored by the git config, so this is the suggested name for your venv.
+The folder `venv/` is ignored by the git config, so this is the suggested name for your venv:
+
+    $ python -m venv venv/
 
 ## Test instructions
 
-The tests use the `pytest` framework. All tests are in the `tests` module (which is not included in the dist).
-You should be able to run them from the command line, without any further config, by just calling:
+The tests use the `pytest` framework. All tests are in the `tests` module (which is not included in the distribution).
+You should be able to run the tests from the command line, without any further config, by just calling:
 
     $ pytest tests
 
@@ -106,7 +123,7 @@ If you want to run the full QA check of this project, just run tox on the comman
 
     $ tox
 
-This commands runs the tests, checks for PEP8 compliance with `flake8`, and for type hinting consistency with `mypy`.
+This commands runs the tests with `pytest`, checks for PEP8 compliance with `flake8`, and for type hinting consistency with `mypy`.
 
 ## Project metadata
 
@@ -118,5 +135,5 @@ This commands runs the tests, checks for PEP8 compliance with `flake8`, and for 
 * Improve current state of project
 * Leverage all information in the `DICTLINE.GEN` file
 * Compare results to output of the original Whitaker's Words program
-* Output to JSON again
+* Output to different formats: JSON, YAML, Whitaker's original syntax, ...
 * ...
