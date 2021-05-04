@@ -1,6 +1,6 @@
 import re
 from enum import Enum
-from typing import Any, Sequence, Union
+from typing import Any, Sequence, Tuple, Union
 
 from .datalayer import DataLayer
 from .datatypes import Addon, DictEntry, Inflect, Stem, Unique
@@ -167,7 +167,7 @@ class Form:
         # only use analyses where the lexeme was found
         self.analyses = dict(filter(self.filter_analysis, self.analyses.items()))
 
-    def filter_analysis(self, analysis) -> bool:
+    def filter_analysis(self, analysis: Tuple[int, Analysis]) -> bool:
         if analysis[1].enclitic:
             enclitic = analysis[1].enclitic
             # TODO fix packons for real

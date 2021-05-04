@@ -26,7 +26,7 @@ class NumeralTest(unittest.TestCase):
                 self.assertTrue(inflection.has_feature(Gender.C))
                 self.assertTrue(inflection.has_feature(Number.P))
                 self.assertTrue(inflection.has_feature(NumeralType.CARD))
-            other_features = [[x.features['Case']] for x in analysis.inflections]   
+            other_features = [[x.features['Case']] for x in analysis.inflections]
             self.assertTrue([Case.NOM] in other_features)
             self.assertTrue([Case.VOC] in other_features)
             self.assertTrue([Case.ACC] in other_features)

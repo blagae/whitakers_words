@@ -1,4 +1,5 @@
 click
 pytest
+pyYAML
 tox
 wheel

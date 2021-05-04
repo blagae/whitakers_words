@@ -91,7 +91,7 @@ class EncliticTest(unittest.TestCase):
                 self.assertEqual(inflection.wordType, WordType.PRON)
                 self.assertTrue(inflection.has_feature(Number.S))
                 self.assertTrue(inflection.has_feature(Gender.C))
-            other_features = [[x.features['Case']] for x in analysis.inflections]   
+            other_features = [[x.features['Case']] for x in analysis.inflections]
             self.assertTrue([Case.ABL] in other_features)
             self.assertTrue([Case.ACC] in other_features)  # TODO fix false positive
 
