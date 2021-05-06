@@ -55,7 +55,7 @@ def _noun_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
 
 # TODO clear up situation with "ADJ X" vs "ADJ POS"
 def _adj_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
-    if not _basic_matcher(stem, infl, word):
+    if not _basic_matcher(stem, infl, word) or not _check_right_stem(stem, infl, word):
         return False
     if stem["form"][-1] == "X":
         if stem["orth"] in word["parts"]:
