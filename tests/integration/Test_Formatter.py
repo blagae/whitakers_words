@@ -4,9 +4,8 @@ from whitakers_words.formatter import JsonFormatter, WordsFormatter, YamlFormatt
 from whitakers_words.parser import Parser
 
 
-""" For now, just make sure that there's no weird exceptions in these parsers """
 class FormatterTest(unittest.TestCase):
-
+    """ For now, just make sure that there's no weird exceptions in these formatters """
     @classmethod
     def setUpClass(cls):
         cls.par = Parser()

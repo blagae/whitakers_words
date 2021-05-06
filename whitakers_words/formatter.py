@@ -20,8 +20,8 @@ class WordsFormatter(Formatter):
                 result += ' ' * (21 - len(form.enclitic.text))
                 result += 'TACKON\n'
                 result += '; '.join(sense for sense in form.enclitic.senses)
-                result += '\n'
             for key, analysis in form.analyses.items():
+                result += '\n'
                 for inflection in analysis.inflections:
                     result += f'{inflection.stem}.{inflection.affix}'
                     result += ' ' * (21 - (len(form.text) + 1))
@@ -36,9 +36,7 @@ class WordsFormatter(Formatter):
         return result
 
 
-
 class YamlFormatter(Formatter):
-    
     class _NoAliasNoTagDumper(yaml.Dumper):
         """
         From https://github.com/progala/ttl255.com/blob/master/yaml/anchors-and-aliases/yaml_same_ids_custom_dumper.py
@@ -57,7 +55,7 @@ class YamlFormatter(Formatter):
 
 class JsonFormatter(Formatter):
     class _CustomJsonEncoder(json.JSONEncoder):
-        def default(self, ref):
+        def default(self, ref: Any) -> Any:
             if isinstance(ref, Enum):
                 return ref.value
             return ref.__dict__
