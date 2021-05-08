@@ -26,7 +26,7 @@ class NounTest(unittest.TestCase):
                 self.assertEqual(inflection.wordType, WordType.N)
                 self.assertTrue(inflection.has_feature(Case.ACC))
                 self.assertTrue(inflection.has_feature(Number.S))
-                self.assertTrue(inflection.has_feature(Gender.C))  # TODO fix gender on nouns
+                self.assertTrue(inflection.has_feature(Gender.F))
 
     def test_templum(self):
         result = self.par.parse("templum")
@@ -43,7 +43,7 @@ class NounTest(unittest.TestCase):
                 self.assertEqual(inflection.affix, 'um')
                 self.assertEqual(inflection.wordType, WordType.N)
                 self.assertTrue(inflection.has_feature(Number.S))
-                # self.assertTrue(inflection.has_feature(Gender.N))  # TODO fix gender on nouns
+                self.assertTrue(inflection.has_feature(Gender.N))
 
             other_features = [[x.features['Case']] for x in analysis.inflections]
             self.assertTrue([Case.ACC] in other_features)
@@ -65,7 +65,7 @@ class NounTest(unittest.TestCase):
                 self.assertEqual(inflection.affix, 'is')
                 self.assertEqual(inflection.wordType, WordType.N)
                 self.assertTrue(inflection.has_feature(Number.P))
-                # self.assertTrue(inflection.has_feature(Gender.F))  # TODO fix gender on nouns
+                self.assertTrue(inflection.has_feature(Gender.F))
 
             other_features = [[x.features['Case']] for x in analysis.inflections]
             self.assertTrue([Case.DAT] in other_features)
@@ -74,7 +74,7 @@ class NounTest(unittest.TestCase):
 
     def test_temptatio_empty(self):
         result = self.par.parse("temptatio")
-        # this result is empty because abacus is not a common enough word for the default parser
+        # this result is empty because temptatio is not a common enough word for the default parser
         # if the default is ever changed, this test will start failing, so fix the test then
         self.assertEqual(len(result.forms), 0)
 
@@ -94,7 +94,7 @@ class NounTest(unittest.TestCase):
                     self.assertEqual(inflection.affix, 'a')
                     self.assertEqual(inflection.wordType, WordType.N)
                     self.assertTrue(inflection.has_feature(Number.P))
-                    # self.assertTrue(inflection.has_feature(Gender.M))  # TODO fix gender on nouns
+                    self.assertTrue(inflection.has_feature(Gender.N))
 
                 other_features = [[x.features['Case']] for x in analysis.inflections]
                 self.assertTrue([Case.NOM] in other_features)
@@ -115,7 +115,7 @@ class NounTest(unittest.TestCase):
                     self.assertEqual(inflection.affix, '')
                     self.assertEqual(inflection.wordType, WordType.N)
                     self.assertTrue(inflection.has_feature(Number.S))
-                    # self.assertTrue(inflection.has_feature(Gender.N))  # TODO fix gender on nouns
+                    self.assertTrue(inflection.has_feature(Gender.N))
 
                 other_features = [x.features['Case'] for x in analysis.inflections]
                 self.assertTrue(Case.VOC in other_features)

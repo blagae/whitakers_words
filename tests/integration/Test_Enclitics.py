@@ -73,7 +73,7 @@ class EncliticTest(unittest.TestCase):
             self.assertEqual(inflection.wordType, WordType.N)
             self.assertTrue(inflection.has_feature(Case.ACC))
             self.assertTrue(inflection.has_feature(Number.S))
-            self.assertTrue(inflection.has_feature(Gender.C))
+            self.assertTrue(inflection.has_feature(Gender.M))
 
     def test_mecum(self):
         result = self.par.parse("mecum")

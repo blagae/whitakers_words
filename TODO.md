@@ -50,6 +50,7 @@ More tests are always welcome, because:
 
 ## datalayer
 
+* make it more generic (e.g. allow a custom backend)
 * do we need the filter() inception ?
 * allow filtering on other metadata than frequency
 * filtering on frequency should also filter the wordlist to prevent homonymic false positives

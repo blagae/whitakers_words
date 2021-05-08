@@ -4,7 +4,7 @@ from typing import Any, Sequence, Tuple, Union
 
 from .datalayer import DataLayer
 from .datatypes import Addon, DictEntry, Inflect, Stem, Unique
-from .enums import WordType, get_enum_value
+from .enums import Gender, WordType, get_enum_value
 from .matcher import Matcher
 
 
@@ -13,13 +13,14 @@ class WordsException(Exception):
 
 
 class Inflection:
-    def __init__(self, infl: Inflect, stem_lemma: str):
+    def __init__(self, infl: Inflect, stem: Stem):
         self.wordType = get_enum_value("WordType", infl["pos"])
         self.category = infl['n']
-        self.stem = stem_lemma
+        self.stem = stem['orth']
         self.affix = infl["ending"]
         self.features: dict[str, Enum] = {}
         self.analyse_features(infl["form"])
+        self.override_features(stem)
         self.id = infl["iid"]
 
     def __repr__(self) -> str:
@@ -45,6 +46,10 @@ class Inflection:
             return
         for idx, feature in enumerate(features[:len(lst)]):
             self.features[lst[idx]] = get_enum_value(lst[idx], feature)
+
+    def override_features(self, stem: Stem) -> None:
+        if self.wordType == WordType.N and stem["form"]:
+            self.features["Gender"] = Gender[str(stem["form"][0])]
 
     def has_feature(self, feature: Enum) -> bool:
         return (type(feature).__name__ in self.features and
@@ -193,7 +198,7 @@ class Form:
                     wrd = data.wordlist[stem_cand['wid']]
                     if wrd and Matcher(stem_cand, infl_cand).check(wrd):
                         word_id = stem_cand['wid']
-                        inflection = Inflection(infl_cand, stem_lemma)
+                        inflection = Inflection(infl_cand, stem_cand)
                         # If there's already a matched stem with that orthography
                         if word_id in matched_stems:
                             if inflection not in matched_stems[word_id].inflections:
