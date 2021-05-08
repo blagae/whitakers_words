@@ -14,7 +14,7 @@ class NumeralTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'tr')  # wid == 33999
+            self.assertEqual(analysis.lexeme.roots[0], 'tr')
             self.assertEqual(analysis.lexeme.wordType, WordType.NUM)
 
             self.assertEqual(len(analysis.inflections), 3)
@@ -36,7 +36,7 @@ class NumeralTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'triginta')  # wid == 33999
+            self.assertEqual(analysis.lexeme.roots[0], 'triginta')
             self.assertEqual(analysis.lexeme.wordType, WordType.NUM)
 
             self.assertEqual(len(analysis.inflections), 1)

@@ -16,7 +16,7 @@ class AdjectiveTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'saev')  # wid == 33999
+            self.assertEqual(analysis.lexeme.roots[0], 'saev')
             self.assertEqual(analysis.lexeme.wordType, WordType.ADJ)
 
             self.assertEqual(len(analysis.inflections), 4)
@@ -40,7 +40,7 @@ class AdjectiveTest(unittest.TestCase):
         self.assertEqual(len(result.forms[0].analyses), 3)
         for key, analysis in result.forms[0].analyses.items():
             if analysis.lexeme.wordType == WordType.ADJ:
-                self.assertEqual(analysis.lexeme.roots[0], 'bon')  # wid == 6825
+                self.assertEqual(analysis.lexeme.roots[0], 'bon')
                 self.assertEqual(analysis.lexeme.wordType, WordType.ADJ)
 
                 self.assertEqual(len(analysis.inflections), 2)
@@ -62,7 +62,7 @@ class AdjectiveTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'felix')  # wid == 20451
+            self.assertEqual(analysis.lexeme.roots[0], 'felix')
             self.assertEqual(analysis.lexeme.wordType, WordType.ADJ)
 
             self.assertEqual(len(analysis.inflections), 1)
@@ -82,7 +82,7 @@ class AdjectiveTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 2)  # see Test_Adverbs.test_melius
         analysis = result.forms[0].analyses[6825]
-        self.assertEqual(analysis.lexeme.roots[0], 'bon')  # wid == 6825
+        self.assertEqual(analysis.lexeme.roots[0], 'bon')
         self.assertEqual(analysis.lexeme.wordType, WordType.ADJ)
 
         self.assertEqual(len(analysis.inflections), 3)
@@ -105,7 +105,7 @@ class AdjectiveTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'anceps')  # wid == 3372
+            self.assertEqual(analysis.lexeme.roots[0], 'anceps')
             self.assertEqual(analysis.lexeme.wordType, WordType.ADJ)
 
             self.assertEqual(len(analysis.inflections), 3)
@@ -126,7 +126,7 @@ class AdjectiveTest(unittest.TestCase):
         self.assertEqual(len(result.forms[0].analyses), 2)
         for key, analysis in result.forms[0].analyses.items():
             if analysis.lexeme.wordType == WordType.ADJ:
-                self.assertEqual(analysis.lexeme.roots[0], 'acer')  # wid == 3372
+                self.assertEqual(analysis.lexeme.roots[0], 'acer')
 
                 self.assertEqual(len(analysis.inflections), 2)
                 for inflection in analysis.inflections:

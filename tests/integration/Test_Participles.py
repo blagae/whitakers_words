@@ -19,7 +19,7 @@ class VerbalParticipleTest(unittest.TestCase):
 
             self.assertIn(analysis.lexeme.wordType, [WordType.N, WordType.V])
             if analysis.lexeme.wordType == WordType.V:
-                self.assertEqual(analysis.lexeme.roots[0], 'pecc')  # wid == 20451
+                self.assertEqual(analysis.lexeme.roots[0], 'pecc')
                 self.assertEqual(len(analysis.inflections), 6)
                 # common properties and features
                 for inflection in analysis.inflections:

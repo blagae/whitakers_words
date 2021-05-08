@@ -15,7 +15,7 @@ class AdverbTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 2)  # also be-ne, see EncliticTest
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'bene')  # wid == 6360
+            self.assertEqual(analysis.lexeme.roots[0], 'bene')
             self.assertEqual(analysis.lexeme.wordType, WordType.ADV)
 
             self.assertEqual(len(analysis.inflections), 1)
@@ -32,7 +32,7 @@ class AdverbTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 2)  # see Test_Adjectives.test_melius
         analysis = result.forms[0].analyses[6360]
-        self.assertEqual(analysis.lexeme.roots[0], 'bene')  # wid == 6360
+        self.assertEqual(analysis.lexeme.roots[0], 'bene')
         self.assertEqual(analysis.lexeme.wordType, WordType.ADV)
 
         self.assertEqual(len(analysis.inflections), 1)

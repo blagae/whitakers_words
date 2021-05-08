@@ -15,7 +15,7 @@ class VerbTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'am')  # wid == 2871
+            self.assertEqual(analysis.lexeme.roots[0], 'am')
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
 
             self.assertEqual(len(analysis.inflections), 1)
@@ -32,7 +32,7 @@ class VerbTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'quaer')  # wid == 32642
+            self.assertEqual(analysis.lexeme.roots[0], 'quaer')
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
 
             self.assertEqual(len(analysis.inflections), 1)
@@ -49,7 +49,7 @@ class VerbTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'fer')  # wid == 32642
+            self.assertEqual(analysis.lexeme.roots[0], 'fer')
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
 
             self.assertEqual(len(analysis.inflections), 1)
@@ -66,7 +66,7 @@ class VerbTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'am')  # wid == 32642
+            self.assertEqual(analysis.lexeme.roots[0], 'am')
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
 
             self.assertEqual(len(analysis.inflections), 1)
@@ -83,7 +83,7 @@ class VerbTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'abe')  # wid == 32642
+            self.assertEqual(analysis.lexeme.roots[0], 'abe')
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
 
             self.assertEqual(len(analysis.inflections), 1)
@@ -100,7 +100,7 @@ class VerbTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'dec')  # wid == 32642
+            self.assertEqual(analysis.lexeme.roots[0], 'dec')
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
 
             self.assertEqual(len(analysis.inflections), 1)
@@ -117,7 +117,7 @@ class VerbTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 2)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'al')  # wid == 32642
+            self.assertEqual(analysis.lexeme.roots[0], 'al')
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
 
             self.assertEqual(len(analysis.inflections), 1)

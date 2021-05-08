@@ -15,7 +15,7 @@ class ConjunctionTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'et')  # wid == 6360
+            self.assertEqual(analysis.lexeme.roots[0], 'et')
             self.assertEqual(analysis.lexeme.wordType, WordType.CONJ)
 
             self.assertEqual(len(analysis.inflections), 1)

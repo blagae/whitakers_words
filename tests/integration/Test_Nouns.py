@@ -15,7 +15,7 @@ class NounTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'regio')  # wid == 20451
+            self.assertEqual(analysis.lexeme.roots[0], 'regio')
             self.assertEqual(analysis.lexeme.wordType, WordType.N)
 
             self.assertEqual(len(analysis.inflections), 1)
@@ -33,7 +33,7 @@ class NounTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'templ')  # wid == 20451
+            self.assertEqual(analysis.lexeme.roots[0], 'templ')
             self.assertEqual(analysis.lexeme.wordType, WordType.N)
 
             self.assertEqual(len(analysis.inflections), 3)
@@ -55,7 +55,7 @@ class NounTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for key, analysis in result.forms[0].analyses.items():
-            self.assertEqual(analysis.lexeme.roots[0], 'regin')  # wid == 20451
+            self.assertEqual(analysis.lexeme.roots[0], 'regin')
             self.assertEqual(analysis.lexeme.wordType, WordType.N)
 
             self.assertEqual(len(analysis.inflections), 3)
@@ -86,7 +86,7 @@ class NounTest(unittest.TestCase):
         for key, analysis in result.forms[0].analyses.items():
             self.assertIn(analysis.lexeme.wordType, [WordType.N, WordType.V])
             if analysis.lexeme.wordType == WordType.N:
-                self.assertEqual(analysis.lexeme.roots[0], 'peccat')  # wid == 20451
+                self.assertEqual(analysis.lexeme.roots[0], 'peccat')
                 self.assertEqual(len(analysis.inflections), 3)
                 # common properties and features
                 for inflection in analysis.inflections:
@@ -107,7 +107,7 @@ class NounTest(unittest.TestCase):
         self.assertEqual(len(result.forms[0].analyses), 2)
         for key, analysis in result.forms[0].analyses.items():
             if analysis.lexeme.wordType == WordType.N:
-                self.assertEqual(analysis.lexeme.roots[0], 'acer')  # wid == 3372
+                self.assertEqual(analysis.lexeme.roots[0], 'acer')
 
                 self.assertEqual(len(analysis.inflections), 3)
                 for inflection in analysis.inflections:
