@@ -1,5 +1,5 @@
 """
-generator.py
+datagenerator.py
 
 Format the data from the input files from Whitaker's Words into python dictionaries
 """

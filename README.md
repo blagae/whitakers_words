@@ -18,8 +18,8 @@ A number of (proposed) functions have been deleted:
 
 It has also seen significant improvement in usability and performance:
 
-* `format_data` has been renamed to `generator`. It is now a data feeding program which reads Whitaker's file lists into Python dictionaries and lists
-* `generator` logic is called upon installation of the project, through `python setup.py install` or `pip install .`
+* `format_data` has been renamed to `datagenerator`. It is now a data feeding program which reads Whitaker's file lists into Python dictionaries and lists
+* `datagenerator` logic is called upon installation of the project, through `python setup.py install` or `pip install .`
 * inefficient dictionary loops (`O(n)`) have been replaced by lookups (`O(log n)`)
 * the default output is no longer a JSON dictionary, but rather a hierarchy of Python objects.
 * tests were added

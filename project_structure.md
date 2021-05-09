@@ -1,12 +1,12 @@
 # On install
 
-During installation, the `generator` module executes.
+During installation, the `datagenerator` module executes.
 This file reads the original data files, which were created by William Whitaker,
 into lists and dictionaries that can be used very efficiently by the rest of the program.
 The output is stored as large Python files in the `whitakers_words.generated` package.
 We generate them on install instead of adding them to version control,
 because it is always possible that the format of the generated files changes,
-and it's much more intuitive to read the changes in the generator script
+and it's much more intuitive to read the changes in the datagenerator script
 than in seeing a thousand random changes in a wall of text.
 
 If you are cloning the project and trying to run the files, first install the package locally:
