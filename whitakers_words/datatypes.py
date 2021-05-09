@@ -8,6 +8,7 @@ class Stem(TypedDict):
     n: Sequence[int]
     wid: int
     props: list[str]
+    stem_number: int
 
 
 class Inflect(TypedDict):

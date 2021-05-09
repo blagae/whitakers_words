@@ -1,6 +1,6 @@
-from typing import Callable, Sequence
+from typing import Callable
 
-from .datatypes import DictEntry, Inflect, Stem
+from .datatypes import Inflect, Stem
 from .enums import Degree, NumeralType
 
 
@@ -8,7 +8,7 @@ class Matcher:
     def __init__(self, stem: Stem, infl: Inflect):
         self.stem = stem
         self.infl = infl
-        self.function: Callable[[Stem, Inflect, DictEntry], bool]
+        self.function: Callable[[Stem, Inflect], bool]
         if infl["pos"] != stem["pos"]:
             if infl["pos"] == "VPAR" and stem["pos"] == "V":
                 self.function = _vpar_checker
@@ -29,55 +29,52 @@ class Matcher:
         else:
             self.function = _basic_matcher
 
-    def check(self, word: DictEntry) -> bool:
-        return self.function(self.stem, self.infl, word)
+    def check(self) -> bool:
+        return self.function(self.stem, self.infl)
 
 
-def _check_right_stem(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
-    return len(word["parts"]) > infl["stem"] and stem["orth"] == word["parts"][infl["stem"]]
+def _check_right_stem(stem: Stem, infl: Inflect) -> bool:
+    return stem["stem_number"] == infl["stem"]
 
 
-def _dummy_false(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
+def _dummy_false(stem: Stem, infl: Inflect) -> bool:
     return False
 
 
-def _vpar_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
-    return _check_right_stem(stem, infl, word)
+def _vpar_checker(stem: Stem, infl: Inflect) -> bool:
+    return _check_right_stem(stem, infl)
 
 
-def _noun_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
-    if _check_right_stem(stem, infl, word):
+def _noun_checker(stem: Stem, infl: Inflect) -> bool:
+    if _check_right_stem(stem, infl):
         if infl["n"] == stem["n"] or (infl["n"][0] == stem["n"][0] and infl["n"][-1] == 0):
             return (infl["form"][-1] in ("X", stem["form"][0]) or
                     (infl["form"][-1] == "C" and stem["form"][0] in ("F", "M")))
     return False
 
 
-# TODO clear up situation with "ADJ X" vs "ADJ POS"
-def _adj_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
-    if not _basic_matcher(stem, infl, word) or not _check_right_stem(stem, infl, word):
+def _adj_checker(stem: Stem, infl: Inflect) -> bool:
+    if not _basic_matcher(stem, infl) or not _check_right_stem(stem, infl):
         return False
     if stem["form"][-1] == "X":
-        if stem["orth"] in word["parts"]:
-            return get_degree(word["parts"][1:], stem["orth"]) == infl["form"][-1]
+        return Degree.get_degree_list()[max(0, stem["stem_number"]-1)] == infl["form"][-1]
     return stem["form"][-1] == infl["form"][-1]
 
 
-def _adv_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
+def _adv_checker(stem: Stem, infl: Inflect) -> bool:
     if stem["form"] == ["X"]:
-        if stem["orth"] in word["parts"]:
-            return get_degree(word["parts"], stem["orth"]) == infl["form"][-1]
+        return Degree.get_degree_list()[stem["stem_number"]] == infl["form"][-1]
     return stem["form"] == infl["form"]
 
 
-def _verb_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
+def _verb_checker(stem: Stem, infl: Inflect) -> bool:
     if stem["form"][0] in ("IMPERS", "DEP", "SEMIDEP", "PERFDEF"):
-        if not _special_verb_checker(stem, infl, word):
+        if not _special_verb_checker(stem, infl):
             return False
-    return _basic_matcher(stem, infl, word) and _check_right_stem(stem, infl, word)
+    return _basic_matcher(stem, infl) and _check_right_stem(stem, infl)
 
 
-def _special_verb_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
+def _special_verb_checker(stem: Stem, infl: Inflect) -> bool:
     if stem["form"][0] == "IMPERS":  # e.g. decet
         return infl["form"][-2] == "3"
     if stem["form"][0] == "DEP":  # e.g. tueri
@@ -91,32 +88,18 @@ def _special_verb_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
     return True
 
 
-def _numeral_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
-    return (_basic_matcher(stem, infl, word) and
+def _numeral_checker(stem: Stem, infl: Inflect) -> bool:
+    return (_basic_matcher(stem, infl) and
             (stem["form"][0] == infl["form"][-1] or
-             (stem["form"][0] == 'X' and get_numeral_type(word["parts"], stem["orth"]) == infl["form"][-1])))
+             (stem["form"][0] == 'X' and NumeralType.get_type_list()[stem["stem_number"]] == infl["form"][-1])))
 
 
-def _pronoun_checker(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
-    return _check_right_stem(stem, infl, word) and infl["n"] == stem["n"]
+def _pronoun_checker(stem: Stem, infl: Inflect) -> bool:
+    return _check_right_stem(stem, infl) and infl["n"] == stem["n"]
 
 
-def _basic_matcher(stem: Stem, infl: Inflect, word: DictEntry) -> bool:
+def _basic_matcher(stem: Stem, infl: Inflect) -> bool:
     if stem["n"]:
         return (infl["n"] == stem["n"] or infl["n"][0] == 0 or
                 (infl["n"][0] == stem["n"][0] and infl["n"][1] == 0))
     return True
-
-
-def get_degree(parts: Sequence[str], stem: str) -> str:
-    try:
-        return Degree.get_degree_list()[parts.index(stem)]
-    except ValueError:
-        return Degree.POS.name
-
-
-def get_numeral_type(parts: Sequence[str], stem: str) -> str:
-    try:
-        return NumeralType.get_type_list()[parts.index(stem)]
-    except ValueError:
-        return NumeralType.CARD.name

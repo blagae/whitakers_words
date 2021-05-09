@@ -195,8 +195,7 @@ class Form:
             if stem_lemma in data.stems:
                 stem_list = data.stems[stem_lemma]
                 for stem_cand in stem_list:
-                    wrd = data.wordlist[stem_cand['wid']]
-                    if wrd and Matcher(stem_cand, infl_cand).check(wrd):
+                    if Matcher(stem_cand, infl_cand).check():
                         word_id = stem_cand['wid']
                         inflection = Inflection(infl_cand, stem_cand)
                         # If there's already a matched stem with that orthography

@@ -127,3 +127,35 @@ class VerbTest(unittest.TestCase):
             self.assertEqual(analysis.inflections[0].affix, 'it')
             self.assertEqual(analysis.inflections[0].wordType, WordType.V)
             self.assertEqual(analysis.inflections[0].features, expected_features)
+
+    def test_venit(self):
+        result = self.par.parse("venit")
+        # response syntax and basics
+        self.assertEqual(len(result.forms), 1)
+        self.assertEqual(len(result.forms[0].analyses), 2)
+        for key, analysis in result.forms[0].analyses.items():
+            self.assertEqual(analysis.lexeme.wordType, WordType.V)
+            if analysis.lexeme.roots[0] == 'vene':  # venere, venio = to be sold as a slave
+                self.assertEqual(len(analysis.inflections), 1)
+                expected_features = {'Mood': Mood.IND, 'Number': Number.S, 'Person': Person['3'],
+                                     'Tense': Tense.PRES, 'Voice': Voice.ACTIVE}
+                self.assertEqual(analysis.inflections[0].stem, 'veni')
+                self.assertEqual(analysis.inflections[0].affix, 't')
+                self.assertEqual(analysis.inflections[0].wordType, WordType.V)
+                self.assertEqual(analysis.inflections[0].features, expected_features)
+            elif analysis.lexeme.roots[0] == 'veni':
+                self.assertEqual(len(analysis.inflections), 2)
+                for inflection in analysis.inflections:
+                    self.assertEqual(analysis.inflections[0].stem, 'ven')
+                    self.assertEqual(analysis.inflections[0].affix, 'it')
+                    self.assertEqual(analysis.inflections[0].wordType, WordType.V)
+                    self.assertTrue(inflection.has_feature(Mood.IND))
+                    self.assertTrue(inflection.has_feature(Number.S))
+                    self.assertTrue(inflection.has_feature(Person['3']))
+                    self.assertTrue(inflection.has_feature(Voice.ACTIVE))
+
+                other_features = [x.features['Tense'] for x in analysis.inflections]
+                self.assertTrue(Tense.PRES in other_features)
+                self.assertTrue(Tense.PERF in other_features)
+            else:
+                self.fail("Invalid root")

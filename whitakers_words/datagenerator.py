@@ -77,14 +77,15 @@ class Generator:
                     'n': n,
                     'senses': senses
                 }
-                for part in parts:
+                for stem_number, part in enumerate(parts):
                     stem: Stem = {
                         'orth': part,
                         'pos': pos,
                         'form': form,
                         'n': n,
                         'wid': i + 1,
-                        'props': properties
+                        'props': properties,
+                        'stem_number': stem_number
                     }
                     if part in stems:
                         stems[part].append(stem)
