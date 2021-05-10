@@ -5,10 +5,7 @@ import os
 def hash_file(filepath: str) -> str:
     file_hash = hashlib.md5()
     with open(filepath, 'rb') as f:
-        while True:
-            buffer = f.read(65536)
-            if not buffer:
-                break
+        while buffer := f.read(65536):
             file_hash.update(buffer)
     return file_hash.hexdigest()
 
