@@ -14,7 +14,7 @@ class PrepositionTest(unittest.TestCase):
         result = self.par.parse("super")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 3)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'super')
             self.assertIn(analysis.lexeme.wordType, [WordType.PREP, WordType.ADV])
 
@@ -33,7 +33,7 @@ class PrepositionTest(unittest.TestCase):
         result = self.par.parse("de")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'de')
             self.assertEqual(analysis.lexeme.wordType, WordType.PREP)
 

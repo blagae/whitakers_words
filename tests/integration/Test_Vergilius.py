@@ -16,7 +16,7 @@ class VergiliusTest(unittest.TestCase):
 
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 2)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertIn(analysis.lexeme.wordType, [WordType.N, WordType.V])
             self.assertEqual(analysis.lexeme.roots[0], 'arm')
 

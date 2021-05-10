@@ -30,7 +30,7 @@ This project is far from production-ready. Known issues are:
 
 * `prefixes.py` and `suffixes.py` are not being used in program logic right now
 * the API does not yet support filtering for e.g. pre-classical inflections
-* question words are analyzed terribly wrong
+* interrogative pronouns are analyzed terribly wrong
 
 There are certainly many more major problems to be found. Feel free to create Github issues for any error you encounter.
 
@@ -47,15 +47,17 @@ the canonical MIT license seems to be quite close to the intent Mr. Whitaker had
 
 The prerequisites are simple: have python 3.9 installed with pip.
 
-If you have cloned the repository, you can just use
+If you have cloned the repository, you can just use either one of these options:
 
     $ python setup.py install
+
+    $ pip install .
 
 Otherwise, you will need to install from the Github repo, because there is no PyPi package for this project.
 
     $ pip install git+https://github.com/blagae/whitakers_words.git#egg=whitakers_words
 
-If you have a requirements file, then this is a valid format for the dependency:
+If you want to use whitakers_words as a dependency, then this is a valid format for adding the project to `requirements.txt`:
 
     git+git://github.com/blagae/whitakers_words.git#egg=whitakers_words
 
@@ -89,15 +91,22 @@ Word:
 Since version 0.5, a command line tool called `whitaker` is available when you install the project.
 It can be called as follows:
 
-```
-$ whitaker parse regemque
-```
+    $ whitaker parse regemque --format=yaml
 
 Some caveats when using this tool, as of version 0.5:
 
 * the tool is very basic and does not support a lot of options yet.
-* the output of the tool is simply the `repr()` in the Python code.
 * it is not guaranteed that the subcommands will remain the same.
+
+It also supports the original `words` format. Note that as of yet, it is not fully equivalent to the original WORDS program.
+
+    $ whitaker words regemque
+    que                  TACKON
+    -que = and (enclitic, translated before attached word); completes plerus/uter;
+    reg.em               N      3 1 ACC S M
+
+    king
+
 
 # Development
 
@@ -113,9 +122,13 @@ The folder `venv/` is ignored by the git config, so this is the suggested name f
 ## Test instructions
 
 The tests use the `pytest` framework. All tests are in the `tests` module (which is not included in the distribution).
-You should be able to run the tests from the command line, without any further config, by just calling:
+You should be able to run the tests from the command line, from the root folder of the project and without any further config, by just calling:
 
     $ pytest tests
+
+If that doesn't work, you may need to manually install the project dependencies before:
+
+    $ pip install -r requirements.txt
 
 ## Using tox
 

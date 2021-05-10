@@ -14,7 +14,7 @@ class AdverbTest(unittest.TestCase):
         result = self.par.parse("bene")
         self.assertEqual(len(result.forms), 2)  # also be-ne, see EncliticTest
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'bene')
             self.assertEqual(analysis.lexeme.wordType, WordType.ADV)
 

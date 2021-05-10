@@ -14,7 +14,7 @@ class VerbTest(unittest.TestCase):
         result = self.par.parse("amat")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'am')
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
 
@@ -31,7 +31,7 @@ class VerbTest(unittest.TestCase):
         # response syntax and basics
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'quaer')
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
 
@@ -48,7 +48,7 @@ class VerbTest(unittest.TestCase):
         # response syntax and basics
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'fer')
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
 
@@ -65,7 +65,7 @@ class VerbTest(unittest.TestCase):
         # response syntax and basics
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'am')
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
 
@@ -82,7 +82,7 @@ class VerbTest(unittest.TestCase):
         # response syntax and basics
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'abe')
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
 
@@ -99,7 +99,7 @@ class VerbTest(unittest.TestCase):
         # response syntax and basics
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'dec')
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
 
@@ -116,7 +116,7 @@ class VerbTest(unittest.TestCase):
         # response syntax and basics
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 2)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'al')
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
 
@@ -133,7 +133,7 @@ class VerbTest(unittest.TestCase):
         # response syntax and basics
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 2)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
             if analysis.lexeme.roots[0] == 'vene':  # venere, venio = to be sold as a slave
                 self.assertEqual(len(analysis.inflections), 1)

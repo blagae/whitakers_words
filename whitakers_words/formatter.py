@@ -20,7 +20,7 @@ class WordsFormatter(Formatter):
                 result += ' ' * (21 - len(form.enclitic.text))
                 result += 'TACKON\n'
                 result += '; '.join(sense for sense in form.enclitic.senses)
-            for key, analysis in form.analyses.items():
+            for analysis in form.analyses.values():
                 result += '\n'
                 for inflection in analysis.inflections:
                     result += f'{inflection.stem}.{inflection.affix}'
@@ -29,7 +29,7 @@ class WordsFormatter(Formatter):
                     result += ' ' * (7 - len(inflection.wordType.name))
                     result += ' '.join(str(i) for i in inflection.category)
                     result += ' '
-                    result += ' '.join(feat.name for key, feat in inflection.features.items())
+                    result += ' '.join(feat.name for feat in inflection.features.values())
                     result += '\n'
                 result += "\n"  # TODO base forms of words + frequency etc
                 result += '; '.join(sense for sense in analysis.lexeme.senses)

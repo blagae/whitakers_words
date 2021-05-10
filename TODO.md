@@ -12,9 +12,9 @@ def test_regem(self):
     self.assertEqual(len(result.forms[0].analyses), 1)
 
     # there is only one entry here, but it's easier to just iterate than to retrieve the element if you don't know the key
-    for key, analysis in result.forms[0].analyses.items():
+    for analysis in result.forms[0].analyses.values():
         self.assertEqual(analysis.lexeme.roots[0], 'rex')
-        self.assertEqual(analysis.lexeme.wordType, WordType.N)
+        self.assertEqual(analysis.lexeme.wordType, WordType.N)  # Noun
 
         self.assertEqual(len(analysis.inflections), 1)
         # if there is more than one inflection for this analysis, look in the tests how we test for similar variants
@@ -23,9 +23,9 @@ def test_regem(self):
         self.assertEqual(inflection.stem, 'reg')
         self.assertEqual(inflection.affix, 'em')
         self.assertEqual(inflection.wordType, WordType.N)
-        self.assertTrue(inflection.has_feature(Case.ACC))
-        self.assertTrue(inflection.has_feature(Number.S))
-        self.assertTrue(inflection.has_feature(Gender.C))
+        self.assertTrue(inflection.has_feature(Case.ACC))  # Accusative
+        self.assertTrue(inflection.has_feature(Gender.M))  # Masculine
+        self.assertTrue(inflection.has_feature(Number.S))  # Singular
 ```
 
 More tests are always welcome, because:
@@ -45,8 +45,8 @@ More tests are always welcome, because:
 ## matcher
 
 * decide if using method names is OK
-* do we need the lambda
 * fix pronoun matching (use pronoun types from enums ?)
+* fix "PACKON" type
 
 ## datalayer
 

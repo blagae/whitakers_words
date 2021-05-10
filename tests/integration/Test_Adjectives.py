@@ -15,7 +15,7 @@ class AdjectiveTest(unittest.TestCase):
 
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'saev')
             self.assertEqual(analysis.lexeme.wordType, WordType.ADJ)
 
@@ -38,7 +38,7 @@ class AdjectiveTest(unittest.TestCase):
         result = self.par.parse("bonorum")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 3)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             if analysis.lexeme.wordType == WordType.ADJ:
                 self.assertEqual(analysis.lexeme.roots[0], 'bon')
                 self.assertEqual(analysis.lexeme.wordType, WordType.ADJ)
@@ -61,7 +61,7 @@ class AdjectiveTest(unittest.TestCase):
         result = self.par.parse("felicium")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'felix')
             self.assertEqual(analysis.lexeme.wordType, WordType.ADJ)
 
@@ -104,7 +104,7 @@ class AdjectiveTest(unittest.TestCase):
         result = self.par.parse("anceps")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'anceps')
             self.assertEqual(analysis.lexeme.wordType, WordType.ADJ)
 
@@ -124,7 +124,7 @@ class AdjectiveTest(unittest.TestCase):
         result = self.par.parse("acer")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 2)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             if analysis.lexeme.wordType == WordType.ADJ:
                 self.assertEqual(analysis.lexeme.roots[0], 'acer')
 

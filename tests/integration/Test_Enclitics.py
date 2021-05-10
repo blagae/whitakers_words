@@ -15,7 +15,7 @@ class EncliticTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(result.forms[0].enclitic.text, 'cumque')
         self.assertEqual(len(result.forms[0].analyses), 4)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertTrue(analysis.lexeme.roots[0] == 'qu')
 
             # common properties and features
@@ -33,7 +33,7 @@ class EncliticTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 2)  # also bene
         self.assertEqual(result.forms[1].enclitic.text, 'ne')
         self.assertEqual(len(result.forms[1].analyses), 1)
-        for key, analysis in result.forms[1].analyses.items():
+        for analysis in result.forms[1].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'be')
             self.assertEqual(analysis.lexeme.wordType, WordType.INTERJ)
 
@@ -61,7 +61,7 @@ class EncliticTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         self.assertEqual(result.forms[0].enclitic.text, 'que')
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'rex')
             self.assertEqual(analysis.lexeme.wordType, WordType.N)
 
@@ -80,7 +80,7 @@ class EncliticTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         self.assertEqual(result.forms[0].enclitic.text, 'cum')
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'ego')
             self.assertEqual(analysis.lexeme.wordType, WordType.PRON)
 

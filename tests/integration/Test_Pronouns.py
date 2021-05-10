@@ -13,7 +13,7 @@ class PronounTest(unittest.TestCase):
         result = self.par.parse("se")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], '-')
             self.assertEqual(analysis.lexeme.wordType, WordType.PRON)
 
@@ -34,7 +34,7 @@ class PronounTest(unittest.TestCase):
         result = self.par.parse("tu")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'tu')
             self.assertEqual(analysis.lexeme.wordType, WordType.PRON)
 
@@ -55,7 +55,7 @@ class PronounTest(unittest.TestCase):
         result = self.par.parse("quos")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 5)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'qu')
             self.assertEqual(analysis.lexeme.wordType, WordType.PRON)
 
@@ -73,7 +73,7 @@ class PronounTest(unittest.TestCase):
         result = self.par.parse("tuas")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'tu')
             self.assertEqual(analysis.lexeme.wordType, WordType.ADJ)  # adjectival pronoun
 

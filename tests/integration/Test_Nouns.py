@@ -14,7 +14,7 @@ class NounTest(unittest.TestCase):
         result = self.par.parse("regionem")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'regio')
             self.assertEqual(analysis.lexeme.wordType, WordType.N)
 
@@ -32,7 +32,7 @@ class NounTest(unittest.TestCase):
         result = self.par.parse("templum")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'templ')
             self.assertEqual(analysis.lexeme.wordType, WordType.N)
 
@@ -54,7 +54,7 @@ class NounTest(unittest.TestCase):
         result = self.par.parse("reginis")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'regin')
             self.assertEqual(analysis.lexeme.wordType, WordType.N)
 
@@ -83,7 +83,7 @@ class NounTest(unittest.TestCase):
 
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 2)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertIn(analysis.lexeme.wordType, [WordType.N, WordType.V])
             if analysis.lexeme.wordType == WordType.N:
                 self.assertEqual(analysis.lexeme.roots[0], 'peccat')
@@ -105,7 +105,7 @@ class NounTest(unittest.TestCase):
         result = self.par.parse("acer")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 2)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             if analysis.lexeme.wordType == WordType.N:
                 self.assertEqual(analysis.lexeme.roots[0], 'acer')
 

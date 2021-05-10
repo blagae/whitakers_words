@@ -13,7 +13,7 @@ class NumeralTest(unittest.TestCase):
         result = self.par.parse("tres")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'tr')
             self.assertEqual(analysis.lexeme.wordType, WordType.NUM)
 
@@ -35,7 +35,7 @@ class NumeralTest(unittest.TestCase):
         result = self.par.parse("tricesimarum")
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
-        for key, analysis in result.forms[0].analyses.items():
+        for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.roots[0], 'triginta')
             self.assertEqual(analysis.lexeme.wordType, WordType.NUM)
 
