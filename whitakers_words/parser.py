@@ -226,6 +226,8 @@ class Word:
                 # only use forms that get at least one valid analysis
                 if apply_filter:
                     form.filter_good_analyses()
+        if apply_filter:
+            self.filter_good_forms()
 
     def filter_good_forms(self) -> None:
         self.forms = list(filter(lambda form: form.analyses, self.forms))
@@ -273,6 +275,4 @@ class Parser:
         result = Word(text)
         result.split_form_enclitic(self.data)
         result.analyse(self.data, apply_filters)
-        if apply_filters:
-            result.filter_good_forms()
         return result
