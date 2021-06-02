@@ -101,6 +101,7 @@ class Enclitic:
         self.text = enclitic['orth']
         self.position = enclitic['pos'].split()
         self.senses = enclitic['senses']
+        self.id = enclitic.get('aid', 0)
 
     def __repr__(self) -> str:
         return repr(self.__dict__)
