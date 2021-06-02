@@ -45,3 +45,4 @@ class Addon(TypedDict, total=False):
     pos: str
     senses: Sequence[str]
     form: str
+    aid: int

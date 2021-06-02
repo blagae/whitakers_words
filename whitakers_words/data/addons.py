@@ -95,31 +95,37 @@ addons: dict[str, Sequence[Addon]] = {
     #
     'tickons': [
         {
+            'aid': 1,
             'orth': "ec",
             'pos': "PACK PACK",
             'senses': ["is there any...that? does any? (w/qui, sometimes w/nam) (passionate interrogation);"]
         },
         {
+            'aid': 2,
             'orth': "ne",
             'pos': "PACK PACK",
             'senses': ["not (introducing negative clause, w/qui); verily, truely  (affirmative particle);"]
         },
         {
+            'aid': 3,
             'orth': "nescio",
             'pos': "PACK PACK",
             'senses': ["(w/qui/quis) nescioquis=> some (unknown/unspecified), one/someone or other;"]
         },
         {
+            'aid': 4,
             'orth': "neu",
             'pos': "PACK PACK",
             'senses': ["nor, and..not, neither..nor (adding a alternative or prohibition, w/qui);"]
         },
         {
+            'aid': 5,
             'orth': "seu",
             'pos': "PACK PACK",
             'senses': ["or if (w/qui);"]
         },
         {
+            'aid': 6,
             'orth': "si",
             'pos': "PACK PACK",
             'senses': ["if, when, in so much, even if (assumed fact/wish/unfinished, w/qui);"]
@@ -705,21 +711,25 @@ addons: dict[str, Sequence[Addon]] = {
 
     'tackons': [
         {
+            'aid': 7,
             'orth': "que",
             'pos': "X",
             'senses': ["-que = and (enclitic, translated before attached word); completes plerus/uter;"]
         },
         {
+            'aid': 8,
             'orth': "ne",
             'pos': "X",
             'senses': ["-ne = is it not that (enclitic); or ...(introduces a question or alternative);"]
         },
         {
+            'aid': 9,
             'orth': "ve",
             'pos': "X",
             'senses': ["-ve = or if you will (enclitic); or as you please; or; (rare)"]
         },
         {
+            'aid': 10,
             'orth': "est",
             'pos': "PRON 4 1 X",
             'senses': ["-est = is, in a contraction; (idest = it/that is); (rare)"]
@@ -731,56 +741,67 @@ addons: dict[str, Sequence[Addon]] = {
     #
     'not_packons': [
         {
+            'aid': 11,
             'orth': "cumque",
             'pos': "ADJ 0 0 POS",
             'senses': ["-ever/-soever; (for generalized/indefinite force); (what/how -> what/however);"]
         },
         {
+            'aid': 12,
             'orth': "cunque",
             'pos': "ADJ 0 0 POS",
             'senses': ["-ever/-soever; (for generalized/indefinite force); (what/how -> what/however);"]
         },
         {
+            'aid': 13,
             'orth': "cine",
             'pos': "PRON 3 1 ADJECT",
             'senses': ["TACKON w/hic this?   (hic + ce + ne (enclitic));"]
         },
         {
+            'aid': 14,
             'orth': "pte",
             'pos': "ADJ 1 0 POS",
             'senses': ["TACKON ! (emphatic particle w/personal ADJ); (usually with ABL, suapte);"]
         },
         {
+            'aid': 15,
             'orth': "ce",
             'pos': "PRON 3 1 ADJECT",
             'senses': ["TACKON w/hic this;"]
         },
         {
+            'aid': 16,
             'orth': "modi",
             'pos': "PRON 3 1 ADJECT",
             'senses': ["TACKON w/GEN of ~ kind, sort, nature; (w/hic); [huiusmodi => of this sort];"]
         },
         {
+            'aid': 17,
             'orth': "dem",
             'pos': "PRON 4 2 DEMONS",
             'senses': ["TACKON w/i-ea-id   idem => same;"]
         },
         {
+            'aid': 18,
             'orth': "cum",
             'pos': "PRON 5 0 PERS",
             'senses': ["TACKON with (enclitic with PRON 5 0); [w/ABL  mecum => at my house/with me];"]
         },
         {
+            'aid': 19,
             'orth': "vis",
             'pos': "ADJ  1 1 POS",
             'senses': ["TACKON (what)-ever (w/quantus) [quantusvis => of whatever size you like];"]
         },
         {
+            'aid': 20,
             'orth': "met",
             'pos': "PRON 5 0 PERS",
             'senses': ["TACKON w/personal self, own; on subst PERS [meamet/egomet => my own/myself];"]
         },
         {
+            'aid': 21,
             'orth': "familias",
             'pos': "N  3 0 C P",
             'senses': ["TACKON of the family/household; (archaic GEN); [pater~ => head of household];"]
@@ -793,56 +814,67 @@ addons: dict[str, Sequence[Addon]] = {
     #
     'packons': [
         {
+            'aid': 22,
             'orth': "cumque",
             'pos': "PACK    1  0 REL",
             'senses': ["PACKON w/qui => whoever; whatever; everyone who, all that, anything that;"]
         },
         {
+            'aid': 23,
             'orth': "cunque",
             'pos': "PACK    1  0 REL",
             'senses': ["PACKON w/qui => whoever; whatever; everyone who, all that, anything that;"]
         },
         {
+            'aid': 24,
             'orth': "que",
             'pos': "PACK    1  0 INDEF",
             'senses': ["PACKON w/qui => whoever it be; whatever; each, each one; everyone, everything;"]
         },
         {
+            'aid': 25,
             'orth': "piam",
             'pos': "PACK    1  0 INDEF",
             'senses': ["PACKON w/qui =>  any/somebody, any, some, any/something;"]
         },
         {
+            'aid': 26,
             'orth': "quam",
             'pos': "PACK    1  0 INDEF",
             'senses': ["PACKON w/quis =>  any; any man/person, anybody/anyone, any whatever, anything;"]
         },
         {
+            'aid': 27,
             'orth': "dam",
             'pos': "PACK    1  0 INDEF",
             'senses': ["PACKON w/qui => certain; a certain (one); a certain thing;"]
         },
         {
+            'aid': 28,
             'orth': "nam",
             'pos': "PACK    1  0 INTERR",
             'senses': ["PACKON w/qui => who then/in the world; which, I insist/meant; why/what pray;"]
         },
         {
+            'aid': 29,
             'orth': "cum",
             'pos': "PACK    1  0 INTERR",
             'senses': ["PACKON w/qui pron with ABL => with what, with whom;"]
         },
         {
+            'aid': 30,
             'orth': "vis",
             'pos': "PACK    1  0 INDEF",
             'senses': ["PACKON w/qui whoever it be, whomever you please; any/anything whatever;"]
         },
         {
+            'aid': 31,
             'orth': "libet",
             'pos': "PACK    1  0 INDEF",
             'senses': ["PACKON w/qui-anyone; -whatever; what you will; no matter which;"]
         },
         {
+            'aid': 32,
             'orth': "lubet",
             'pos': "PACK    1  0 INDEF",
             'senses': ["PACKON w/qui -anyone; -whatever; what you will; no matter which;"]
