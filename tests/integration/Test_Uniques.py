@@ -79,3 +79,22 @@ class UniquesTest(unittest.TestCase):
         other_features = [x.features['Tense'] for x in analysis.inflections]
         self.assertTrue(Tense.FUTP in other_features)
         self.assertTrue(Tense.PERF in other_features)
+
+    def test_deus(self):
+        result = self.par.parse("deus")
+        self.assertEqual(len(result.forms), 1)
+        # TODO this will start failing once the parser is case-insensitive
+        self.assertEqual(len(result.forms[0].analyses), 1)
+        analysis = result.forms[0].analyses[0]
+
+        self.assertEqual(len(analysis.inflections), 1)
+
+        for inflection in analysis.inflections:
+            self.assertIsInstance(inflection, UniqueInflection)
+            self.assertEqual(inflection.stem, 'deus')
+            self.assertEqual(inflection.affix, '')
+            self.assertEqual(inflection.wordType, WordType.N)
+            self.assertTrue(inflection.has_feature(Number.S))
+            self.assertTrue(inflection.has_feature(Gender.M))
+            self.assertTrue(inflection.has_feature(Case.VOC))
+
