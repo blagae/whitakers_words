@@ -109,7 +109,7 @@ def _numeral_checker(stem: Stem, infl: Inflect) -> bool:
 
 
 def _pronoun_checker(stem: Stem, infl: Inflect) -> bool:
-    return _check_right_stem(stem, infl) and infl["n"] == stem["n"]
+    return _check_right_stem(stem, infl) and _basic_matcher(stem, infl)
 
 
 def _basic_matcher(stem: Stem, infl: Inflect) -> bool:

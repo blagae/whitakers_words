@@ -2991,10 +2991,10 @@ PRON  6 0 ACC P M   1 2 os                          X A
 PRON  6 0 ABL P X   1 2 is                          X A
          
 PRON  6 0 NOM S F   1 1 a                           X A
---PRON  6 0 GEN S F   1 3 ius                         X A
---PRON  6 0 DAT S F   1 1 i                           X A
+PRON  6 0 GEN S F   1 3 ius                         X A
+PRON  6 0 DAT S F   1 1 i                           X A
 PRON  6 0 ACC S F   1 2 am                          X A
---PRON  6 0 ABL S F   1 1 a                           X A
+PRON  6 0 ABL S F   1 1 a                           X A
 
 PRON  6 0 NOM P F   1 2 ae                          X A
 PRON  6 0 GEN P F   1 4 arum                        X A
