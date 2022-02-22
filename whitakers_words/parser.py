@@ -166,7 +166,10 @@ class Form:
         for analysis in analyses.values():
             analysis.enclitic = self.enclitic
             analysis.lookup_stem(data.wordlist)
-        self.analyses = analyses
+        if self.analyses:
+            self.analyses.update(analyses)
+        else:
+            self.analyses = analyses
         # TODO reimplement reduce (see old_parser)
 
     def filter_good_analyses(self) -> None:
@@ -178,7 +181,7 @@ class Form:
             enclitic = analysis[1].enclitic
             # TODO fix packons for real
             return enclitic.position[0] in ("X", "PACK") or enclitic.position[0] == analysis[1].lexeme.wordType.name
-        return bool(analysis[1].lexeme.roots)
+        return bool(analysis[1].lexeme.roots) or isinstance(analysis[1].lexeme, UniqueLexeme)
 
     def match_stems_inflections(self, viable_inflections: Sequence[Inflect], data: DataLayer) -> dict[int, Analysis]:
         """
@@ -222,11 +225,10 @@ class Word:
                 for unique_form in data.uniques[form.text]:
                     form.analyse_unique(unique_form)
             # Get regular words
-            else:
-                form.analyse(data)
-                # only use forms that get at least one valid analysis
-                if apply_filter:
-                    form.filter_good_analyses()
+            form.analyse(data)
+            # only use forms that get at least one valid analysis
+            if apply_filter:
+                form.filter_good_analyses()
         if apply_filter:
             self.filter_good_forms()
 

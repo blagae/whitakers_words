@@ -34,7 +34,7 @@ class UniquesTest(unittest.TestCase):
     def test_esse(self):
         result = self.par.parse("esses")
         self.assertEqual(len(result.forms), 1)
-        self.assertEqual(len(result.forms[0].analyses), 1)
+        self.assertEqual(len(result.forms[0].analyses), 2)  # also an infrequent form of edere
         analysis = result.forms[0].analyses[0]
         self.assertEqual(len(analysis.inflections), 1)
         self.assertIsInstance(analysis.inflections[0], UniqueInflection)
