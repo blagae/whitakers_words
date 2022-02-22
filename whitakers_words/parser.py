@@ -213,7 +213,7 @@ class Form:
 
 class Word:
     def __init__(self, text: str):
-        self.text = text
+        self.text = text.lower()
         self.forms: Sequence[Form] = []
 
     def __repr__(self) -> str:

@@ -83,8 +83,7 @@ class UniquesTest(unittest.TestCase):
     def test_deus(self):
         result = self.par.parse("deus")
         self.assertEqual(len(result.forms), 1)
-        # TODO this will start failing once the parser is case-insensitive
-        self.assertEqual(len(result.forms[0].analyses), 1)
+        self.assertEqual(len(result.forms[0].analyses), 2)
         analysis = result.forms[0].analyses[0]
 
         self.assertEqual(len(analysis.inflections), 1)
@@ -97,4 +96,3 @@ class UniquesTest(unittest.TestCase):
             self.assertTrue(inflection.has_feature(Number.S))
             self.assertTrue(inflection.has_feature(Gender.M))
             self.assertTrue(inflection.has_feature(Case.VOC))
-

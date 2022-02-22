@@ -125,8 +125,7 @@ class NounTest(unittest.TestCase):
     def test_deus_upper(self):
         result = self.par.parse("Deus")
         self.assertEqual(len(result.forms), 1)
-        # TODO this will start failing once the parser is case-insensitive
-        self.assertEqual(len(result.forms[0].analyses), 1)
+        self.assertEqual(len(result.forms[0].analyses), 2)
         test_ran = False
         for key, analysis in result.forms[0].analyses.items():
             if not key:
@@ -134,7 +133,7 @@ class NounTest(unittest.TestCase):
             self.assertEqual(len(analysis.inflections), 1)
 
             for inflection in analysis.inflections:
-                self.assertEqual(inflection.stem, 'De')
+                self.assertEqual(inflection.stem, 'de')
                 self.assertEqual(inflection.affix, 'us')
                 self.assertEqual(inflection.wordType, WordType.N)
                 self.assertTrue(inflection.has_feature(Number.S))
@@ -146,8 +145,7 @@ class NounTest(unittest.TestCase):
     def test_deus_lower(self):
         result = self.par.parse("deus")
         self.assertEqual(len(result.forms), 1)
-        # TODO this will start failing once the parser is case-insensitive
-        self.assertEqual(len(result.forms[0].analyses), 1)
+        self.assertEqual(len(result.forms[0].analyses), 2)
         test_ran = False
         for key, analysis in result.forms[0].analyses.items():
             if not key:
@@ -155,12 +153,11 @@ class NounTest(unittest.TestCase):
             self.assertEqual(len(analysis.inflections), 1)
 
             for inflection in analysis.inflections:
-                self.assertEqual(inflection.stem, 'De')
+                self.assertEqual(inflection.stem, 'de')
                 self.assertEqual(inflection.affix, 'us')
                 self.assertEqual(inflection.wordType, WordType.N)
                 self.assertTrue(inflection.has_feature(Number.S))
                 self.assertTrue(inflection.has_feature(Gender.M))
                 self.assertTrue(inflection.has_feature(Case.NOM))
             test_ran = True
-        # TODO for now, we're documenting the wrong behavior
-        self.assertFalse(test_ran)  # ensure that we're actually going through the test
+        self.assertTrue(test_ran)  # ensure that we're actually going through the test

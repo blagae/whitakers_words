@@ -49,11 +49,11 @@ class Generator:
             for i, line in enumerate(f):
 
                 parts = line[parts_slicer].replace("zzz", "-").split()
+                parts = [x.lower() for x in parts]
                 orth = parts[0]
                 pos = line[pos_slicer].strip()
                 raw_form = line[form_slicer].strip()
                 properties = line[properties_slicer].split()
-
                 n: Sequence[int] = []
                 form: Sequence[Union[str, int]] = []
                 for v in raw_form.split():
