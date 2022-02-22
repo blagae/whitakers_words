@@ -15,8 +15,8 @@ class WordsException(Exception):
 class Inflection:
     def __init__(self, infl: Inflect, stem: Stem):
         self.wordType = get_enum_value("WordType", infl["pos"])
-        self.category = infl['n']
-        self.stem = stem['orth']
+        self.category = infl["n"]
+        self.stem = stem["orth"]
         self.affix = infl["ending"]
         self.features: dict[str, Enum] = {}
         self.analyse_features(infl["form"])
@@ -44,7 +44,7 @@ class Inflection:
             lst = ["Degree"]
         else:
             return
-        for idx, feature in enumerate(features[:len(lst)]):
+        for idx, feature in enumerate(features[: len(lst)]):
             self.features[lst[idx]] = get_enum_value(lst[idx], feature)
 
     def override_features(self, stem: Stem) -> None:
@@ -52,16 +52,20 @@ class Inflection:
             self.features["Gender"] = Gender[str(stem["form"][0])]
 
     def has_feature(self, feature: Enum) -> bool:
-        return (type(feature).__name__ in self.features and
-                self.features[type(feature).__name__] == feature)
+        return (
+            type(feature).__name__ in self.features
+            and self.features[type(feature).__name__] == feature
+        )
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Inflection):
             return NotImplemented
-        return (self.affix == other.affix and
-                self.wordType == other.wordType and
-                self.category == other.category and
-                self.features == other.features)
+        return (
+            self.affix == other.affix
+            and self.wordType == other.wordType
+            and self.category == other.category
+            and self.features == other.features
+        )
 
 
 class UniqueInflection(Inflection):
@@ -77,8 +81,8 @@ class UniqueInflection(Inflection):
 
 class Lexeme:
     def __init__(self, stem: Stem):
-        self.id = stem['wid']
-        self.category: Sequence[Union[str, int]] = stem['n']
+        self.id = stem["wid"]
+        self.category: Sequence[Union[str, int]] = stem["n"]
         self.roots: Sequence[str] = []
         self.senses: Sequence[str] = []
         self.wordType = get_enum_value("WordType", stem["pos"])
@@ -92,23 +96,25 @@ class UniqueLexeme(Lexeme):
         self.id = 0
         self.category = []
         self.roots = []
-        self.senses = unique['senses']
+        self.senses = unique["senses"]
         self.wordType = get_enum_value("WordType", unique["pos"])
 
 
 class Enclitic:
     def __init__(self, enclitic: Addon):
-        self.text = enclitic['orth']
-        self.position = enclitic['pos'].split()
-        self.senses = enclitic['senses']
-        self.id = enclitic.get('aid', 0)
+        self.text = enclitic["orth"]
+        self.position = enclitic["pos"].split()
+        self.senses = enclitic["senses"]
+        self.id = enclitic.get("aid", 0)
 
     def __repr__(self) -> str:
         return repr(self.__dict__)
 
 
 class Analysis:
-    def __init__(self, lexeme: Lexeme, inflections: list[Inflection], enclitic: Enclitic = None):
+    def __init__(
+        self, lexeme: Lexeme, inflections: list[Inflection], enclitic: Enclitic = None
+    ):
         self.lexeme = lexeme
         self.root = ""
         self.inflections = inflections
@@ -137,7 +143,9 @@ class Form:
         if self.analyses:
             self.analyses[0].inflections.append(UniqueInflection(unique_form))
         else:
-            self.analyses = {0: Analysis(UniqueLexeme(unique_form), [UniqueInflection(unique_form)])}
+            self.analyses = {
+                0: Analysis(UniqueLexeme(unique_form), [UniqueInflection(unique_form)])
+            }
 
     def analyse(self, data: DataLayer) -> None:
         """
@@ -156,7 +164,10 @@ class Form:
         # Check against inflection list
         for inflect_length in range(1, min(8, len(self.text))):
             end_of_word = self.text[-inflect_length:]
-            if str(inflect_length) in data.inflects and end_of_word in data.inflects[str(inflect_length)]:
+            if (
+                str(inflect_length) in data.inflects
+                and end_of_word in data.inflects[str(inflect_length)]
+            ):
                 infl = data.inflects[str(inflect_length)][end_of_word]
                 viable_inflections.extend(infl)
 
@@ -180,10 +191,17 @@ class Form:
         if analysis[1].enclitic:
             enclitic = analysis[1].enclitic
             # TODO fix packons for real
-            return enclitic.position[0] in ("X", "PACK") or enclitic.position[0] == analysis[1].lexeme.wordType.name
-        return bool(analysis[1].lexeme.roots) or isinstance(analysis[1].lexeme, UniqueLexeme)
+            return (
+                enclitic.position[0] in ("X", "PACK")
+                or enclitic.position[0] == analysis[1].lexeme.wordType.name
+            )
+        return bool(analysis[1].lexeme.roots) or isinstance(
+            analysis[1].lexeme, UniqueLexeme
+        )
 
-    def match_stems_inflections(self, viable_inflections: Sequence[Inflect], data: DataLayer) -> dict[int, Analysis]:
+    def match_stems_inflections(
+        self, viable_inflections: Sequence[Inflect], data: DataLayer
+    ) -> dict[int, Analysis]:
         """
         For each inflection that was a theoretical match, remove the inflection from the end of the word string
         and then check the resulting stem against the list of stems loaded in __init__
@@ -192,22 +210,24 @@ class Form:
         # For each of the inflections that is a match, strip the inflection from the end of the word
         # and look up the stripped word (w) in the stems
         for infl_cand in viable_inflections:
-            if infl_cand['ending']:
-                stem_lemma = self.text[:-len(infl_cand['ending'])]
+            if infl_cand["ending"]:
+                stem_lemma = self.text[: -len(infl_cand["ending"])]
             else:
                 stem_lemma = self.text
             if stem_lemma in data.stems:
                 stem_list = data.stems[stem_lemma]
                 for stem_cand in stem_list:
                     if Matcher(stem_cand, infl_cand).check():
-                        word_id = stem_cand['wid']
+                        word_id = stem_cand["wid"]
                         inflection = Inflection(infl_cand, stem_cand)
                         # If there's already a matched stem with that orthography
                         if word_id in matched_stems:
                             if inflection not in matched_stems[word_id].inflections:
                                 matched_stems[word_id].inflections.append(inflection)
                         else:
-                            matched_stems[word_id] = Analysis(Lexeme(stem_cand), [inflection])
+                            matched_stems[word_id] = Analysis(
+                                Lexeme(stem_cand), [inflection]
+                            )
         return matched_stems
 
 
@@ -240,20 +260,20 @@ class Word:
         result = [Form(self.text)]
 
         # Test the different tackons / packons as specified in addons.py
-        result.extend(self.find_enclitic('tackons', data))
+        result.extend(self.find_enclitic("tackons", data))
 
         # which list do we get info from
         if self.text.startswith("qu"):
-            result.extend(self.find_enclitic('packons', data))
+            result.extend(self.find_enclitic("packons", data))
         else:
-            result.extend(self.find_enclitic('not_packons', data))
+            result.extend(self.find_enclitic("not_packons", data))
         self.forms = result
 
     def find_enclitic(self, list_name: str, data: DataLayer) -> Sequence[Form]:
         result = []
         if list_name in data.addons:
             for affix in data.addons[list_name]:
-                affix_text = affix['orth']
+                affix_text = affix["orth"]
                 if self.text.endswith(affix_text):
                     base = re.sub(affix_text + "$", "", self.text)
                     # an enclitic without a base is not an enclitic
@@ -270,7 +290,7 @@ class Parser:
         self.data = DataLayer(**kwargs)
 
     def __repr__(self) -> str:
-        return f"Parser(frequency=\"{self.data.frequency}\")"
+        return f'Parser(frequency="{self.data.frequency}")'
 
     def parse(self, text: str, apply_filters: bool = True) -> Word:
         if not text.isalpha():

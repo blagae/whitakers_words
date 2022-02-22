@@ -11,21 +11,24 @@ from .generated.wordlist import wordlist
 
 
 class DataLayer:
-
     def __init__(self, **kwargs: Any):
-        self.wordlist: Sequence[DictEntry] = kwargs.get('wordlist', wordlist)
-        self.wordkeys: set[str] = set(kwargs.get('wordkeys', wordkeys))  # input may be a set or a list
-        self.stems: dict[str, Sequence[Stem]] = kwargs.get('stems', stems)
-        self.uniques: dict[str, Sequence[Unique]] = kwargs.get('uniques', uniques)
-        self.inflects: dict[str, dict[str, Sequence[Inflect]]] = kwargs.get('inflects', inflects)
-        self.addons: dict[str, Sequence[Addon]] = kwargs.get('addons', addons)
-        self.empty: dict[str, Sequence[Inflect]] = kwargs.get('empty', empty)
+        self.wordlist: Sequence[DictEntry] = kwargs.get("wordlist", wordlist)
+        self.wordkeys: set[str] = set(
+            kwargs.get("wordkeys", wordkeys)
+        )  # input may be a set or a list
+        self.stems: dict[str, Sequence[Stem]] = kwargs.get("stems", stems)
+        self.uniques: dict[str, Sequence[Unique]] = kwargs.get("uniques", uniques)
+        self.inflects: dict[str, dict[str, Sequence[Inflect]]] = kwargs.get(
+            "inflects", inflects
+        )
+        self.addons: dict[str, Sequence[Addon]] = kwargs.get("addons", addons)
+        self.empty: dict[str, Sequence[Inflect]] = kwargs.get("empty", empty)
 
-        self.age: str = kwargs.get('age', "A")
-        self.area: str = kwargs.get('area', "A")
-        self.geo: str = kwargs.get('geo', "A")
-        self.frequency: str = kwargs.get('frequency', "C")
-        self.source: str = kwargs.get('source', "A")
+        self.age: str = kwargs.get("age", "A")
+        self.area: str = kwargs.get("area", "A")
+        self.geo: str = kwargs.get("geo", "A")
+        self.frequency: str = kwargs.get("frequency", "C")
+        self.source: str = kwargs.get("source", "A")
         self.create_subsets()
 
     def create_subsets(self) -> None:
@@ -41,7 +44,7 @@ class DataLayer:
 
     def filter_inflections(self, item: Inflect) -> bool:
         # TODO use all filters: [AGE, FREQ]
-        return item["props"][1] <= 'B'  # TODO make configurable again
+        return item["props"][1] <= "B"  # TODO make configurable again
 
     def filter_stems(self, item: Tuple[str, Sequence[Stem]]) -> bool:
         # TODO use all filters: [AGE, AREA, GEO, FREQ, SOURCE]

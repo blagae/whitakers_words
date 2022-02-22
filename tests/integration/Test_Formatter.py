@@ -5,7 +5,8 @@ from whitakers_words.parser import Parser
 
 
 class FormatterTest(unittest.TestCase):
-    """ For now, just make sure that there's no weird exceptions in these formatters """
+    """For now, just make sure that there's no weird exceptions in these formatters"""
+
     @classmethod
     def setUpClass(cls):
         cls.par = Parser()

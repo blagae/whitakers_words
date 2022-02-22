@@ -19,9 +19,11 @@ class PerformanceTest(unittest.TestCase):
         start1 = timer()
         self.full_par.parse("amabat")
         end1 = timer()
-        wat1 = timedelta(seconds=end1-start1)
+        wat1 = timedelta(seconds=end1 - start1)
         start2 = timer()
         self.par.parse("amabat")
         end2 = timer()
-        wat2 = timedelta(seconds=end2-start2)
-        self.assertTrue(abs((wat2-wat1)/wat2) < 5)  # TODO super-flaky & doesn't mean anything
+        wat2 = timedelta(seconds=end2 - start2)
+        self.assertTrue(
+            abs((wat2 - wat1) / wat2) < 5
+        )  # TODO super-flaky & doesn't mean anything

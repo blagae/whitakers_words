@@ -136,29 +136,29 @@ class FilterCriteria(Enum):
 
 # https://mk270.github.io/whitakers-words/dictionary.html
 class Age(Enum):
-    X = "DEFAULT"     # In use throughout the ages/unknown # the default
-    A = "Archaic"     # Very early forms, obsolete by classical times
-    B = "Early"       # Early Latin, pre-classical, used for effect/poetry
-    C = "Classical"   # Limited to classical (~150 BC - 200 AD)
-    D = "Late"        # Late, post-classical (3rd-5th centuries)
-    E = "Later"       # Latin not in use in Classical times (6-10) Christian
-    F = "Medieval"    # Medieval (11th-15th centuries)
-    G = "Scholar"     # Latin post 15th - Scholarly/Scientific   (16-18)
-    H = "Modern"      # Coined recently, words for new things (19-20)
+    X = "DEFAULT"  # In use throughout the ages/unknown # the default
+    A = "Archaic"  # Very early forms, obsolete by classical times
+    B = "Early"  # Early Latin, pre-classical, used for effect/poetry
+    C = "Classical"  # Limited to classical (~150 BC - 200 AD)
+    D = "Late"  # Late, post-classical (3rd-5th centuries)
+    E = "Later"  # Latin not in use in Classical times (6-10) Christian
+    F = "Medieval"  # Medieval (11th-15th centuries)
+    G = "Scholar"  # Latin post 15th - Scholarly/Scientific   (16-18)
+    H = "Modern"  # Coined recently, words for new things (19-20)
 
 
 class Area(Enum):
     X = "Default"
-    A = "Agriculture"   # Flora, Fauna, Land, Equipment, Rural
-    B = "Biological"    # Medical, Body Parts
-    D = "Drama"         # Music, Theater, Art, Painting, Sculpture
+    A = "Agriculture"  # Flora, Fauna, Land, Equipment, Rural
+    B = "Biological"  # Medical, Body Parts
+    D = "Drama"  # Music, Theater, Art, Painting, Sculpture
     E = "Ecclesiastic"  # Biblical, Religious
-    G = "Grammar"       # Rhetoric, Logic, Literature, Schools
-    L = "Legal"         # Government, Tax, Financial, Political, Titles
+    G = "Grammar"  # Rhetoric, Logic, Literature, Schools
+    L = "Legal"  # Government, Tax, Financial, Political, Titles
     P = "Poetic"
-    S = "Science"       # Philosophy, Mathematics, Units/Measures
-    T = "Technical"     # Architecture, Topography, Surveying
-    W = "War"           # Military, Naval, Ships, Armor
+    S = "Science"  # Philosophy, Mathematics, Units/Measures
+    T = "Technical"  # Architecture, Topography, Surveying
+    W = "War"  # Military, Naval, Ships, Armor
     Y = "Mythology"
 
 
@@ -185,14 +185,14 @@ class Geography(Enum):
 
 class Frequency(Enum):
     A = "Very Frequent"  # full column or more, more than 50 citations - very frequent
-    B = "Frequent"       # half column, more than 20 citations - frequent
-    C = "Common"         # more then 5 citations - common
-    D = "Uncommon"       # 4-5 citations - lesser
-    E = "Rare"           # 2-3 citations - uncommon
-    F = "Very Rare"      # only 1 citation - very rare
-    I = "Inscription"    # Only citation is inscription  # noqa: E741
-    M = "Graffiti"       # Presently not much used
-    N = "Plinius"        # Things that appear only in Plinius Natural History
+    B = "Frequent"  # half column, more than 20 citations - frequent
+    C = "Common"  # more then 5 citations - common
+    D = "Uncommon"  # 4-5 citations - lesser
+    E = "Rare"  # 2-3 citations - uncommon
+    F = "Very Rare"  # only 1 citation - very rare
+    I = "Inscription"  # Only citation is inscription  # noqa: E741
+    M = "Graffiti"  # Presently not much used
+    N = "Plinius"  # Things that appear only in Plinius Natural History
 
 
 class Source(Enum):

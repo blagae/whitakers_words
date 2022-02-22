@@ -47,9 +47,12 @@ def _vpar_checker(stem: Stem, infl: Inflect) -> bool:
 
 def _noun_checker(stem: Stem, infl: Inflect) -> bool:
     if _check_right_stem(stem, infl):
-        if infl["n"] == stem["n"] or (infl["n"][0] == stem["n"][0] and infl["n"][-1] == 0):
-            return (infl["form"][-1] in ("X", stem["form"][0]) or
-                    (infl["form"][-1] == "C" and stem["form"][0] in ("F", "M")))
+        if infl["n"] == stem["n"] or (
+            infl["n"][0] == stem["n"][0] and infl["n"][-1] == 0
+        ):
+            return infl["form"][-1] in ("X", stem["form"][0]) or (
+                infl["form"][-1] == "C" and stem["form"][0] in ("F", "M")
+            )
     return False
 
 
@@ -57,7 +60,10 @@ def _adj_checker(stem: Stem, infl: Inflect) -> bool:
     if not _basic_matcher(stem, infl) or not _check_right_stem(stem, infl):
         return False
     if stem["form"][-1] == "X":
-        return Degree.get_degree_list()[max(0, stem["stem_number"]-1)] == infl["form"][-1]
+        return (
+            Degree.get_degree_list()[max(0, stem["stem_number"] - 1)]
+            == infl["form"][-1]
+        )
     return stem["form"][-1] == infl["form"][-1]
 
 
@@ -81,7 +87,11 @@ def _special_verb_checker(stem: Stem, infl: Inflect) -> bool:
         return infl["form"][1] == "PASSIVE"
     if stem["form"][0] == "SEMIDEP":  # e.g. audeo, ausus sum
         if infl["form"][1] == "PASSIVE":
-            return infl["form"][0] in ("PERF", "FUTP", "PLUP")  # TODO will this ever hit ?
+            return infl["form"][0] in (
+                "PERF",
+                "FUTP",
+                "PLUP",
+            )  # TODO will this ever hit ?
         return infl["form"][0] in ("PRES", "IMP", "FUT")
     if stem["form"][0] == "PERFDEF":  # e.g. coepisse
         return infl["form"][0] in ("PERF", "FUTP", "PLUP")
@@ -89,9 +99,13 @@ def _special_verb_checker(stem: Stem, infl: Inflect) -> bool:
 
 
 def _numeral_checker(stem: Stem, infl: Inflect) -> bool:
-    return (_basic_matcher(stem, infl) and
-            (stem["form"][0] == infl["form"][-1] or
-             (stem["form"][0] == 'X' and NumeralType.get_type_list()[stem["stem_number"]] == infl["form"][-1])))
+    return _basic_matcher(stem, infl) and (
+        stem["form"][0] == infl["form"][-1]
+        or (
+            stem["form"][0] == "X"
+            and NumeralType.get_type_list()[stem["stem_number"]] == infl["form"][-1]
+        )
+    )
 
 
 def _pronoun_checker(stem: Stem, infl: Inflect) -> bool:
@@ -100,6 +114,9 @@ def _pronoun_checker(stem: Stem, infl: Inflect) -> bool:
 
 def _basic_matcher(stem: Stem, infl: Inflect) -> bool:
     if stem["n"]:
-        return (infl["n"] == stem["n"] or infl["n"][0] == 0 or
-                (infl["n"][0] == stem["n"][0] and infl["n"][1] == 0))
+        return (
+            infl["n"] == stem["n"]
+            or infl["n"][0] == 0
+            or (infl["n"][0] == stem["n"][0] and infl["n"][1] == 0)
+        )
     return True

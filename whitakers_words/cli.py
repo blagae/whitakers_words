@@ -11,12 +11,17 @@ def whitaker() -> None:
 
 
 @whitaker.command()
-@click.option('--frequency', default='C', help='how strict to be in filtering the dictionary')
-@click.option('--formatter', default='json',
-              help='the format of the output: json, yaml, or words (the old Whitaker format)')
-@click.argument('word')
+@click.option(
+    "--frequency", default="C", help="how strict to be in filtering the dictionary"
+)
+@click.option(
+    "--formatter",
+    default="json",
+    help="the format of the output: json, yaml, or words (the old Whitaker format)",
+)
+@click.argument("word")
 def parse(frequency: str, formatter: str, word: str) -> None:
-    """ Parse a single word with a format of your choice """
+    """Parse a single word with a format of your choice"""
     clz = Formatter()
     if formatter.lower() == "words":
         clz = WordsFormatter()
@@ -31,10 +36,12 @@ def parse(frequency: str, formatter: str, word: str) -> None:
 
 
 @whitaker.command()
-@click.option('--frequency', default='C', help='how strict to be in filtering the dictionary')
-@click.argument('word')
+@click.option(
+    "--frequency", default="C", help="how strict to be in filtering the dictionary"
+)
+@click.argument("word")
 def words(frequency: str, word: str) -> None:
-    """ Parse a single word, and use Whitaker's Words formatting for output """
+    """Parse a single word, and use Whitaker's Words formatting for output"""
     result = Parser(frequency=frequency).parse(word)
     fmt(result, WordsFormatter())
 

@@ -13,26 +13,28 @@ class Formatter:
 
 class WordsFormatter(Formatter):
     def format_result(self, word: Word) -> str:
-        result = ''
+        result = ""
         for form in word.forms:
             if form.enclitic:
                 result += form.enclitic.text
-                result += ' ' * (21 - len(form.enclitic.text))
-                result += 'TACKON\n'
-                result += '; '.join(sense for sense in form.enclitic.senses)
+                result += " " * (21 - len(form.enclitic.text))
+                result += "TACKON\n"
+                result += "; ".join(sense for sense in form.enclitic.senses)
             for analysis in form.analyses.values():
-                result += '\n'
+                result += "\n"
                 for inflection in analysis.inflections:
-                    result += f'{inflection.stem}.{inflection.affix}'
-                    result += ' ' * (21 - (len(form.text) + 1))
+                    result += f"{inflection.stem}.{inflection.affix}"
+                    result += " " * (21 - (len(form.text) + 1))
                     result += inflection.wordType.name
-                    result += ' ' * (7 - len(inflection.wordType.name))
-                    result += ' '.join(str(i) for i in inflection.category)
-                    result += ' '
-                    result += ' '.join(feat.name for feat in inflection.features.values())
-                    result += '\n'
+                    result += " " * (7 - len(inflection.wordType.name))
+                    result += " ".join(str(i) for i in inflection.category)
+                    result += " "
+                    result += " ".join(
+                        feat.name for feat in inflection.features.values()
+                    )
+                    result += "\n"
                 result += "\n"  # TODO base forms of words + frequency etc
-                result += '; '.join(sense for sense in analysis.lexeme.senses)
+                result += "; ".join(sense for sense in analysis.lexeme.senses)
         return result
 
 
@@ -42,6 +44,7 @@ class YamlFormatter(Formatter):
         From https://github.com/progala/ttl255.com/blob/master/yaml/anchors-and-aliases/yaml_same_ids_custom_dumper.py
         Licensed under MIT license
         """
+
         def ignore_aliases(self, data: Any) -> bool:
             return True
 
