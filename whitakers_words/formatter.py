@@ -1,6 +1,7 @@
-from enum import Enum
 import json
+from enum import Enum
 from typing import Any
+
 import yaml
 
 from .parser import Word

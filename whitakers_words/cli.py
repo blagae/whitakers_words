@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import click
 
-from .parser import Parser, Word
 from .formatter import Formatter, JsonFormatter, WordsFormatter, YamlFormatter
+from .parser import Parser, Word
 
 
 @click.group()

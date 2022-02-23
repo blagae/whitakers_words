@@ -169,9 +169,8 @@ class VerbTest(unittest.TestCase):
         self.assertEqual(len(result.forms[0].analyses), 2)
         for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
-            if (
-                analysis.lexeme.roots[0] == "vene"
-            ):  # venere, venio = to be sold as a slave
+            if analysis.lexeme.roots[0] == "vene":
+                # venere, venio = to be sold as a slave
                 self.assertEqual(len(analysis.inflections), 1)
                 expected_features = {
                     "Mood": Mood.IND,

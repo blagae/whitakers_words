@@ -239,9 +239,8 @@ class Generator:
     def reorder_inflects(
         self, data: list[dict[str, Any]]
     ) -> Tuple[dict[str, list[Any]], dict[int, dict[str, Any]]]:
-        keys = (
-            x for x in range(1, 8)
-        )  # assuming all endings are at most 7 characters long
+        # assuming all endings are at most 7 characters long
+        keys = (x for x in range(1, 8))
         empty: dict[str, list[Any]] = {}
         result: dict[int, dict[str, Any]] = {key: dict() for key in keys}
         for item in data:

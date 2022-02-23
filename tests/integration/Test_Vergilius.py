@@ -1,6 +1,15 @@
 import unittest
 
-from whitakers_words.enums import Case, Gender, Mood, Number, Person, Tense, Voice, WordType
+from whitakers_words.enums import (
+    Case,
+    Gender,
+    Mood,
+    Number,
+    Person,
+    Tense,
+    Voice,
+    WordType,
+)
 from whitakers_words.parser import Parser
 
 
@@ -74,7 +83,9 @@ class VergiliusTest(unittest.TestCase):
                         self.assertEqual(inflection.wordType, WordType.N)
                         self.assertTrue(inflection.has_feature(Number.S))
                         self.assertTrue(inflection.has_feature(Gender.N))
-                    other_features = [[x.features["Case"]] for x in analysis.inflections]
+                    other_features = [
+                        [x.features["Case"]] for x in analysis.inflections
+                    ]
                     self.assertTrue([Case.NOM] in other_features)
                     self.assertTrue([Case.ACC] in other_features)
                     self.assertTrue([Case.VOC] in other_features)

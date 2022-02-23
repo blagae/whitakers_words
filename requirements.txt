@@ -1,5 +1,6 @@
 black
 click
+isort
 pytest
 pyYAML
 tox

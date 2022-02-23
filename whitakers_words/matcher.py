@@ -87,11 +87,12 @@ def _special_verb_checker(stem: Stem, infl: Inflect) -> bool:
         return infl["form"][1] == "PASSIVE"
     if stem["form"][0] == "SEMIDEP":  # e.g. audeo, ausus sum
         if infl["form"][1] == "PASSIVE":
+            # TODO will this ever hit ?
             return infl["form"][0] in (
                 "PERF",
                 "FUTP",
                 "PLUP",
-            )  # TODO will this ever hit ?
+            )
         return infl["form"][0] in ("PRES", "IMP", "FUT")
     if stem["form"][0] == "PERFDEF":  # e.g. coepisse
         return infl["form"][0] in ("PERF", "FUTP", "PLUP")

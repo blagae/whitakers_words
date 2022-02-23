@@ -81,9 +81,8 @@ class AdjectiveTest(unittest.TestCase):
         result = self.par.parse("melius")
 
         self.assertEqual(len(result.forms), 1)
-        self.assertEqual(
-            len(result.forms[0].analyses), 2
-        )  # see Test_Adverbs.test_melius
+        # see Test_Adverbs.test_melius
+        self.assertEqual(len(result.forms[0].analyses), 2)
         analysis = result.forms[0].analyses[6825]
         self.assertEqual(analysis.lexeme.roots[0], "bon")
         self.assertEqual(analysis.lexeme.wordType, WordType.ADJ)
