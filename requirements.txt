@@ -4,4 +4,6 @@ isort
 pytest
 pyYAML
 tox
+types-PyYAML
+types-setuptools
 wheel
