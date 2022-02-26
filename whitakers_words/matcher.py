@@ -46,7 +46,7 @@ def _vpar_checker(stem: Stem, infl: Inflect) -> bool:
 
 
 def _noun_checker(stem: Stem, infl: Inflect) -> bool:
-    if _check_right_stem(stem, infl):
+    if _check_right_stem(stem, infl) and "n" in infl and "n" in stem:
         if infl["n"] == stem["n"] or (
             infl["n"][0] == stem["n"][0] and infl["n"][-1] == 0
         ):

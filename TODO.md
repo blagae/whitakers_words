@@ -45,7 +45,6 @@ More tests are always welcome, because:
 ## matcher
 
 * decide if using method names is OK
-* fix pronoun matching (use pronoun types from enums ?)
 * fix "PACKON" type
 
 ## datalayer
@@ -54,10 +53,6 @@ More tests are always welcome, because:
 * do we need the filter() inception ?
 * allow filtering on other metadata than frequency
 * filtering on frequency should also filter the wordlist to prevent homonymic false positives
-
-## enums
-
-* add more types of metadata and word subtypes (and integrate them into the code base)
 
 # tests
 

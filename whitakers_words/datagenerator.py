@@ -188,7 +188,7 @@ class Generator:
                 comment = ""
 
                 if "--" in line:
-                    comment = line[line.index("--") + 2 :].strip()
+                    comment = line[line.index("--") + 2:].strip()
                     line = line[: line.index("--")]
                 info = line.split()
 

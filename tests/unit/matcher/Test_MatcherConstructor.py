@@ -15,7 +15,7 @@ from whitakers_words.matcher import (
 )
 
 
-class DummyFalseMatcher(unittest.TestCase):
+class MatcherConstructorTest(unittest.TestCase):
     def test_unequal_wordtypes(self):
         stem = Stem(pos="N")
         infl = Inflect(pos="V")
