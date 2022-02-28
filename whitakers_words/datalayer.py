@@ -23,10 +23,11 @@ class DataLayer:
         self.addons: dict[str, Sequence[Addon]] = kwargs.get("addons", addons)
         self.empty: dict[str, Sequence[Inflect]] = kwargs.get("empty", empty)
 
-        self.age: str = kwargs.get("age", "A")
+        self.age: str = kwargs.get("age", "C")
         self.area: str = kwargs.get("area", "A")
         self.geo: str = kwargs.get("geo", "A")
         self.frequency: str = kwargs.get("frequency", "C")
+        self.inflection_frequency: str = kwargs.get("frequency", "B")
         self.source: str = kwargs.get("source", "A")
         self.create_subsets()
 
@@ -42,8 +43,9 @@ class DataLayer:
         self.inflects = result
 
     def filter_inflections(self, item: Inflect) -> bool:
-        # TODO use all filters: [AGE, FREQ]
-        return item["props"][1] <= "B"  # TODO make configurable again
+        return item["props"][1] <= self.inflection_frequency and (
+            item["props"][0] <= self.age or item["props"][0] == "X"
+        )
 
     def filter_stems(self, item: Tuple[str, Sequence[Stem]]) -> bool:
         # TODO use all filters: [AGE, AREA, GEO, FREQ, SOURCE]

@@ -13,6 +13,8 @@ def get_enum_value(object_name: str, value_name: str) -> Enum:
     return get_enum_or_dict(object_name)[value_name]
 
 
+# some of these lists are copied from the original Whitaker's Words
+# more specifically latin_utils/latin_utils-inflections_package.ads
 class WordType(Enum):
     ADJ = "Adjective"
     ADV = "Adverb"
@@ -47,6 +49,7 @@ class Mood(Enum):
     SUB = "Subjunctive"
     IMP = "Imperative"
     INF = "Infinitive"
+    PPL = "Participle"
     X = "Unknown"
 
 
@@ -114,13 +117,15 @@ class NumeralType(Enum):
 
 
 class VerbType(Enum):
-    TO_BEING = "To Be"
+    TO_BE = "To Be"
+    TO_BEING = "To Be (Compounds)"
     SEMIDEP = "Semideponent"
     DEP = "Deponent"
     IMPERS = "Impersonal"
     PERFDEF = "Perfect Defective"
     ABL = "Ablative"
     DAT = "Dative"
+    GEN = "Genitive"
     INTRANS = "Intransitive"
     TRANS = "Transitive"
     X = "Default"
@@ -224,14 +229,30 @@ class Source(Enum):
     Z = "Sent by user"  # no dictionary reference
 
 
-# TODO other types
-"""
-subtypes = {
-    "N": ["M", "N", "T", "P", "F", "W", "C", "A", "L", "G", "X"],
-    "PREP": ["ABL", "ACC", "GEN"],
-    "PACK": ["REL", "INTERR", "INDEF", "ADJECT"]
-}
-"""
+class NounType(Enum):
+    A = "Abstract idea"
+    G = "Group/collective Name -- Roman(s)"
+    L = "Locale, name of country/city"
+    M = "plural or Multiple"
+    N = "proper Name"
+    P = "a Person"
+    S = "Singular"
+    T = "a Thing"
+    W = "place Where"
+    X = "unknown, nondescript"
+
+
+class PrepositionCase(Enum):
+    GEN = "Genitive"
+    ACC = "Accusative"
+    ABL = "Ablative"
+
+
+class PackonType(Enum):
+    REL = "Relative"
+    INTERR = "Interrogative"
+    ADJECT = "Adjectival"
+    INDEF = "Indefinite"
 
 
 names = inspect.getmembers(sys.modules[__name__], inspect.isclass)
