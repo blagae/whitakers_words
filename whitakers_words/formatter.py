@@ -4,7 +4,26 @@ from typing import Any
 
 import yaml
 
-from .parser import Word
+from whitakers_words.enums import WordType
+
+from .parser import Analysis, Word
+
+
+def make_ordinal(n: str):
+    '''
+    Convert an integer into its ordinal representation::
+
+        make_ordinal(0)   => '0th'
+        make_ordinal(3)   => '3rd'
+        make_ordinal(122) => '122nd'
+        make_ordinal(213) => '213th'
+    '''
+    n = int(n)
+    if 11 <= (n % 100) <= 13:
+        suffix = 'th'
+    else:
+        suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
+    return str(n) + suffix
 
 
 class Formatter:
@@ -34,9 +53,21 @@ class WordsFormatter(Formatter):
                         feat.name for feat in inflection.features.values()
                     )
                     result += "\n"
-                result += "\n"  # TODO base forms of words + frequency etc
+                # TODO insert props (frequency etc)
+                result += f"{self.format_principal_parts(analysis)}   []\n"
                 result += "; ".join(sense for sense in analysis.lexeme.senses)
         return result
+
+    def format_principal_parts(self, analysis: Analysis) -> str:
+        if analysis.lexeme.wordType == WordType.N:
+            return self.format_noun(analysis)
+        return ''
+
+    def format_noun(self, analysis: Analysis) -> str:
+        roots = analysis.lexeme.roots
+        category = int(analysis.lexeme.category[0])
+        # TODO logic to find an inflection e.g. N 3 1 GEN S M
+        return f"{roots[0]} {roots[1]}  N ({make_ordinal(category)})"
 
 
 class YamlFormatter(Formatter):

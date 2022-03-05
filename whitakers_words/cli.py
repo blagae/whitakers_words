@@ -22,7 +22,6 @@ def whitaker() -> None:
 @click.argument("word")
 def parse(frequency: str, formatter: str, word: str) -> None:
     """Parse a single word with a format of your choice"""
-    clz = Formatter()
     if formatter.lower() == "words":
         clz = WordsFormatter()
     elif formatter.lower() == "json":
