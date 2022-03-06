@@ -9,7 +9,9 @@ from typing import Any, Sequence, Tuple, Union
 
 from pkg_resources import resource_filename
 
-from .datatypes import DictEntry, Stem, Unique
+from whitakers_words.enums import WordType
+
+from .datatypes import DictEntry, Inflect, Stem, Unique
 
 
 class Generator:
@@ -181,6 +183,7 @@ class Generator:
     def import_inflects(self) -> None:
         with open(self.resources + "/INFLECTS.LAT") as f:
             data = []
+            paradigms = {}
             for i, text in enumerate(f):
                 line = text.strip()
                 if not line or line.startswith("--"):
@@ -214,19 +217,31 @@ class Generator:
                     form = info[3:6]
                 else:
                     raise Exception()
-                data.append(
-                    {
-                        "ending": ending,
-                        "n": [int(x) for x in n],
-                        "note": comment,
-                        "pos": pos,
-                        "form": form,
-                        "props": properties,
-                        "iid": i,
-                        "stem": int(used_stem) - 1,  # go zero-based
+                entry = {
+                    "ending": ending,
+                    "n": [int(x) for x in n],
+                    "note": comment,
+                    "pos": pos,
+                    "form": form,
+                    "props": properties,
+                    "iid": i,
+                    "stem": int(used_stem) - 1,  # go zero-based
                     }
-                )
-
+                data.append(entry)
+                if len(n) > 1:
+                    numbers = [int(x) for x in n]
+                    numerize = 10 * numbers[0] + numbers[1]
+                else:
+                    numerize = 0
+                numerize = str(numerize)
+                if pos not in paradigms:
+                    paradigms[pos] = {}
+                if numerize not in paradigms[pos]:
+                    paradigms[pos][numerize] = {}
+                ff = " ".join(form).upper()
+                if ff not in paradigms[pos][numerize]:
+                    paradigms[pos][numerize][ff] = []
+                paradigms[pos][numerize][ff].append(entry)
         empty, reordered = self.reorder_inflects(data)
         self.dump_file("empty.py", empty, "dict[str, Sequence[Inflect]]", "Inflect")
         self.dump_file(
@@ -235,6 +250,7 @@ class Generator:
             "dict[str, dict[str, Sequence[Inflect]]]",
             "Inflect",
         )
+        self.dump_file("paradigms.py", paradigms, "dict[str, dict[str, dict[str, list[Inflect]]]]", "Inflect")
 
     def reorder_inflects(
         self, data: list[dict[str, Any]]

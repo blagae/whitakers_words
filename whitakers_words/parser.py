@@ -86,6 +86,8 @@ class Lexeme:
         self.roots: Sequence[str] = []
         self.senses: Sequence[str] = []
         self.wordType = get_enum_value("WordType", stem["pos"])
+        self.form = stem["form"]
+        self.props = stem["props"]
 
     def __repr__(self) -> str:
         return repr(self.__dict__)

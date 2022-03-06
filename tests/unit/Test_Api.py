@@ -36,6 +36,7 @@ class MinimalDictionaryParseTest(unittest.TestCase):
             "wid": 0,
             "parts": ["word"],
             "senses": [],
+            "props": []
         }
         self.prs.data.wordkeys.add("word")
         self.prs.data.empty = {

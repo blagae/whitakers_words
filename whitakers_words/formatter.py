@@ -5,6 +5,7 @@ from typing import Any
 import yaml
 
 from whitakers_words.enums import WordType
+from whitakers_words.finder import find_inflection
 
 from .parser import Analysis, Word
 
@@ -54,7 +55,7 @@ class WordsFormatter(Formatter):
                     )
                     result += "\n"
                 # TODO insert props (frequency etc)
-                result += f"{self.format_principal_parts(analysis)}   []\n"
+                result += f"{self.format_principal_parts(analysis)}   [{''.join(analysis.lexeme.props)}]\n"
                 result += "; ".join(sense for sense in analysis.lexeme.senses)
         return result
 
@@ -64,10 +65,12 @@ class WordsFormatter(Formatter):
         return ''
 
     def format_noun(self, analysis: Analysis) -> str:
-        roots = analysis.lexeme.roots
-        category = int(analysis.lexeme.category[0])
-        # TODO logic to find an inflection e.g. N 3 1 GEN S M
-        return f"{roots[0]} {roots[1]}  N ({make_ordinal(category)})"
+        lex = analysis.lexeme
+        roots = lex.roots
+        category = int(lex.category[0])
+        nom = find_inflection(lex.wordType, lex.category, ["NOM", "S", lex.form[0]])
+        gen = find_inflection(lex.wordType, lex.category, ["GEN", "S", lex.form[0]])
+        return f"{roots[0]}{nom}, {roots[1]}{gen}  N ({make_ordinal(category)}) {lex.form[0]}"
 
 
 class YamlFormatter(Formatter):
