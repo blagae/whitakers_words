@@ -10,7 +10,7 @@ from whitakers_words.finder import find_inflection
 from .parser import Analysis, Word
 
 
-def make_ordinal(n: str):
+def make_ordinal(n: int) -> str:
     '''
     Convert an integer into its ordinal representation::
 
@@ -19,7 +19,6 @@ def make_ordinal(n: str):
         make_ordinal(122) => '122nd'
         make_ordinal(213) => '213th'
     '''
-    n = int(n)
     if 11 <= (n % 100) <= 13:
         suffix = 'th'
     else:
@@ -54,23 +53,24 @@ class WordsFormatter(Formatter):
                         feat.name for feat in inflection.features.values()
                     )
                     result += "\n"
-                # TODO insert props (frequency etc)
-                result += f"{self.format_principal_parts(analysis)}   [{''.join(analysis.lexeme.props)}]\n"
+                props = ''.join(analysis.lexeme.props)
+                result += f"{self.format_parts(analysis)}   [{props}]\n"
                 result += "; ".join(sense for sense in analysis.lexeme.senses)
         return result
 
-    def format_principal_parts(self, analysis: Analysis) -> str:
+    def format_parts(self, analysis: Analysis) -> str:
         if analysis.lexeme.wordType == WordType.N:
             return self.format_noun(analysis)
         return ''
 
     def format_noun(self, analysis: Analysis) -> str:
         lex = analysis.lexeme
-        roots = lex.roots
+        root = lex.roots
         category = int(lex.category[0])
-        nom = find_inflection(lex.wordType, lex.category, ["NOM", "S", lex.form[0]])
-        gen = find_inflection(lex.wordType, lex.category, ["GEN", "S", lex.form[0]])
-        return f"{roots[0]}{nom}, {roots[1]}{gen}  N ({make_ordinal(category)}) {lex.form[0]}"
+        gender = lex.form[0]
+        nom = find_inflection(lex.wordType, lex.category, ["NOM", "S", gender])
+        gen = find_inflection(lex.wordType, lex.category, ["GEN", "S", gender])
+        return f"{root[0]}{nom}, {root[1]}{gen}  N ({make_ordinal(category)}) {gender}"
 
 
 class YamlFormatter(Formatter):
