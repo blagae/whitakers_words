@@ -28,7 +28,9 @@ class WordsFormatter(Formatter):
             for analysis in form.analyses.values():
                 result += "\n"
                 for inflection in analysis.inflections:
-                    result += f"{inflection.stem}.{inflection.affix}"
+                    result += inflection.stem
+                    if inflection.affix:
+                        result += f".{inflection.affix}"
                     result += " " * (21 - (len(form.text) + 1))
                     result += inflection.wordType.name
                     result += " " * (7 - len(inflection.wordType.name))
@@ -46,6 +48,8 @@ class WordsFormatter(Formatter):
     def format_parts(self, analysis: Analysis) -> str:
         if analysis.lexeme.wordType == WordType.N:
             return self.format_noun(analysis)
+        if analysis.lexeme.wordType in (WordType.CONJ, WordType.INTERJ):
+            return f"{analysis.lexeme.roots[0]}  {analysis.lexeme.wordType.name}"
         return ''
 
     def format_noun(self, analysis: Analysis) -> str:
