@@ -8,22 +8,7 @@ from whitakers_words.enums import WordType
 from whitakers_words.finder import find_inflection
 
 from .parser import Analysis, Word
-
-
-def make_ordinal(n: int) -> str:
-    '''
-    Convert an integer into its ordinal representation::
-
-        make_ordinal(0)   => '0th'
-        make_ordinal(3)   => '3rd'
-        make_ordinal(122) => '122nd'
-        make_ordinal(213) => '213th'
-    '''
-    if 11 <= (n % 100) <= 13:
-        suffix = 'th'
-    else:
-        suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
-    return str(n) + suffix
+from .util import make_ordinal
 
 
 class Formatter:

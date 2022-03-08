@@ -23,3 +23,11 @@ class FinderTest(unittest.TestCase):
     def test_basic_noun_em(self):
         em = find_inflection(WordType.N, [3, 1], ["ACC", "S", "M"])
         self.assertEqual("em", em)
+
+    def test_basic_verb_em(self):
+        em = find_inflection(WordType.V, [1, 1], ["PRES", "ACTIVE", "SUB", "1", "S"])
+        self.assertEqual("em", em)
+
+    def test_basic_verb_mini(self):
+        i = find_inflection(WordType.V, [3, 1], ["PRES", "PASSIVE", "IND", "2", "P"])
+        self.assertEqual("imini", i)
