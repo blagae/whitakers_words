@@ -33,4 +33,6 @@ def find_inflects(para: partype, spec: int, form: str) -> list[Inflect]:
         result.extend(para[spec_str][form])
     if gen_str in para and form in para[gen_str]:
         result.extend(para[gen_str][form])
+    if "0" in para and form in para["0"]:
+        result.extend(para["0"][form])
     return result

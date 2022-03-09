@@ -11,6 +11,9 @@ from .parser import Analysis, Word
 from .util import make_ordinal
 
 
+immutables = [WordType.CONJ, WordType.INTERJ, WordType.PREP]
+
+
 class Formatter:
     def format_result(self, word: Word) -> str:
         raise NotImplementedError("needs to be subclassed")
@@ -46,10 +49,12 @@ class WordsFormatter(Formatter):
         return result
 
     def format_parts(self, analysis: Analysis) -> str:
+        if analysis.lexeme.wordType in immutables:
+            return f"{analysis.lexeme.roots[0]}  {analysis.lexeme.wordType.name}"
         if analysis.lexeme.wordType == WordType.N:
             return self.format_noun(analysis)
-        if analysis.lexeme.wordType in (WordType.CONJ, WordType.INTERJ):
-            return f"{analysis.lexeme.roots[0]}  {analysis.lexeme.wordType.name}"
+        if analysis.lexeme.wordType == WordType.V:
+            return self.format_verb(analysis)
         return ''
 
     def format_noun(self, analysis: Analysis) -> str:
@@ -57,9 +62,19 @@ class WordsFormatter(Formatter):
         root = lex.roots
         category = int(lex.category[0])
         gender = lex.form[0]
-        nom = find_inflection(lex.wordType, lex.category, ["NOM", "S", gender])
-        gen = find_inflection(lex.wordType, lex.category, ["GEN", "S", gender])
+        nom = find_inflection(WordType.N, lex.category, ["NOM", "S", gender])
+        gen = find_inflection(WordType.N, lex.category, ["GEN", "S", gender])
         return f"{root[0]}{nom}, {root[1]}{gen}  N ({make_ordinal(category)}) {gender}"
+
+    def format_verb(self, analysis: Analysis) -> str:
+        lex = analysis.lexeme
+        root = lex.roots
+        category = int(lex.category[0])
+        ind = find_inflection(WordType.V, lex.category, ["PRES", "ACTIVE", "IND", "1", "S"])
+        inf = find_inflection(WordType.V, lex.category, ["PRES", "ACTIVE", "INF", "0", "X"])
+        perf = find_inflection(WordType.V, lex.category, ["PERF", "ACTIVE", "IND", "1", "S"])
+        part = find_inflection(WordType.VPAR, lex.category, ["NOM", "S", "M", "PERF", "PASSIVE"])
+        return f"{root[0]}{ind}, {root[1]}{inf}, {root[2]}{perf}, {root[3]}{part}  V ({make_ordinal(category)}) "
 
 
 class YamlFormatter(Formatter):

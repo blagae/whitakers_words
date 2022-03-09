@@ -31,3 +31,19 @@ class FinderTest(unittest.TestCase):
     def test_basic_verb_mini(self):
         i = find_inflection(WordType.V, [3, 1], ["PRES", "PASSIVE", "IND", "2", "P"])
         self.assertEqual("imini", i)
+
+    def test_basic_verb_i(self):
+        i = find_inflection(WordType.V, [3, 1], ["PERF", "ACTIVE", "IND", "1", "S"])
+        self.assertEqual("i", i)
+
+    def test_basic_verb_are(self):
+        are = find_inflection(WordType.V, [1, 1], ["PRES", "ACTIVE", "INF", "0", "X"])
+        self.assertEqual("are", are)
+
+    def test_basic_verb_isse(self):
+        isse = find_inflection(WordType.V, [1, 1], ["PERF", "ACTIVE", "INF", "0", "X"])
+        self.assertEqual("isse", isse)
+
+    def test_basic_verbal_participle_us(self):
+        us = find_inflection(WordType.VPAR, [3, 1], ["NOM", "S", "M", "PERF", "PASSIVE"])
+        self.assertEqual("us", us)
