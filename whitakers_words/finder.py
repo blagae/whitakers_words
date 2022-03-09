@@ -10,29 +10,34 @@ strs_or_ints = type(Sequence[Union[str, int]])
 
 
 def find_inflection(wordType: Enum, n: strs_or_ints, form: strs_or_ints) -> str:
-    spec_cat = 10 * int(n[0]) + int(n[1])
-    form_str = " ".join([str(x) for x in form]).upper()
     typ = wordType.name
-    inflects = find_inflects(paradigms[typ], spec_cat, form_str)
+    inflects = find_inflects(paradigms[typ], n, form)
     if wordType == WordType.N:
-        ungendered = form_str[:-1]
+        ungendered = form[:-1]
         if form[-1] != "N":
-            inflects.extend(find_inflects(paradigms[typ], spec_cat, ungendered + "C"))
-        inflects.extend(find_inflects(paradigms[typ], spec_cat, ungendered + "X"))
+            inflects.extend(find_inflects(paradigms[typ], n, ungendered + ["C"]))
+        inflects.extend(find_inflects(paradigms[typ], n, ungendered + ["X"]))
+    elif wordType == WordType.ADJ:
+        ungendered = form[:-2]
+        if form[-2] != "N":
+            inflects.extend(find_inflects(paradigms[typ], n, ungendered + ["C"] + form[-1:]))
+        inflects.extend(find_inflects(paradigms[typ], n, ungendered + ["X"] + form[-1:]))
     if len(inflects):
         inflects.sort(key=lambda infl: infl["props"][1])
         return inflects[0]["ending"]
-    raise Exception()
+    raise Exception(form)
 
 
-def find_inflects(para: partype, spec: int, form: str) -> list[Inflect]:
+def find_inflects(para: partype, n: strs_or_ints, form: strs_or_ints) -> list[Inflect]:
+    spec = 10 * int(n[0]) + int(n[1])
     spec_str = str(spec)
     gen_str = str(spec // 10 * 10)
+    form_str = " ".join([str(x) for x in form]).upper()
     result = []
-    if spec_str in para and form in para[spec_str]:
-        result.extend(para[spec_str][form])
-    if gen_str in para and form in para[gen_str]:
-        result.extend(para[gen_str][form])
-    if "0" in para and form in para["0"]:
-        result.extend(para["0"][form])
+    if spec_str in para and form_str in para[spec_str]:
+        result.extend(para[spec_str][form_str])
+    if gen_str in para and form_str in para[gen_str]:
+        result.extend(para[gen_str][form_str])
+    if "0" in para and form_str in para["0"]:
+        result.extend(para["0"][form_str])
     return result
