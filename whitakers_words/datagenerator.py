@@ -189,7 +189,7 @@ class Generator:
                 comment = ""
 
                 if "--" in line:
-                    comment = line[line.index("--") + 2:].strip()
+                    comment = line[line.index("--") + 2 :].strip()
                     line = line[: line.index("--")]
                 info = line.split()
 
@@ -225,12 +225,12 @@ class Generator:
                     "props": properties,
                     "iid": i,
                     "stem": int(used_stem) - 1,  # go zero-based
-                    }
+                }
                 data.append(entry)
                 if len(n) > 1:
                     category = str(10 * numbers[0] + numbers[1])
                 else:
-                    category = '0'
+                    category = "0"
                 if pos not in paradigms:
                     paradigms[pos] = {}
                 if category not in paradigms[pos]:
@@ -247,7 +247,12 @@ class Generator:
             "dict[str, dict[str, Sequence[Inflect]]]",
             "Inflect",
         )
-        self.dump_file("paradigms.py", paradigms, "dict[str, dict[str, dict[str, list[Inflect]]]]", "Inflect")
+        self.dump_file(
+            "paradigms.py",
+            paradigms,
+            "dict[str, dict[str, dict[str, list[Inflect]]]]",
+            "Inflect",
+        )
 
     def reorder_inflects(
         self, data: list[Inflect]

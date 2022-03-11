@@ -5,7 +5,7 @@ from typing import Any
 import yaml
 
 from whitakers_words.enums import WordType
-from whitakers_words.finder import find_inflection
+from whitakers_words.finder import find_inflection as find_infl
 
 from .parser import Analysis, Word
 from .util import make_ordinal
@@ -72,7 +72,7 @@ class WordsFormatter(Formatter):
                         feat.name for feat in inflection.features.values()
                     )
                     result += "\n"
-                props = ''.join(analysis.lexeme.props)
+                props = "".join(analysis.lexeme.props)
                 result += f"{self.format_parts(analysis)}   [{props}]\n"
                 result += "; ".join(sense for sense in analysis.lexeme.senses)
         return result
@@ -86,7 +86,7 @@ class WordsFormatter(Formatter):
             return format_verb(analysis)
         if analysis.lexeme.wordType == WordType.ADJ:
             return format_adj(analysis)
-        return ''
+        return ""
 
 
 def format_noun(analysis: Analysis) -> str:
@@ -94,8 +94,8 @@ def format_noun(analysis: Analysis) -> str:
     root = lex.roots
     category = int(lex.category[0])
     gender = lex.form[0]
-    nom = find_inflection(WordType.N, lex.category, ["NOM", "S", gender])
-    gen = find_inflection(WordType.N, lex.category, ["GEN", "S", gender])
+    nom = find_infl(WordType.N, lex.category, ["NOM", "S", gender])
+    gen = find_infl(WordType.N, lex.category, ["GEN", "S", gender])
     return f"{root[0]}{nom}, {root[1]}{gen}  N ({make_ordinal(category)}) {gender}"
 
 
@@ -103,19 +103,25 @@ def format_verb(analysis: Analysis) -> str:
     lex = analysis.lexeme
     root = lex.roots
     category = int(lex.category[0])
-    ind = find_inflection(WordType.V, lex.category, ["PRES", "ACTIVE", "IND", "1", "S"])
-    inf = find_inflection(WordType.V, lex.category, ["PRES", "ACTIVE", "INF", "0", "X"])
-    perf = find_inflection(WordType.V, lex.category, ["PERF", "ACTIVE", "IND", "1", "S"])
-    part = find_inflection(WordType.VPAR, lex.category, ["NOM", "S", "M", "PERF", "PASSIVE"])
+    ind = find_infl(WordType.V, lex.category, ["PRES", "ACTIVE", "IND", "1", "S"])
+    inf = find_infl(WordType.V, lex.category, ["PRES", "ACTIVE", "INF", "0", "X"])
+    perf = find_infl(WordType.V, lex.category, ["PERF", "ACTIVE", "IND", "1", "S"])
+    part = find_infl(WordType.VPAR, lex.category, ["NOM", "S", "M", "PERF", "PASSIVE"])
     return f"{root[0]}{ind}, {root[1]}{inf}, {root[2]}{perf}, {root[3]}{part}  V ({make_ordinal(category)}) "
 
 
 def format_adj(analysis: Analysis) -> str:
     lex = analysis.lexeme
     root = lex.roots
-    pos = [find_inflection(WordType.ADJ, lex.category, ["NOM", "S", x, "POS"]) for x in genders]
-    comp = [find_inflection(WordType.ADJ, lex.category, ["NOM", "S", x, "COMP"]) for x in genders]
-    sup = [find_inflection(WordType.ADJ, lex.category, ["NOM", "S", x, "SUPER"]) for x in genders]
+    pos = [
+        find_infl(WordType.ADJ, lex.category, ["NOM", "S", x, "POS"]) for x in genders
+    ]
+    comp = [
+        find_infl(WordType.ADJ, lex.category, ["NOM", "S", x, "COMP"]) for x in genders
+    ]
+    sup = [
+        find_infl(WordType.ADJ, lex.category, ["NOM", "S", x, "SUPER"]) for x in genders
+    ]
     pos_str = f"{root[0]}{pos[0]}, {root[1]}{pos[1]} -{pos[2]}"
     comp_str = f"{root[2]}{comp[0]} -{comp[1]} -{comp[2]}"
     sup_str = f"{root[3]}{sup[0]} -{sup[1]} -{sup[2]}"
