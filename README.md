@@ -1,10 +1,18 @@
 # Whitaker's Words
 
+## Introduction
+
+`whitakers_words` is a Latin word analysis tool written in Python 3.
+Its core is a software library: it takes a single Latin word as input, and it outputs the word's stem, inflection, and meaning.
+The output may also contain basic information about the word's syntactic use and/or some other metadata about frequency, semantic field, age, etc.
+
+There is also a command line tool called `whitaker` that can be used on any terminal.
+
 ## Project history
 
-`whitakers_words` is a port of William Whitaker's original Ada code to Python 3 for future maintenance and improvement.
-You can find the current state of development that started with the original Whitaker's Words, written in Ada, on
-[Martin Keegan's Github repository](https://github.com/mk270/whitakers-words).
+`whitakers_words` is a reimplementation of William Whitaker's original project in Python 3.9 for future maintenance and improvement.
+You can find the current state of development of the Ada code that started with the original Whitaker's Words,
+on [Martin Keegan's Github repository](https://github.com/mk270/whitakers-words).
 More information about William Whitaker and the Words program is available there.  
 
 ## Changes since fork
@@ -19,17 +27,18 @@ A number of (proposed) functions have been deleted:
 It has also seen significant improvement in usability and performance:
 
 * `format_data` has been renamed to `datagenerator`. It is now a data feeding program which reads Whitaker's file lists into Python dictionaries and lists
-* `datagenerator` logic is called upon installation of the project, through `python setup.py install` or `pip install .`
+* `datagenerator` logic is called upon installation of the project, through `setup.py` or `pip install`
 * inefficient dictionary loops (`O(n)`) have been replaced by lookups (`O(log n)`)
-* the default output is no longer a JSON dictionary, but rather a hierarchy of Python objects.
+* the default output is no longer a JSON dictionary, but rather a hierarchy of Python objects. It can thus be used as a library by a client application.
 * tests were added
+* a command line tool was added to simulate replicate the original Whitakers Words
 
 ## Project status
 
 This project is far from production-ready. Known issues are:
 
 * `prefixes.py` and `suffixes.py` are not being used in program logic right now
-* the API does not yet support filtering for e.g. pre-classical inflections
+* the API does not yet support filtering fully e.g. pre-classical inflections are unsupported
 * interrogative pronouns are analyzed terribly wrong
 
 There are certainly many more major problems to be found. Feel free to create Github issues for any error you encounter.
@@ -51,7 +60,7 @@ If you have cloned the repository, you can just use either one of these options:
 
     $ python setup.py install
 
-    $ pip install .
+    $ pip install -e .
 
 Otherwise, you will need to install from the Github repo, because there is no PyPi package for this project.
 
@@ -82,7 +91,7 @@ Word:
         - lexeme: (rex, regis)
           inflections:
             - root: reg
-              affix: em (Accusative Singular Common)
+              affix: em (Accusative Singular Masculine)
           enclitic: que
 ```
 
@@ -91,14 +100,14 @@ Word:
 Since version 0.5, a command line tool called `whitaker` is available when you install the project.
 It can be called as follows:
 
-    $ whitaker parse regemque --format=yaml
+    $ whitaker parse regemque --formatter=yaml
 
 Some caveats when using this tool, as of version 0.6:
 
 * the tool is very basic and does not support a lot of options yet.
 * it is not guaranteed that the subcommands will remain the same.
 
-It also supports the original `words` format. Note that as of yet, some word types are not fully equivalent to the original WORDS program.
+It also supports the original `words` format. Note that as of 0.6, some word types are not fully equivalent to the original WORDS program.
 
     $ whitaker words regemque
     que                  TACKON
@@ -115,13 +124,13 @@ It also supports the original `words` format. Note that as of yet, some word typ
 You are advised to use `virtualenv` or `venv` when modifying any code. The project currently runs on Python 3.9,
 using some improvements of the type hinting system, but it could probably run on older versions as well with minimal modifications.
 
-The folder `venv/` is ignored by the git config, so this is the suggested name for your venv:
+The folder `venv/` is ignored by the git config, so this name is the suggested name for your virtual environment:
 
     $ python -m venv venv/
 
 ## Test instructions
 
-The tests use the `pytest` framework. All tests are in the `tests` module (which is not included in the distribution).
+The tests use the `pytest` framework. All tests are in the `tests` module (which is not included in the distributed library code).
 You should be able to run the tests from the command line, from the root folder of the project and without any further config, by just calling:
 
     $ pytest tests
@@ -132,11 +141,22 @@ If that doesn't work, you may need to manually install the project dependencies 
 
 ## Using tox
 
-If you want to run the full QA check of this project, just run tox on the command line while `venv` is active
+If you want to run the full QA check of this project, just run tox on the command line while `venv` is active:
 
     $ tox
 
 This commands runs the tests with `pytest`, checks for PEP8 compliance with `flake8`, and for type hinting consistency with `mypy`.
+If everything goes well, the last lines of the output of `tox` will look like this:
+
+> py39: commands succeeded
+> flake8: commands succeeded
+> mypy: commands succeeded
+> congratulations :)
+
+If your tests are failing because the test runner can't find the package `whitakers_words.generated`,
+then install the current project as a code dependency (not a package) by using the `-e` option, before retrying:
+
+    $ pip install -e .
 
 ## Project metadata
 

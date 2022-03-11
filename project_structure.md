@@ -11,7 +11,7 @@ than in seeing a thousand random changes in a wall of text.
 
 If you are cloning the project and trying to run the files, first install the package locally:
 
-    (whitakers_words) $ python setup.py install
+    (whitakers_words) $ pip install -e .
 
 # Program execution
 

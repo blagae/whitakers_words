@@ -5,7 +5,7 @@ The integration tests are written as a full analysis of one word, checking every
 
 They are usually structured like so, which makes them (relatively) easy to understand:
 
-```
+```python
 def test_regem(self):
     result = self.par.parse("regem")
     self.assertEqual(len(result.forms), 1)
@@ -44,12 +44,11 @@ More tests are always welcome, because:
 
 ## matcher
 
-* decide if using method names is OK
 * fix "PACKON" type
 
 ## datalayer
 
-* make it more generic (e.g. allow a custom backend)
+* make it more generic (e.g. allow a custom backend such as an SQL database)
 * do we need the filter() inception ?
 * allow filtering on other metadata than frequency
 * filtering on frequency should also filter the wordlist to prevent homonymic false positives
@@ -63,7 +62,8 @@ More tests are always welcome, because:
 
 ## integration
 
-* many more tests are needed
+* many more tests for specific words are needed
+* test WordsFormatter for comparison to Whitaker's Words
 
 ## nonfunctional
 
