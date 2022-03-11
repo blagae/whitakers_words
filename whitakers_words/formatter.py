@@ -5,7 +5,7 @@ from typing import Any
 import yaml
 
 from whitakers_words.enums import WordType
-from whitakers_words.finder import find_inflection as find_infl
+from whitakers_words.finder import find_infl
 
 from .parser import Analysis, Word
 from .util import make_ordinal

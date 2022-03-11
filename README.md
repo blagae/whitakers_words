@@ -93,18 +93,18 @@ It can be called as follows:
 
     $ whitaker parse regemque --format=yaml
 
-Some caveats when using this tool, as of version 0.5:
+Some caveats when using this tool, as of version 0.6:
 
 * the tool is very basic and does not support a lot of options yet.
 * it is not guaranteed that the subcommands will remain the same.
 
-It also supports the original `words` format. Note that as of yet, it is not fully equivalent to the original WORDS program.
+It also supports the original `words` format. Note that as of yet, some word types are not fully equivalent to the original WORDS program.
 
     $ whitaker words regemque
     que                  TACKON
     -que = and (enclitic, translated before attached word); completes plerus/uter;
     reg.em               N      3 1 ACC S M
-
+    rex, regis  N (3rd) M   [XLXAX]
     king
 
 
