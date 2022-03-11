@@ -1,6 +1,7 @@
 import unittest
 
-from whitakers_words.formatter import JsonFormatter, WordsFormatter, YamlFormatter
+from whitakers_words.formatter import (JsonFormatter, WordsFormatter,
+                                       YamlFormatter)
 from whitakers_words.parser import Parser
 
 

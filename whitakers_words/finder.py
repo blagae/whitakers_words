@@ -1,27 +1,27 @@
 from enum import Enum
 from typing import Sequence, Union
+
 from whitakers_words.datatypes import Inflect
 from whitakers_words.enums import WordType
 from whitakers_words.generated.paradigms import paradigms
 
-
-partype = type(paradigms["V"])
-strs_or_ints = type(Sequence[Union[str, int]])
+partype = dict[str, dict[str, list[Inflect]]]
+strs_or_ints = Sequence[Union[str, int]]
 
 
 def find_inflection(wordType: Enum, n: strs_or_ints, form: strs_or_ints) -> str:
     typ = wordType.name
     inflects = find_inflects(paradigms[typ], n, form)
-    if wordType == WordType.N:
-        ungendered = form[:-1]
+    if wordType == WordType.N or wordType == WordType.PRON:
+        ungendered = list(form[:-1])
         if form[-1] != "N":
             inflects.extend(find_inflects(paradigms[typ], n, ungendered + ["C"]))
         inflects.extend(find_inflects(paradigms[typ], n, ungendered + ["X"]))
-    elif wordType == WordType.ADJ:
-        ungendered = form[:-2]
+    elif wordType == WordType.ADJ or wordType == WordType.NUM:
+        ungendered = list(form[:-2])
         if form[-2] != "N":
-            inflects.extend(find_inflects(paradigms[typ], n, ungendered + ["C"] + form[-1:]))
-        inflects.extend(find_inflects(paradigms[typ], n, ungendered + ["X"] + form[-1:]))
+            inflects.extend(find_inflects(paradigms[typ], n, ungendered + ["C", form[-1]]))
+        inflects.extend(find_inflects(paradigms[typ], n, ungendered + ["X", form[-1]]))
     if len(inflects):
         inflects.sort(key=lambda infl: infl["props"][1])
         return inflects[0]["ending"]

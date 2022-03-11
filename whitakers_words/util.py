@@ -20,13 +20,13 @@ def hash_generated_files() -> dict[str, str]:
     return result
 
 
-"""
-I found this function on https://stackoverflow.com/a/50992575/2065017.
-As a result, it is licensed under the CC BY-SA 4.0 license.
-I have added type hints in the function definition.
-"""
 def make_ordinal(n: int) -> str:
     '''
+    LICENSE NOTICE
+    I found this function on https://stackoverflow.com/a/50992575/2065017.
+    As a result, it is licensed under the CC BY-SA 4.0 license.
+    I have added type hints in the function definition.
+
     Convert an integer into its ordinal representation::
 
         make_ordinal(0)   => '0th'

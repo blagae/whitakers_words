@@ -1,18 +1,11 @@
 import unittest
 
 from whitakers_words.datatypes import Inflect, Stem
-from whitakers_words.matcher import (
-    Matcher,
-    _adj_checker,
-    _adv_checker,
-    _basic_matcher,
-    _dummy_false,
-    _noun_checker,
-    _numeral_checker,
-    _pronoun_checker,
-    _verb_checker,
-    _vpar_checker,
-)
+from whitakers_words.matcher import (Matcher, _adj_checker, _adv_checker,
+                                     _basic_matcher, _dummy_false,
+                                     _noun_checker, _numeral_checker,
+                                     _pronoun_checker, _verb_checker,
+                                     _vpar_checker)
 
 
 class MatcherConstructorTest(unittest.TestCase):

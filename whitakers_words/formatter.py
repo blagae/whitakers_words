@@ -10,7 +10,6 @@ from whitakers_words.finder import find_inflection
 from .parser import Analysis, Word
 from .util import make_ordinal
 
-
 immutables = [WordType.CONJ, WordType.INTERJ, WordType.PREP]
 genders = ["M", "F", "N"]
 

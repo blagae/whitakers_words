@@ -1,15 +1,7 @@
 import unittest
 
-from whitakers_words.enums import (
-    Case,
-    Gender,
-    Mood,
-    Number,
-    Person,
-    Tense,
-    Voice,
-    WordType,
-)
+from whitakers_words.enums import (Case, Gender, Mood, Number, Person, Tense,
+                                   Voice, WordType)
 from whitakers_words.parser import Parser
 
 
