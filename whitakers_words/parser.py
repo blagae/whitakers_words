@@ -241,7 +241,7 @@ class Word:
     def __repr__(self) -> str:
         return repr(self.__dict__)
 
-    def analyse(self, data: DataLayer, apply_filter: bool = True) -> None:
+    def analyse(self, data: DataLayer) -> None:
         for form in self.forms:
             if form.text in data.uniques:
                 for unique_form in data.uniques[form.text]:
@@ -249,10 +249,8 @@ class Word:
             # Get regular words
             form.analyse(data)
             # only use forms that get at least one valid analysis
-            if apply_filter:
-                form.filter_good_analyses()
-        if apply_filter:
-            self.filter_good_forms()
+            form.filter_good_analyses()
+        self.filter_good_forms()
 
     def filter_good_forms(self) -> None:
         self.forms = list(filter(lambda form: form.analyses, self.forms))
@@ -262,26 +260,16 @@ class Word:
         result = [Form(self.text)]
 
         # Test the different tackons / packons as specified in addons.py
-        result.extend(self.find_enclitic("tackons", data))
+        cliticized = data.find_enclitic(self.text, "tackons")
 
         # which list do we get info from
         if self.text.startswith("qu"):
-            result.extend(self.find_enclitic("packons", data))
+            cliticized.extend(data.find_enclitic(self.text, "packons"))
         else:
-            result.extend(self.find_enclitic("not_packons", data))
+            cliticized.extend(data.find_enclitic(self.text, "not_packons"))
+        for clitic in cliticized:
+            result.append(Form(clitic["base"], Enclitic(clitic["affix"])))
         self.forms = result
-
-    def find_enclitic(self, list_name: str, data: DataLayer) -> Sequence[Form]:
-        result = []
-        if list_name in data.addons:
-            for affix in data.addons[list_name]:
-                affix_text = affix["orth"]
-                if self.text.endswith(affix_text):
-                    base = re.sub(affix_text + "$", "", self.text)
-                    # an enclitic without a base is not an enclitic
-                    if base:
-                        result.append(Form(base, Enclitic(affix)))
-        return result
 
     def get_analyses(self) -> Sequence[Analysis]:
         return [item for form in self.forms for item in form.analyses.values()]
@@ -292,12 +280,12 @@ class Parser:
         self.data = DataLayer(**kwargs)
 
     def __repr__(self) -> str:
-        return f'Parser(frequency="{self.data.frequency}")'
+        return f'Parser(frequency="{self.data.get_frequency()}")'
 
-    def parse(self, text: str, apply_filters: bool = True) -> Word:
+    def parse(self, text: str) -> Word:
         if not text.isalpha():
             raise WordsException("Text to be parsed must be a single Latin word")
         result = Word(text)
         result.split_form_enclitic(self.data)
-        result.analyse(self.data, apply_filters)
+        result.analyse(self.data)
         return result

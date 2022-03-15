@@ -1,3 +1,4 @@
+import re
 from typing import Any, Sequence, Tuple
 
 from .data.addons import addons
@@ -50,3 +51,18 @@ class DataLayer:
     def filter_stems(self, item: Tuple[str, Sequence[Stem]]) -> bool:
         # TODO use all filters: [AGE, AREA, GEO, FREQ, SOURCE]
         return bool(list(filter(lambda x: x["props"][3] <= self.frequency, item[1])))
+
+    def find_enclitic(self, text: str, addon_type: str) -> list[dict[str, str]]:
+        result = []
+        if addon_type in self.addons:
+            for affix in self.addons[addon_type]:
+                affix_text = affix["orth"]
+                if text.endswith(affix_text):
+                    base = re.sub(affix_text + "$", "", text)
+                    # an enclitic without a base is not an enclitic
+                    if base:
+                        result.append({'base': base, 'affix': affix})
+        return result
+
+    def get_frequency(self):
+        return self.frequency
