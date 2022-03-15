@@ -1,6 +1,6 @@
 import re
 from enum import Enum
-from typing import Any, Sequence, Tuple, Union
+from typing import Any, Optional, Sequence, Tuple, Union
 
 from .datalayer import DataLayer
 from .datatypes import Addon, DictEntry, Inflect, Stem, Unique
@@ -125,8 +125,7 @@ class Analysis:
     def __repr__(self) -> str:
         return repr(self.__dict__)
 
-    def lookup_stem(self, wordlist: Sequence[DictEntry]) -> None:
-        dict_word = wordlist[self.lexeme.id]
+    def push_lexeme_info(self, dict_word: Optional[DictEntry]) -> None:
         if dict_word:  # guard for empty entries
             self.lexeme.roots = dict_word["parts"]
             self.lexeme.senses = dict_word["senses"]
@@ -150,35 +149,14 @@ class Form:
             }
 
     def analyse(self, data: DataLayer) -> None:
-        """
-        Find all possible endings that may apply, so without checking congruence between word type and ending type
-        """
-        viable_inflections: list[Inflect] = []
-
-        # the word may be undeclined, so add this as an option if the full form exists in the list of words
-        if self.text in data.wordkeys and self.text in data.stems:
-            stem_list = data.stems[self.text]
-            wordtypes = {x["pos"] for x in stem_list}
-            # no need to check for VPAR, because there are no empty VPAR endings
-            for wordtype in wordtypes:
-                viable_inflections.extend(data.empty[wordtype])
-
-        # Check against inflection list
-        for inflect_length in range(1, min(8, len(self.text))):
-            end_of_word = self.text[-inflect_length:]
-            if (
-                str(inflect_length) in data.inflects
-                and end_of_word in data.inflects[str(inflect_length)]
-            ):
-                infl = data.inflects[str(inflect_length)][end_of_word]
-                viable_inflections.extend(infl)
-
         # Get viable combinations of stem + endings (+ enclitics)
+        viable_inflections: list[Inflect] = data.get_inflections(self.text)
         analyses = self.match_stems_inflections(viable_inflections, data)
 
         for analysis in analyses.values():
             analysis.enclitic = self.enclitic
-            analysis.lookup_stem(data.wordlist)
+            dict_word = data.lookup_stem(analysis.lexeme.id)
+            analysis.push_lexeme_info(dict_word)
         if self.analyses:
             self.analyses.update(analyses)
         else:
@@ -243,9 +221,8 @@ class Word:
 
     def analyse(self, data: DataLayer) -> None:
         for form in self.forms:
-            if form.text in data.uniques:
-                for unique_form in data.uniques[form.text]:
-                    form.analyse_unique(unique_form)
+            for unique_form in data.get_uniques(form.text):
+                form.analyse_unique(unique_form)
             # Get regular words
             form.analyse(data)
             # only use forms that get at least one valid analysis
@@ -260,14 +237,14 @@ class Word:
         result = [Form(self.text)]
 
         # Test the different tackons / packons as specified in addons.py
-        cliticized = data.find_enclitic(self.text, "tackons")
+        cliticised = data.find_enclitic(self.text, "tackons")
 
         # which list do we get info from
         if self.text.startswith("qu"):
-            cliticized.extend(data.find_enclitic(self.text, "packons"))
+            cliticised.extend(data.find_enclitic(self.text, "packons"))
         else:
-            cliticized.extend(data.find_enclitic(self.text, "not_packons"))
-        for clitic in cliticized:
+            cliticised.extend(data.find_enclitic(self.text, "not_packons"))
+        for clitic in cliticised:
             result.append(Form(clitic["base"], Enclitic(clitic["affix"])))
         self.forms = result
 

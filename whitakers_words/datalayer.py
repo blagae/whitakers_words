@@ -1,5 +1,5 @@
 import re
-from typing import Any, Sequence, Tuple
+from typing import Any, Optional, Sequence, Tuple
 
 from .data.addons import addons
 from .datatypes import Addon, DictEntry, Inflect, Stem, Unique
@@ -66,3 +66,36 @@ class DataLayer:
 
     def get_frequency(self):
         return self.frequency
+
+    def get_uniques(self, text: str) -> Sequence[Unique]:
+        return self.uniques.get(text, [])
+
+    def get_empty_inflections(self, text: str) -> Sequence[Inflect]:
+        result = []
+        if text in self.wordkeys and text in self.stems:
+            stem_list = self.stems[text]
+            wordtypes = {x["pos"] for x in stem_list}
+            # no need to check for VPAR, because there are no empty VPAR endings
+            for wordtype in wordtypes:
+                result.extend(self.empty[wordtype])
+        return result
+
+    def get_inflections(self, text: str) -> Sequence[Inflect]:
+        """
+        Find all possible endings that may apply, so without checking congruence between word type and ending type
+        """
+        # the word may be undeclined, so add this as an option if the full form exists in the list of words
+        result: list[Inflect] = self.get_empty_inflections(text)
+        # Check against inflection list
+        for inflect_length in range(1, min(8, len(text))):
+            end_of_word = text[-inflect_length:]
+            if (
+                str(inflect_length) in self.inflects
+                and end_of_word in self.inflects[str(inflect_length)]
+            ):
+                infl = self.inflects[str(inflect_length)][end_of_word]
+                result.extend(infl)
+        return result
+
+    def lookup_stem(self, id: int) -> Optional[DictEntry]:
+        return self.wordlist[id]

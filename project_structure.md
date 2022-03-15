@@ -18,7 +18,7 @@ If you are cloning the project and trying to run the files, first install the pa
 ## Parser
 
 The `Parser` is probably the only entry point users will need.
-The default constructor `Parser` will initialize its `DataLayer` with a subset of the full dictionary from the `generated` package.
+The default constructor `Parser` will initialise its `DataLayer` with a subset of the full dictionary from the `generated` package.
 You can pass the constructor argument `frequency`, which will modify which subset is used:
 it will only show results if the word and inflection are common enough to be filtered on this category.
 
@@ -27,7 +27,7 @@ parser = Parser(frequency="B")  # analyze using dictionary entries and inflectio
 ```
 **TODO add all metadata modifiers to enums.py**
 
-You can also specify a fully customized dictionary as part of the `DataLayer`,
+You can also specify a fully customised dictionary as part of the `DataLayer`,
 by using the dictionary's keywords that are used in its initialization.
 This is prominently used in the unit tests, to test the API with a "minimal" dictionary.
 If you want to do this, then you will have to recreate the data structure of the list(s) and/or dict(s) that you want to override.
