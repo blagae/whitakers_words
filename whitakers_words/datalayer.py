@@ -12,6 +12,35 @@ from .generated.wordlist import wordlist
 
 
 class DataLayer:
+    def __new__(cls, **kwargs):
+        if "database" in kwargs:
+            # TODO allow database implementations
+            raise NotImplementedError()
+        return super().__new__(FileBasedDataLayer)
+
+    def find_enclitic(self, text: str, addon_type: str) -> list[dict[str, str]]:
+        raise NotImplementedError()
+
+    def get_frequency(self):
+        raise NotImplementedError()
+
+    def get_uniques(self, text: str) -> Sequence[Unique]:
+        raise NotImplementedError()
+
+    def get_empty_inflections(self, text: str) -> Sequence[Inflect]:
+        raise NotImplementedError()
+
+    def get_inflections(self, text: str) -> Sequence[Inflect]:
+        raise NotImplementedError()
+
+    def lookup_stem(self, id: int) -> Optional[DictEntry]:
+        raise NotImplementedError()
+
+    def get_stems(self, text: str):
+        raise NotImplementedError()
+
+
+class FileBasedDataLayer(DataLayer):
     def __init__(self, **kwargs: Any):
         self.wordlist: Sequence[DictEntry] = kwargs.get("wordlist", wordlist)
         # input may be a set or a list
@@ -30,28 +59,29 @@ class DataLayer:
         self.frequency: str = kwargs.get("frequency", "C")
         self.inflection_frequency: str = kwargs.get("frequency", "B")
         self.source: str = kwargs.get("source", "A")
-        self.create_subsets()
+        self._create_subsets()
 
-    def create_subsets(self) -> None:
-        self.stems = dict(filter(self.filter_stems, self.stems.items()))
+    def _create_subsets(self) -> None:
+        self.stems = dict(filter(self._filter_stems, self.stems.items()))
         result: dict[str, dict[str, Sequence[Inflect]]] = {}
         for length_index, ending_list in self.inflects.items():
             result[length_index] = {}
             for text, definition in ending_list.items():
-                lst = list(filter(self.filter_inflections, definition))
+                lst = list(filter(self._filter_inflections, definition))
                 if lst:
                     result[length_index][text] = lst
         self.inflects = result
 
-    def filter_inflections(self, item: Inflect) -> bool:
+    def _filter_inflections(self, item: Inflect) -> bool:
         return item["props"][1] <= self.inflection_frequency and (
             item["props"][0] <= self.age or item["props"][0] == "X"
         )
 
-    def filter_stems(self, item: Tuple[str, Sequence[Stem]]) -> bool:
+    def _filter_stems(self, item: Tuple[str, Sequence[Stem]]) -> bool:
         # TODO use all filters: [AGE, AREA, GEO, FREQ, SOURCE]
         return bool(list(filter(lambda x: x["props"][3] <= self.frequency, item[1])))
 
+    # INTERFACE STARTS HERE
     def find_enclitic(self, text: str, addon_type: str) -> list[dict[str, str]]:
         result = []
         if addon_type in self.addons:
@@ -61,7 +91,7 @@ class DataLayer:
                     base = re.sub(affix_text + "$", "", text)
                     # an enclitic without a base is not an enclitic
                     if base:
-                        result.append({'base': base, 'affix': affix})
+                        result.append({"base": base, "affix": affix})
         return result
 
     def get_frequency(self):
@@ -99,3 +129,6 @@ class DataLayer:
 
     def lookup_stem(self, id: int) -> Optional[DictEntry]:
         return self.wordlist[id]
+
+    def get_stems(self, text: str):
+        return self.stems.get(text, [])

@@ -194,20 +194,19 @@ class Form:
                 stem_lemma = self.text[: -len(infl_cand["ending"])]
             else:
                 stem_lemma = self.text
-            if stem_lemma in data.stems:
-                stem_list = data.stems[stem_lemma]
-                for stem_cand in stem_list:
-                    if Matcher(stem_cand, infl_cand).check():
-                        word_id = stem_cand["wid"]
-                        inflection = Inflection(infl_cand, stem_cand)
-                        # If there's already a matched stem with that orthography
-                        if word_id in matched_stems:
-                            if inflection not in matched_stems[word_id].inflections:
-                                matched_stems[word_id].inflections.append(inflection)
-                        else:
-                            matched_stems[word_id] = Analysis(
-                                Lexeme(stem_cand), [inflection]
-                            )
+            stem_list = data.get_stems(stem_lemma)
+            for stem_cand in stem_list:
+                if Matcher(stem_cand, infl_cand).check():
+                    word_id = stem_cand["wid"]
+                    inflection = Inflection(infl_cand, stem_cand)
+                    # If there's already a matched stem with that orthography
+                    if word_id in matched_stems:
+                        if inflection not in matched_stems[word_id].inflections:
+                            matched_stems[word_id].inflections.append(inflection)
+                    else:
+                        matched_stems[word_id] = Analysis(
+                            Lexeme(stem_cand), [inflection]
+                        )
         return matched_stems
 
 
