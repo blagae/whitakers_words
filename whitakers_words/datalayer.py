@@ -12,31 +12,31 @@ from .generated.wordlist import wordlist
 
 
 class DataLayer:
-    def __new__(cls, **kwargs):
+    def __new__(cls, **kwargs: Any) -> "DataLayer":
         if "database" in kwargs:
             # TODO allow database implementations
             raise NotImplementedError()
         return super().__new__(FileBasedDataLayer)
 
-    def find_enclitic(self, text: str, addon_type: str) -> list[dict[str, str]]:
+    def find_enclitic(self, text: str, addon_type: str) -> list[Tuple[str, Addon]]:
         raise NotImplementedError()
 
-    def get_frequency(self):
+    def get_frequency(self) -> str:
         raise NotImplementedError()
 
     def get_uniques(self, text: str) -> Sequence[Unique]:
         raise NotImplementedError()
 
-    def get_empty_inflections(self, text: str) -> Sequence[Inflect]:
+    def get_empty_inflections(self, text: str) -> list[Inflect]:
         raise NotImplementedError()
 
-    def get_inflections(self, text: str) -> Sequence[Inflect]:
+    def get_inflections(self, text: str) -> list[Inflect]:
         raise NotImplementedError()
 
     def lookup_stem(self, id: int) -> Optional[DictEntry]:
         raise NotImplementedError()
 
-    def get_stems(self, text: str):
+    def get_stems(self, text: str) -> Sequence[Stem]:
         raise NotImplementedError()
 
 
@@ -81,8 +81,7 @@ class FileBasedDataLayer(DataLayer):
         # TODO use all filters: [AGE, AREA, GEO, FREQ, SOURCE]
         return bool(list(filter(lambda x: x["props"][3] <= self.frequency, item[1])))
 
-    # INTERFACE STARTS HERE
-    def find_enclitic(self, text: str, addon_type: str) -> list[dict[str, str]]:
+    def find_enclitic(self, text: str, addon_type: str) -> list[Tuple[str, Addon]]:
         result = []
         if addon_type in self.addons:
             for affix in self.addons[addon_type]:
@@ -91,17 +90,17 @@ class FileBasedDataLayer(DataLayer):
                     base = re.sub(affix_text + "$", "", text)
                     # an enclitic without a base is not an enclitic
                     if base:
-                        result.append({"base": base, "affix": affix})
+                        result.append((base, affix))
         return result
 
-    def get_frequency(self):
+    def get_frequency(self) -> str:
         return self.frequency
 
     def get_uniques(self, text: str) -> Sequence[Unique]:
         return self.uniques.get(text, [])
 
-    def get_empty_inflections(self, text: str) -> Sequence[Inflect]:
-        result = []
+    def get_empty_inflections(self, text: str) -> list[Inflect]:
+        result: list[Inflect] = []
         if text in self.wordkeys and text in self.stems:
             stem_list = self.stems[text]
             wordtypes = {x["pos"] for x in stem_list}
@@ -110,12 +109,12 @@ class FileBasedDataLayer(DataLayer):
                 result.extend(self.empty[wordtype])
         return result
 
-    def get_inflections(self, text: str) -> Sequence[Inflect]:
+    def get_inflections(self, text: str) -> list[Inflect]:
         """
         Find all possible endings that may apply, so without checking congruence between word type and ending type
         """
         # the word may be undeclined, so add this as an option if the full form exists in the list of words
-        result: list[Inflect] = self.get_empty_inflections(text)
+        result = self.get_empty_inflections(text)
         # Check against inflection list
         for inflect_length in range(1, min(8, len(text))):
             end_of_word = text[-inflect_length:]
@@ -130,5 +129,5 @@ class FileBasedDataLayer(DataLayer):
     def lookup_stem(self, id: int) -> Optional[DictEntry]:
         return self.wordlist[id]
 
-    def get_stems(self, text: str):
+    def get_stems(self, text: str) -> Sequence[Stem]:
         return self.stems.get(text, [])

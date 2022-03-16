@@ -1,4 +1,3 @@
-import re
 from enum import Enum
 from typing import Any, Optional, Sequence, Tuple, Union
 
@@ -244,7 +243,7 @@ class Word:
         else:
             cliticised.extend(data.find_enclitic(self.text, "not_packons"))
         for clitic in cliticised:
-            result.append(Form(clitic["base"], Enclitic(clitic["affix"])))
+            result.append(Form(clitic[0], Enclitic(clitic[1])))
         self.forms = result
 
     def get_analyses(self) -> Sequence[Analysis]:
