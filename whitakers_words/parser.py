@@ -3,7 +3,7 @@ from typing import Any, Optional, Sequence, Tuple, Union
 
 from .datalayer import DataLayer
 from .datatypes import Addon, DictEntry, Inflect, Stem, Unique
-from .enums import Gender, WordType, get_enum_value
+from .enums import Gender, WordType, get_enum_value, prop_classes
 from .matcher import Matcher
 
 
@@ -87,9 +87,13 @@ class Lexeme:
         self.wordType = get_enum_value("WordType", stem["pos"])
         self.form = stem["form"]
         self.props = stem["props"]
+        self.parsed_props = self.parse_props(stem["props"])
 
     def __repr__(self) -> str:
         return repr(self.__dict__)
+
+    def parse_props(self, props: list[str]) -> dict[str, str]:
+        return {prop_classes[i].__name__: prop_classes[i][x].value for i, x in enumerate(props)}
 
 
 class UniqueLexeme(Lexeme):

@@ -229,6 +229,9 @@ class Source(Enum):
     Z = "Sent by user"  # no dictionary reference
 
 
+prop_classes: list[Type[Enum]] = [Age, Area, Geography, Frequency, Source]
+
+
 class NounType(Enum):
     A = "Abstract idea"
     G = "Group/collective Name -- Roman(s)"
