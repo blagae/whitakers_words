@@ -123,6 +123,9 @@ def format_adj(analysis: Analysis) -> str:
         find_infl(WordType.ADJ, lex.category, ["NOM", "S", x, "SUPER"]) for x in genders
     ]
     pos_str = f"{root[0]}{pos[0]}, {root[1]}{pos[1]} -{pos[2]}"
-    comp_str = f"{root[2]}{comp[0]} -{comp[1]} -{comp[2]}"
-    sup_str = f"{root[3]}{sup[0]} -{sup[1]} -{sup[2]}"
-    return f"{pos_str}, {comp_str}, {sup_str}  ADJ"
+    comp_str = sup_str = "  "
+    if len(root) > 2:
+        comp_str = f", {root[2]}{comp[0]} -{comp[1]} -{comp[2]}"
+        if len(root) > 3:
+            sup_str = f", {root[3]}{sup[0]} -{sup[1]} -{sup[2]}"
+    return f"{pos_str}{comp_str}{sup_str}  ADJ"
