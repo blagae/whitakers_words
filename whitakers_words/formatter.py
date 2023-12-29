@@ -107,11 +107,15 @@ def format_verb(analysis: Analysis) -> str:
     lex = analysis.lexeme
     root = lex.roots
     category = int(lex.category[0])
-    ind = find_infl(WordType.V, lex.category, ["PRES", "ACTIVE", "IND", "1", "S"])
-    inf = find_infl(WordType.V, lex.category, ["PRES", "ACTIVE", "INF", "0", "X"])
-    perf = find_infl(WordType.V, lex.category, ["PERF", "ACTIVE", "IND", "1", "S"])
-    part = find_infl(WordType.VPAR, lex.category, ["NOM", "S", "M", "PERF", "PASSIVE"])
-    return f"{root[0]}{ind}, {root[1]}{inf}, {root[2]}{perf}, {root[3]}{part}  V ({make_ordinal(category)}) "
+    try:
+        ind = find_infl(WordType.V, lex.category, ["PRES", "ACTIVE", "IND", "1", "S"])
+        inf = find_infl(WordType.V, lex.category, ["PRES", "ACTIVE", "INF", "0", "X"])
+        perf = find_infl(WordType.V, lex.category, ["PERF", "ACTIVE", "IND", "1", "S"])
+        part = find_infl(WordType.VPAR, lex.category, ["NOM", "S", "M", "PERF", "PASSIVE"])
+        return f"{root[0]}{ind}, {root[1]}{inf}, {root[2]}{perf}, {root[3]}{part}  V ({make_ordinal(category)}) "
+    except Exception:
+        # especially for edo
+        return ""
 
 
 def format_adj(analysis: Analysis) -> str:

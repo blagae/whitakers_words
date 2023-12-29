@@ -38,12 +38,12 @@ def get_candidates(par: partype, n: strs_or_ints, form: strs_or_ints) -> list[In
     if spec_str in par:
         if form_str in par[spec_str]:
             result.extend(par[spec_str][form_str])
-        if catchall_string in par[spec_str]:
+        elif catchall_string in par[spec_str]:
             result.extend(par[spec_str][catchall_string])
     if gen_str in par:
         if form_str in par[gen_str]:
             result.extend(par[gen_str][form_str])
-        if catchall_string in par[gen_str]:
+        elif catchall_string in par[gen_str]:
             result.extend(par[gen_str][catchall_string])
     if "0" in par and form_str in par["0"]:
         result.extend(par["0"][form_str])
