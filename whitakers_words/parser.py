@@ -103,6 +103,7 @@ class UniqueLexeme(Lexeme):
         self.roots = []
         self.senses = unique["senses"]
         self.wordType = get_enum_value("WordType", unique["pos"])
+        self.props = unique.get("props", [])
 
 
 class Enclitic:
@@ -118,7 +119,7 @@ class Enclitic:
 
 class Analysis:
     def __init__(
-        self, lexeme: Lexeme, inflections: list[Inflection], enclitic: Enclitic = None
+        self, lexeme: Lexeme, inflections: list[Inflection], enclitic: Optional[Enclitic] = None
     ):
         self.lexeme = lexeme
         self.root = ""
@@ -135,7 +136,7 @@ class Analysis:
 
 
 class Form:
-    def __init__(self, text: str, enclitic: Enclitic = None):
+    def __init__(self, text: str, enclitic: Optional[Enclitic] = None):
         self.text = text
         self.analyses: dict[int, Analysis] = {}
         self.enclitic = enclitic

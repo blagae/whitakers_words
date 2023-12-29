@@ -171,6 +171,8 @@ class Generator:
 
         for est in esse:
             orth = est["orth"]
+            est["n"] = [5, 1]
+            est["props"] = ["X", "X", "X", "A", "X"]
             if orth in data:
                 data[orth].append(est)
             else:

@@ -28,6 +28,7 @@ class Unique(TypedDict, total=False):
     form: Sequence[str]
     senses: Sequence[str]
     n: Sequence[int]
+    props: list[str]
 
 
 class DictEntry(TypedDict, total=False):

@@ -7,7 +7,7 @@ import yaml
 from whitakers_words.enums import WordType
 from whitakers_words.finder import find_infl
 
-from .parser import Analysis, Word
+from .parser import Analysis, UniqueLexeme, Word
 from .util import make_ordinal
 
 immutables = [WordType.CONJ, WordType.INTERJ, WordType.PREP]
@@ -78,6 +78,9 @@ class WordsFormatter(Formatter):
         return result
 
     def format_parts(self, analysis: Analysis) -> str:
+        if isinstance(analysis.lexeme, UniqueLexeme):
+            # TODO get meaningful output, esp. for forms of esse
+            return ""
         if analysis.lexeme.wordType in immutables:
             return f"{analysis.lexeme.roots[0]}  {analysis.lexeme.wordType.name}"
         if analysis.lexeme.wordType == WordType.N:
@@ -96,7 +99,8 @@ def format_noun(analysis: Analysis) -> str:
     gender = lex.form[0]
     nom = find_infl(WordType.N, lex.category, ["NOM", "S", gender])
     gen = find_infl(WordType.N, lex.category, ["GEN", "S", gender])
-    return f"{root[0]}{nom}, {root[1]}{gen}  N ({make_ordinal(category)}) {gender}"
+    gen_str = f", {root[1]}{gen}" if len(root) > 1 else "   "
+    return f"{root[0]}{nom}{gen_str}  N ({make_ordinal(category)}) {gender}"
 
 
 def format_verb(analysis: Analysis) -> str:
