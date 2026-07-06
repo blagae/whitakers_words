@@ -5,12 +5,11 @@ from typing import Type
 
 
 def get_enum_or_dict(name: str) -> Type[Enum]:
-    enum_class = [x[1] for x in names if x[0] == name]
-    return enum_class[0]
+    return names[name]
 
 
 def get_enum_value(object_name: str, value_name: str) -> Enum:
-    return get_enum_or_dict(object_name)[value_name]
+    return names[object_name][value_name]
 
 
 # some of these lists are copied from the original Whitaker's Words
@@ -86,7 +85,7 @@ class Degree(Enum):
 
     @classmethod
     def get_degree_list(cls) -> list[str]:
-        return [x.name for x in Degree]
+        return _degree_names
 
 
 # this has its problems, because we can't use Person.1, but we can use Person["1"]
@@ -113,7 +112,7 @@ class NumeralType(Enum):
 
     @classmethod
     def get_type_list(cls) -> list[str]:
-        return [x.name for x in NumeralType]
+        return _numeral_type_names
 
 
 class VerbType(Enum):
@@ -258,4 +257,8 @@ class PackonType(Enum):
     INDEF = "Indefinite"
 
 
-names = inspect.getmembers(sys.modules[__name__], inspect.isclass)
+names: dict[str, Type[Enum]] = dict(
+    inspect.getmembers(sys.modules[__name__], inspect.isclass)
+)
+_degree_names = [x.name for x in Degree]
+_numeral_type_names = [x.name for x in NumeralType]

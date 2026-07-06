@@ -12,6 +12,13 @@ except ModuleNotFoundError:
     from whitakers_words.datagenerator import generate_all_dicts
 
     generate_all_dicts()
+else:
+    import os
+
+    if not os.path.exists("whitakers_words/generated/words.db"):
+        from whitakers_words.datagenerator import generate_database
+
+        generate_database()
 
 setup(
     author="Benoit Lagae",
@@ -47,6 +54,10 @@ setup(
     url="https://github.com/blagae/whitakers_words",
     version="0.6.0",
     zip_safe=False,
-    package_data={"whitakers_words": ["py.typed"], "whitakers_words.data": ["*.*"]},
+    package_data={
+        "whitakers_words": ["py.typed"],
+        "whitakers_words.data": ["*.*"],
+        "whitakers_words.generated": ["*.db"],
+    },
     entry_points={"console_scripts": ["whitaker=whitakers_words.cli:whitaker"]},
 )

@@ -2,20 +2,20 @@
 datagenerator.py
 
 Format the data from the input files from Whitaker's Words into python dictionaries
+and an equivalent sqlite database
 """
 import json
 import os
-from typing import Any, Sequence, Tuple, Union
-
-from pkg_resources import resource_filename
+import sqlite3
+from typing import Any, Mapping, Optional, Sequence, Tuple, Union
 
 from .datatypes import DictEntry, Inflect, Stem, Unique
 
 
 class Generator:
     def __init__(self) -> None:
-        self.resources = resource_filename(__name__, "data")
-        self.filedir = self.resources[:-4] + "generated/"
+        self.resources = os.path.join(os.path.dirname(__file__), "data")
+        self.filedir = os.path.join(os.path.dirname(__file__), "generated") + os.sep
         try:
             os.mkdir(self.filedir)
         except FileExistsError:
@@ -35,7 +35,9 @@ class Generator:
                 json.dump(obj, out)
             out.write("\n")
 
-    def import_dicts(self) -> None:
+    def import_dicts(
+        self,
+    ) -> Tuple[Sequence[str], Sequence[DictEntry], dict[str, Sequence[Stem]]]:
         keys: Sequence[str] = list()
         ids: Sequence[DictEntry] = [{}]
         stems: dict[str, Sequence[Stem]] = dict()
@@ -109,6 +111,7 @@ class Generator:
         self.dump_file("wordkeys.py", keys, "list[str]")
         self.dump_file("wordlist.py", ids, "Sequence[DictEntry]", "DictEntry")
         self.dump_file("stems.py", stems, "dict[str, Sequence[Stem]]", "Stem")
+        return keys, ids, stems
 
     def import_affixes(self) -> None:
         for affix in ["prefix", "suffix"]:
@@ -138,7 +141,7 @@ class Generator:
 
             self.dump_file(f"{affix}es.py", data)
 
-    def import_uniques(self) -> None:
+    def import_uniques(self) -> dict[str, Sequence[Unique]]:
         with open(self.resources + "/UNIQUES.LAT") as f:
 
             counter = 0
@@ -179,8 +182,11 @@ class Generator:
                 data[orth] = [est]
 
         self.dump_file("uniques.py", data, "dict[str, Sequence[Unique]]", "Unique")
+        return data
 
-    def import_inflects(self) -> None:
+    def import_inflects(
+        self,
+    ) -> Tuple[dict[str, list[Inflect]], dict[int, dict[str, Sequence[Inflect]]]]:
         with open(self.resources + "/INFLECTS.LAT") as f:
             data = []
             paradigms: dict[str, dict[str, dict[str, list[Inflect]]]] = {}
@@ -255,6 +261,7 @@ class Generator:
             "dict[str, dict[str, dict[str, list[Inflect]]]]",
             "Inflect",
         )
+        return empty, reordered
 
     def reorder_inflects(
         self, data: list[Inflect]
@@ -284,10 +291,106 @@ class Generator:
         self.dump_file("__init__.py")
 
 
+def dump_database(
+    path: str,
+    wordkeys: Sequence[str],
+    wordlist: Sequence[DictEntry],
+    stems: Mapping[str, Sequence[Stem]],
+    uniques: Mapping[str, Sequence[Unique]],
+    inflects: Mapping[Any, Mapping[str, Sequence[Inflect]]],
+    empty: Mapping[str, Sequence[Inflect]],
+) -> None:
+    """
+    Write the parsed data to a sqlite database, as an alternative to the generated
+    python modules that is much cheaper to open at runtime
+    """
+    if os.path.exists(path):
+        os.remove(path)
+    conn = sqlite3.connect(path)
+    try:
+        conn.execute("PRAGMA journal_mode = OFF")
+        conn.execute("CREATE TABLE wordlist (id INTEGER PRIMARY KEY, data TEXT NOT NULL)")
+        conn.execute("CREATE TABLE wordkeys (orth TEXT PRIMARY KEY) WITHOUT ROWID")
+        conn.execute("CREATE TABLE stems (orth TEXT NOT NULL, freq TEXT NOT NULL, data TEXT NOT NULL)")
+        conn.execute("CREATE TABLE uniques (orth TEXT NOT NULL, data TEXT NOT NULL)")
+        conn.execute(
+            "CREATE TABLE inflects (length INTEGER NOT NULL, ending TEXT NOT NULL,"
+            " age TEXT NOT NULL, freq TEXT NOT NULL, data TEXT NOT NULL)"
+        )
+        conn.execute("CREATE TABLE empty (pos TEXT PRIMARY KEY, data TEXT NOT NULL) WITHOUT ROWID")
+
+        conn.executemany(
+            "INSERT INTO wordlist VALUES (?, ?)",
+            ((i, json.dumps(entry)) for i, entry in enumerate(wordlist)),
+        )
+        conn.executemany(
+            "INSERT INTO wordkeys VALUES (?)", ((key,) for key in set(wordkeys))
+        )
+        conn.executemany(
+            "INSERT INTO stems VALUES (?, ?, ?)",
+            (
+                (orth, stem["props"][3], json.dumps(stem))
+                for orth, stem_list in stems.items()
+                for stem in stem_list
+            ),
+        )
+        conn.executemany(
+            "INSERT INTO uniques VALUES (?, ?)",
+            (
+                (orth, json.dumps(unique))
+                for orth, unique_list in uniques.items()
+                for unique in unique_list
+            ),
+        )
+        conn.executemany(
+            "INSERT INTO inflects VALUES (?, ?, ?, ?, ?)",
+            (
+                (int(length), ending, infl["props"][0], infl["props"][1], json.dumps(infl))
+                for length, ending_list in inflects.items()
+                for ending, infl_list in ending_list.items()
+                for infl in infl_list
+            ),
+        )
+        conn.executemany(
+            "INSERT INTO empty VALUES (?, ?)",
+            ((pos, json.dumps(infl_list)) for pos, infl_list in empty.items()),
+        )
+        conn.execute("CREATE INDEX stems_orth ON stems (orth)")
+        conn.execute("CREATE INDEX uniques_orth ON uniques (orth)")
+        conn.execute("CREATE INDEX inflects_ending ON inflects (ending)")
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def generate_database(path: Optional[str] = None) -> None:
+    """
+    Build the sqlite database from the generated python modules, for installations
+    that already have those but no database file yet
+    """
+    from .generated.empty import empty
+    from .generated.inflects import inflects
+    from .generated.stems import stems
+    from .generated.uniques import uniques
+    from .generated.wordkeys import wordkeys
+    from .generated.wordlist import wordlist
+
+    if path is None:
+        from .datalayer import default_database_path
+
+        path = default_database_path()
+    dump_database(path, wordkeys, wordlist, stems, uniques, inflects, empty)
+
+
 def generate_all_dicts() -> None:
     gen = Generator()
     gen.create_init_file()
-    gen.import_dicts()
+    wordkeys, wordlist, stems = gen.import_dicts()
     gen.import_affixes()
-    gen.import_uniques()
-    gen.import_inflects()
+    uniques = gen.import_uniques()
+    empty, inflects = gen.import_inflects()
+    from .datalayer import default_database_path
+
+    dump_database(
+        default_database_path(), wordkeys, wordlist, stems, uniques, inflects, empty
+    )
