@@ -1,4 +1,13 @@
+import os
+import sys
+
 from setuptools import find_namespace_packages, setup
+
+# Make sure the probe imports below resolve to this source tree, not to an
+# already-installed copy of the package, and generate into this tree too.
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, PROJECT_ROOT)
+DATABASE_PATH = os.path.join(PROJECT_ROOT, "whitakers_words", "generated", "words.db")
 
 try:
     from whitakers_words.data.addons import addons  # noqa: F401
@@ -11,7 +20,12 @@ try:
 except ModuleNotFoundError:
     from whitakers_words.datagenerator import generate_all_dicts
 
-    generate_all_dicts()
+    generate_all_dicts(DATABASE_PATH)
+else:
+    if not os.path.exists(DATABASE_PATH):
+        from whitakers_words.datagenerator import generate_database
+
+        generate_database(DATABASE_PATH)
 
 setup(
     author="Benoit Lagae",
@@ -45,8 +59,12 @@ setup(
         ]
     ),
     url="https://github.com/blagae/whitakers_words",
-    version="0.6.0",
+    version="0.7.0",
     zip_safe=False,
-    package_data={"whitakers_words": ["py.typed"], "whitakers_words.data": ["*.*"]},
+    package_data={
+        "whitakers_words": ["py.typed"],
+        "whitakers_words.data": ["*.*"],
+        "whitakers_words.generated": ["*.db"],
+    },
     entry_points={"console_scripts": ["whitaker=whitakers_words.cli:whitaker"]},
 )

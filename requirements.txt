@@ -3,6 +3,7 @@ click
 isort
 pytest
 pyYAML
+setuptools
 tox
 types-PyYAML
 types-setuptools

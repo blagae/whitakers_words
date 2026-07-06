@@ -14,20 +14,8 @@ class Matcher:
                 self.function = _vpar_checker
             else:
                 self.function = _dummy_false
-        elif stem["pos"] == "N":
-            self.function = _noun_checker
-        elif stem["pos"] == "ADV":
-            self.function = _adv_checker
-        elif stem["pos"] == "ADJ":
-            self.function = _adj_checker
-        elif stem["pos"] == "V":
-            self.function = _verb_checker
-        elif stem["pos"] == "NUM":
-            self.function = _numeral_checker
-        elif stem["pos"] == "PRON":
-            self.function = _pronoun_checker
         else:
-            self.function = _basic_matcher
+            self.function = _checkers.get(stem["pos"], _basic_matcher)
 
     def check(self) -> bool:
         return self.function(self.stem, self.infl)
@@ -121,3 +109,13 @@ def _basic_matcher(stem: Stem, infl: Inflect) -> bool:
             or (infl["n"][0] == stem["n"][0] and infl["n"][1] == 0)
         )
     return True
+
+
+_checkers: dict[str, Callable[[Stem, Inflect], bool]] = {
+    "N": _noun_checker,
+    "ADV": _adv_checker,
+    "ADJ": _adj_checker,
+    "V": _verb_checker,
+    "NUM": _numeral_checker,
+    "PRON": _pronoun_checker,
+}

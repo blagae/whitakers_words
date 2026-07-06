@@ -170,3 +170,21 @@ then install the current project as a code dependency (not a package) by using t
 * Compare results to output of the original Whitaker's Words program
 * Output to different formats: JSON, YAML, Whitaker's original syntax, ...
 * ...
+
+## Database: usage hints
+
+The initial approach we took was to load in about 15MB of generated Python modules at startup of the process,
+which slowed down the first-response time to at least 150ms, even on performant hardware.
+This is especially noticeable if the pycache is out of sync (or does not exist yet), making the wait time several seconds.
+However, subsequent calls during the same program runtime are relatively fast (~0.08ms/word after startup).
+
+We have added SQLite as an option, which can easily be selected in both the API and the CLI,
+to improve startup and fetch times for short program runs.
+There is much less startup cost, but per-word parsing is much slower through sqlite (~1.1ms/word),
+since each lookup is a query + JSON decode.
+
+This means that you have the option to run either on-database or in-memory, with some tradeoffs.
+For bulk work (parsing whole texts in one process) you should keep the dict layer — it amortizes its startup after ~150 words.
+For the CLI and short-lived processes the db is clearly faster.
+
+Both options will take up some space on your system (about 20MB), which are only used if called upon.
