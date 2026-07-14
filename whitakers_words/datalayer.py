@@ -12,7 +12,10 @@ def default_database_path() -> str:
 
 class DataLayer:
     def __new__(cls, **kwargs: Any) -> "DataLayer":
-        if kwargs.get("database"):
+        database = kwargs.get("database")
+        if isinstance(database, str) and database.startswith("mysql://"):
+            return super().__new__(MySqlDataLayer)
+        if database:
             return super().__new__(SqliteDataLayer)
         return super().__new__(FileBasedDataLayer)
 
@@ -228,3 +231,89 @@ class SqliteDataLayer(DataLayer):
             "SELECT 1 FROM wordkeys WHERE orth = ?", (text,)
         ).fetchone()
         return row is not None
+
+
+class MySqlDataLayer(DataLayer):
+    """
+    Reads the ww_* tables written by datagenerator.dump_mysql_database, typically
+    in a database shared with a consuming application. Construct with
+    database="mysql://user:password@host:port/dbname" (requires the [mysql] extra).
+
+    Holds a single connection: instances are not safe for concurrent use from
+    multiple threads. ORDER BY id reproduces the sqlite layer's rowid ordering.
+    """
+
+    def __init__(self, **kwargs: Any):
+        super().__init__(**kwargs)
+        from .datagenerator import connect_mysql
+
+        self.conn = connect_mysql(kwargs["database"])
+        try:
+            # the empty inflections are a handful of rows, so keep them in memory
+            self.empty: dict[str, Sequence[Inflect]] = {
+                pos: json.loads(data)
+                for pos, data in self._fetchall("SELECT pos, data FROM ww_empty")
+            }
+        except Exception as exc:
+            # unlike the sqlite layer we never auto-build: a shared server
+            # database should not be rebuilt as an import side effect
+            raise RuntimeError(
+                "MySQL dictionary tables not found or unreadable; run"
+                " whitakers_words.datagenerator.generate_mysql_database(url) first"
+            ) from exc
+
+    def _fetchall(self, query: str, args: Tuple[Any, ...] = ()) -> list:
+        with self.conn.cursor() as cursor:
+            cursor.execute(query, args)
+            return list(cursor.fetchall())
+
+    def get_uniques(self, text: str) -> Sequence[Unique]:
+        rows = self._fetchall(
+            "SELECT data FROM ww_uniques WHERE orth = %s ORDER BY id", (text,)
+        )
+        return [json.loads(row[0]) for row in rows]
+
+    def get_empty_inflections(self, text: str) -> list[Inflect]:
+        result: list[Inflect] = []
+        stem_list = self.get_stems(text)
+        if stem_list and self._is_wordkey(text):
+            wordtypes = {x["pos"] for x in stem_list}
+            # no need to check for VPAR, because there are no empty VPAR endings
+            for wordtype in wordtypes:
+                result.extend(self.empty[wordtype])
+        return result
+
+    def get_inflections(self, text: str) -> list[Inflect]:
+        """
+        Find all possible endings that may apply, so without checking congruence between word type and ending type
+        """
+        # the word may be undeclined, so add this as an option if the full form exists in the list of words
+        result = self.get_empty_inflections(text)
+        # an ending determines its own length, so all candidate endings can go in a single query
+        endings = [text[-length:] for length in range(1, min(8, len(text)))]
+        if endings:
+            placeholders = ", ".join(["%s"] * len(endings))
+            rows = self._fetchall(
+                f"SELECT data FROM ww_inflects WHERE ending IN ({placeholders})"
+                " AND freq <= %s AND (age <= %s OR age = 'X') ORDER BY length, id",
+                (*endings, self.inflection_frequency, self.age),
+            )
+            result.extend(json.loads(row[0]) for row in rows)
+        return result
+
+    def lookup_stem(self, id: int) -> Optional[DictEntry]:
+        rows = self._fetchall("SELECT data FROM ww_wordlist WHERE id = %s", (id,))
+        return json.loads(rows[0][0]) if rows else None
+
+    def get_stems(self, text: str) -> Sequence[Stem]:
+        rows = self._fetchall(
+            "SELECT freq, data FROM ww_stems WHERE orth = %s ORDER BY id", (text,)
+        )
+        # keep the whole group if any of its stems is frequent enough,
+        # mirroring FileBasedDataLayer._filter_stems
+        if any(freq <= self.frequency for freq, _ in rows):
+            return [json.loads(data) for _, data in rows]
+        return []
+
+    def _is_wordkey(self, text: str) -> bool:
+        return bool(self._fetchall("SELECT 1 FROM ww_wordkeys WHERE orth = %s", (text,)))

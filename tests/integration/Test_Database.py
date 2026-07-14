@@ -1,8 +1,12 @@
+import os
 import unittest
 
-from whitakers_words.datalayer import FileBasedDataLayer, SqliteDataLayer
+from whitakers_words.datalayer import (FileBasedDataLayer, MySqlDataLayer,
+                                       SqliteDataLayer)
 from whitakers_words.formatter import JsonFormatter
 from whitakers_words.parser import Parser
+
+mysql_url = os.environ.get("WW_MYSQL_URL")
 
 words = [
     "amabat",
@@ -49,6 +53,39 @@ class DatabaseLayerTest(unittest.TestCase):
     def test_identical_results_full_frequency(self):
         dict_parser = Parser(frequency="X")
         db_parser = Parser(frequency="X", database=True)
+        for word in words:
+            with self.subTest(word=word):
+                expected = self.formatter.format_result(dict_parser.parse(word))
+                actual = self.formatter.format_result(db_parser.parse(word))
+                self.assertEqual(expected, actual)
+
+
+@unittest.skipUnless(mysql_url, "WW_MYSQL_URL not set")
+class MySqlLayerTest(unittest.TestCase):
+    """
+    Verify that the MySQL database layer gives the exact same results as the
+    dictionary-based layer (see BUILDING/README for generating the ww_* tables)
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.dict_parser = Parser()
+        cls.db_parser = Parser(database=mysql_url)
+        cls.formatter = JsonFormatter()
+
+    def test_layer_type(self):
+        self.assertIsInstance(self.db_parser.data, MySqlDataLayer)
+
+    def test_identical_results(self):
+        for word in words:
+            with self.subTest(word=word):
+                expected = self.formatter.format_result(self.dict_parser.parse(word))
+                actual = self.formatter.format_result(self.db_parser.parse(word))
+                self.assertEqual(expected, actual)
+
+    def test_identical_results_full_frequency(self):
+        dict_parser = Parser(frequency="X")
+        db_parser = Parser(frequency="X", database=mysql_url)
         for word in words:
             with self.subTest(word=word):
                 expected = self.formatter.format_result(dict_parser.parse(word))
