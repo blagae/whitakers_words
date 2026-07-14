@@ -2,12 +2,13 @@
 datagenerator.py
 
 Format the data from the input files from Whitaker's Words into python dictionaries
-and an equivalent sqlite database
+and an equivalent sqlite or MySQL database
 """
 import json
 import os
 import sqlite3
-from typing import Any, Mapping, Optional, Sequence, Tuple, Union
+from typing import Any, Iterable, Iterator, Mapping, Optional, Sequence, Tuple, Union
+from urllib.parse import unquote, urlsplit
 
 from .datatypes import DictEntry, Inflect, Stem, Unique
 
@@ -291,6 +292,45 @@ class Generator:
         self.dump_file("__init__.py")
 
 
+def _wordlist_rows(wordlist: Sequence[DictEntry]) -> Iterator[Tuple[Any, ...]]:
+    return ((i, json.dumps(entry)) for i, entry in enumerate(wordlist))
+
+
+def _wordkeys_rows(wordkeys: Sequence[str]) -> Iterator[Tuple[Any, ...]]:
+    return ((key,) for key in set(wordkeys))
+
+
+def _stems_rows(stems: Mapping[str, Sequence[Stem]]) -> Iterator[Tuple[Any, ...]]:
+    return (
+        (orth, stem["props"][3], json.dumps(stem))
+        for orth, stem_list in stems.items()
+        for stem in stem_list
+    )
+
+
+def _uniques_rows(uniques: Mapping[str, Sequence[Unique]]) -> Iterator[Tuple[Any, ...]]:
+    return (
+        (orth, json.dumps(unique))
+        for orth, unique_list in uniques.items()
+        for unique in unique_list
+    )
+
+
+def _inflects_rows(
+    inflects: Mapping[Any, Mapping[str, Sequence[Inflect]]]
+) -> Iterator[Tuple[Any, ...]]:
+    return (
+        (int(length), ending, infl["props"][0], infl["props"][1], json.dumps(infl))
+        for length, ending_list in inflects.items()
+        for ending, infl_list in ending_list.items()
+        for infl in infl_list
+    )
+
+
+def _empty_rows(empty: Mapping[str, Sequence[Inflect]]) -> Iterator[Tuple[Any, ...]]:
+    return ((pos, json.dumps(infl_list)) for pos, infl_list in empty.items())
+
+
 def dump_database(
     path: str,
     wordkeys: Sequence[str],
@@ -319,45 +359,105 @@ def dump_database(
         )
         conn.execute("CREATE TABLE empty (pos TEXT PRIMARY KEY, data TEXT NOT NULL) WITHOUT ROWID")
 
-        conn.executemany(
-            "INSERT INTO wordlist VALUES (?, ?)",
-            ((i, json.dumps(entry)) for i, entry in enumerate(wordlist)),
-        )
-        conn.executemany(
-            "INSERT INTO wordkeys VALUES (?)", ((key,) for key in set(wordkeys))
-        )
-        conn.executemany(
-            "INSERT INTO stems VALUES (?, ?, ?)",
-            (
-                (orth, stem["props"][3], json.dumps(stem))
-                for orth, stem_list in stems.items()
-                for stem in stem_list
-            ),
-        )
-        conn.executemany(
-            "INSERT INTO uniques VALUES (?, ?)",
-            (
-                (orth, json.dumps(unique))
-                for orth, unique_list in uniques.items()
-                for unique in unique_list
-            ),
-        )
-        conn.executemany(
-            "INSERT INTO inflects VALUES (?, ?, ?, ?, ?)",
-            (
-                (int(length), ending, infl["props"][0], infl["props"][1], json.dumps(infl))
-                for length, ending_list in inflects.items()
-                for ending, infl_list in ending_list.items()
-                for infl in infl_list
-            ),
-        )
-        conn.executemany(
-            "INSERT INTO empty VALUES (?, ?)",
-            ((pos, json.dumps(infl_list)) for pos, infl_list in empty.items()),
-        )
+        conn.executemany("INSERT INTO wordlist VALUES (?, ?)", _wordlist_rows(wordlist))
+        conn.executemany("INSERT INTO wordkeys VALUES (?)", _wordkeys_rows(wordkeys))
+        conn.executemany("INSERT INTO stems VALUES (?, ?, ?)", _stems_rows(stems))
+        conn.executemany("INSERT INTO uniques VALUES (?, ?)", _uniques_rows(uniques))
+        conn.executemany("INSERT INTO inflects VALUES (?, ?, ?, ?, ?)", _inflects_rows(inflects))
+        conn.executemany("INSERT INTO empty VALUES (?, ?)", _empty_rows(empty))
         conn.execute("CREATE INDEX stems_orth ON stems (orth)")
         conn.execute("CREATE INDEX uniques_orth ON uniques (orth)")
         conn.execute("CREATE INDEX inflects_ending ON inflects (ending)")
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def connect_mysql(url: str) -> Any:
+    """
+    Open a PyMySQL connection from a mysql://user:password@host:port/dbname URL.
+    PyMySQL is an optional dependency (pip install whitakers_words[mysql]).
+    """
+    import pymysql
+
+    parts = urlsplit(url)
+    return pymysql.connect(
+        host=parts.hostname or "127.0.0.1",
+        port=parts.port or 3306,
+        user=unquote(parts.username or ""),
+        password=unquote(parts.password or ""),
+        database=parts.path.lstrip("/"),
+        charset="utf8mb4",
+    )
+
+
+def _batched(rows: Iterable[Tuple[Any, ...]], size: int = 5000) -> Iterator[list]:
+    batch: list = []
+    for row in rows:
+        batch.append(row)
+        if len(batch) >= size:
+            yield batch
+            batch = []
+    if batch:
+        yield batch
+
+
+# The explicit AUTO_INCREMENT id column replaces sqlite's implicit rowid: the runtime
+# layer orders result rows by it to reproduce the generated modules' insertion order.
+_MYSQL_SCHEMA = [
+    "CREATE TABLE ww_wordlist (id INT PRIMARY KEY, data TEXT NOT NULL)",
+    "CREATE TABLE ww_wordkeys (orth VARCHAR(25) PRIMARY KEY)",
+    "CREATE TABLE ww_stems (id INT AUTO_INCREMENT PRIMARY KEY, orth VARCHAR(25) NOT NULL,"
+    " freq CHAR(1) NOT NULL, data TEXT NOT NULL, KEY ww_stems_orth (orth))",
+    "CREATE TABLE ww_uniques (id INT AUTO_INCREMENT PRIMARY KEY, orth VARCHAR(25) NOT NULL,"
+    " data TEXT NOT NULL, KEY ww_uniques_orth (orth))",
+    "CREATE TABLE ww_inflects (id INT AUTO_INCREMENT PRIMARY KEY, length TINYINT NOT NULL,"
+    " ending VARCHAR(8) NOT NULL, age CHAR(1) NOT NULL, freq CHAR(1) NOT NULL,"
+    " data TEXT NOT NULL, KEY ww_inflects_ending (ending))",
+    "CREATE TABLE ww_empty (pos VARCHAR(8) PRIMARY KEY, data MEDIUMTEXT NOT NULL)",
+]
+
+_MYSQL_INSERTS = {
+    "ww_wordlist": "INSERT INTO ww_wordlist (id, data) VALUES (%s, %s)",
+    "ww_wordkeys": "INSERT INTO ww_wordkeys (orth) VALUES (%s)",
+    "ww_stems": "INSERT INTO ww_stems (orth, freq, data) VALUES (%s, %s, %s)",
+    "ww_uniques": "INSERT INTO ww_uniques (orth, data) VALUES (%s, %s)",
+    "ww_inflects": "INSERT INTO ww_inflects (length, ending, age, freq, data) VALUES (%s, %s, %s, %s, %s)",
+    "ww_empty": "INSERT INTO ww_empty (pos, data) VALUES (%s, %s)",
+}
+
+
+def dump_mysql_database(
+    url: str,
+    wordkeys: Sequence[str],
+    wordlist: Sequence[DictEntry],
+    stems: Mapping[str, Sequence[Stem]],
+    uniques: Mapping[str, Sequence[Unique]],
+    inflects: Mapping[Any, Mapping[str, Sequence[Inflect]]],
+    empty: Mapping[str, Sequence[Inflect]],
+) -> None:
+    """
+    Write the parsed data to ww_* tables in a MySQL/MariaDB database, so the
+    dictionary can share a schema with a consuming application
+    """
+    data = {
+        "ww_wordlist": _wordlist_rows(wordlist),
+        "ww_wordkeys": _wordkeys_rows(wordkeys),
+        "ww_stems": _stems_rows(stems),
+        "ww_uniques": _uniques_rows(uniques),
+        "ww_inflects": _inflects_rows(inflects),
+        "ww_empty": _empty_rows(empty),
+    }
+    conn = connect_mysql(url)
+    try:
+        with conn.cursor() as cursor:
+            for table in _MYSQL_INSERTS:
+                cursor.execute(f"DROP TABLE IF EXISTS {table}")
+            for statement in _MYSQL_SCHEMA:
+                cursor.execute(statement + " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4")
+            for table, insert in _MYSQL_INSERTS.items():
+                for batch in _batched(data[table]):
+                    cursor.executemany(insert, batch)
         conn.commit()
     finally:
         conn.close()
@@ -380,6 +480,21 @@ def generate_database(path: Optional[str] = None) -> None:
 
         path = default_database_path()
     dump_database(path, wordkeys, wordlist, stems, uniques, inflects, empty)
+
+
+def generate_mysql_database(url: str) -> None:
+    """
+    Build the ww_* MySQL tables from the generated python modules, for installations
+    that already have those (see generate_database for the sqlite equivalent)
+    """
+    from .generated.empty import empty
+    from .generated.inflects import inflects
+    from .generated.stems import stems
+    from .generated.uniques import uniques
+    from .generated.wordkeys import wordkeys
+    from .generated.wordlist import wordlist
+
+    dump_mysql_database(url, wordkeys, wordlist, stems, uniques, inflects, empty)
 
 
 def generate_all_dicts(path: Optional[str] = None) -> None:

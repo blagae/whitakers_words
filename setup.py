@@ -67,4 +67,5 @@ setup(
         "whitakers_words.generated": ["*.db"],
     },
     entry_points={"console_scripts": ["whitaker=whitakers_words.cli:whitaker"]},
+    extras_require={"mysql": ["PyMySQL>=1.1"]},
 )
