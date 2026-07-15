@@ -91,7 +91,7 @@ class VerbTest(unittest.TestCase):
                 "Tense": Tense.PERF,
                 "Voice": Voice.ACTIVE,
             }
-            self.assertEqual(analysis.inflections[0].stem, "amav")
+            self.assertEqual(analysis.inflections[0].stem, "amau")
             self.assertEqual(analysis.inflections[0].affix, "isse")
             self.assertEqual(analysis.inflections[0].wordType, WordType.V)
             self.assertEqual(analysis.inflections[0].features, expected_features)
@@ -169,7 +169,7 @@ class VerbTest(unittest.TestCase):
         self.assertEqual(len(result.forms[0].analyses), 2)
         for analysis in result.forms[0].analyses.values():
             self.assertEqual(analysis.lexeme.wordType, WordType.V)
-            if analysis.lexeme.roots[0] == "vene":
+            if analysis.lexeme.roots[0] == "uene":
                 # venere, venio = to be sold as a slave
                 self.assertEqual(len(analysis.inflections), 1)
                 expected_features = {
@@ -179,14 +179,14 @@ class VerbTest(unittest.TestCase):
                     "Tense": Tense.PRES,
                     "Voice": Voice.ACTIVE,
                 }
-                self.assertEqual(analysis.inflections[0].stem, "veni")
+                self.assertEqual(analysis.inflections[0].stem, "ueni")
                 self.assertEqual(analysis.inflections[0].affix, "t")
                 self.assertEqual(analysis.inflections[0].wordType, WordType.V)
                 self.assertEqual(analysis.inflections[0].features, expected_features)
-            elif analysis.lexeme.roots[0] == "veni":
+            elif analysis.lexeme.roots[0] == "ueni":
                 self.assertEqual(len(analysis.inflections), 2)
                 for inflection in analysis.inflections:
-                    self.assertEqual(analysis.inflections[0].stem, "ven")
+                    self.assertEqual(analysis.inflections[0].stem, "uen")
                     self.assertEqual(analysis.inflections[0].affix, "it")
                     self.assertEqual(analysis.inflections[0].wordType, WordType.V)
                     self.assertTrue(inflection.has_feature(Mood.IND))

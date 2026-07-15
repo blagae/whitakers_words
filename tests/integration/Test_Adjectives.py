@@ -15,13 +15,13 @@ class AdjectiveTest(unittest.TestCase):
         self.assertEqual(len(result.forms), 1)
         self.assertEqual(len(result.forms[0].analyses), 1)
         for analysis in result.forms[0].analyses.values():
-            self.assertEqual(analysis.lexeme.roots[0], "saev")
+            self.assertEqual(analysis.lexeme.roots[0], "saeu")
             self.assertEqual(analysis.lexeme.wordType, WordType.ADJ)
 
             self.assertEqual(len(analysis.inflections), 4)
             # common properties and features
             for inflection in analysis.inflections:
-                self.assertEqual(inflection.stem, "saevissi")
+                self.assertEqual(inflection.stem, "saeuissi")
                 self.assertEqual(inflection.affix, "mae")
                 self.assertEqual(inflection.wordType, WordType.ADJ)
                 self.assertTrue(inflection.has_feature(Degree.SUPER))

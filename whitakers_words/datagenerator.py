@@ -11,6 +11,7 @@ from typing import Any, Iterable, Iterator, Mapping, Optional, Sequence, Tuple, 
 from urllib.parse import unquote, urlsplit
 
 from .datatypes import DictEntry, Inflect, Stem, Unique
+from .util import canonicalize_orth
 
 
 class Generator:
@@ -54,7 +55,7 @@ class Generator:
             for i, line in enumerate(f):
 
                 parts = line[parts_slicer].replace("zzz", "-").split()
-                parts = [x.lower() for x in parts]
+                parts = [canonicalize_orth(x.lower()) for x in parts]
                 orth = parts[0]
                 pos = line[pos_slicer].strip()
                 raw_form = line[form_slicer].strip()
@@ -150,7 +151,7 @@ class Generator:
             data: dict[str, Sequence[Unique]] = dict()
             for line in f:
                 if counter == 0:
-                    obj["orth"] = line.strip()
+                    obj["orth"] = canonicalize_orth(line.strip().lower())
 
                 elif counter == 1:
                     contents = line.split()
@@ -207,6 +208,7 @@ class Generator:
                 if not ending.isalpha():
                     ending = ""
                     used_stem = info[-4]
+                ending = canonicalize_orth(ending.lower())
                 pos = info[0]
                 n = info[1:3]
                 properties = info[-2:]

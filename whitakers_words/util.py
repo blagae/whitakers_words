@@ -2,6 +2,15 @@ import hashlib
 import os
 
 
+def canonicalize_orth(text: str) -> str:
+    """
+    The canonical lookup orthography of a word or word part: Whitaker's source
+    data spells consonantal i and u as j and v, but queries may arrive in either
+    spelling, so both sides of every lookup collapse j to i and v to u.
+    """
+    return text.replace("j", "i").replace("v", "u")
+
+
 def hash_file(filepath: str) -> str:
     file_hash = hashlib.md5()
     with open(filepath, "rb") as f:

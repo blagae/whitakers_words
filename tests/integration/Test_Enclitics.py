@@ -53,7 +53,7 @@ class EncliticTest(unittest.TestCase):
     def test_recentiave(self):
         result = self.par.parse("recentiave")
         self.assertEqual(len(result.forms), 1)
-        self.assertEqual(result.forms[0].enclitic.text, "ve")
+        self.assertEqual(result.forms[0].enclitic.text, "ue")
 
     def test_regemque(self):
         result = self.par.parse("regemque")

@@ -4,6 +4,7 @@ import sqlite3
 from typing import Any, Optional, Sequence, Tuple
 
 from .datatypes import Addon, DictEntry, Inflect, Stem, Unique
+from .util import canonicalize_orth
 
 
 def default_database_path() -> str:
@@ -21,11 +22,16 @@ class DataLayer:
 
     def __init__(self, **kwargs: Any):
         if "addons" in kwargs:
-            self.addons: dict[str, Sequence[Addon]] = kwargs["addons"]
+            addons: dict[str, Sequence[Addon]] = kwargs["addons"]
         else:
-            from .data.addons import addons
-
-            self.addons = addons
+            from .data.addons import addons  # type: ignore[no-redef]
+        # addons are spelled in Whitaker's j/v orthography ("ve"), queries in canonical i/u
+        self.addons: dict[str, Sequence[Addon]] = {
+            addon_type: [dict(addon, orth=canonicalize_orth(addon["orth"]))  # type: ignore[misc]
+                         if "orth" in addon else addon
+                         for addon in addon_list]
+            for addon_type, addon_list in addons.items()
+        }
 
         self.age: str = kwargs.get("age", "C")
         self.area: str = kwargs.get("area", "A")

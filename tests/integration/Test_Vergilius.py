@@ -50,15 +50,15 @@ class VergiliusTest(unittest.TestCase):
         self.assertEqual(len(result.forms[0].analyses), 3)
         self.assertEqual(result.forms[0].enclitic.text, "que")
         for analysis in result.forms[0].analyses.values():
-            self.assertIn(analysis.lexeme.roots[0], ["vir", "vis"])
-            if analysis.lexeme.roots[0] == "vir":
+            self.assertIn(analysis.lexeme.roots[0], ["uir", "uis"])
+            if analysis.lexeme.roots[0] == "uir":
                 if analysis.lexeme.category[1] == 3:
                     self.assertEqual(analysis.lexeme.wordType, WordType.N)
 
                     self.assertEqual(len(analysis.inflections), 1)
                     inflection = analysis.inflections[0]
 
-                    self.assertEqual(inflection.stem, "vir")
+                    self.assertEqual(inflection.stem, "uir")
                     self.assertEqual(inflection.affix, "um")
                     self.assertEqual(inflection.wordType, WordType.N)
                     self.assertTrue(inflection.has_feature(Case.ACC))
@@ -70,7 +70,7 @@ class VergiliusTest(unittest.TestCase):
                     self.assertEqual(len(analysis.inflections), 3)
 
                     for inflection in analysis.inflections:
-                        self.assertEqual(inflection.stem, "vir")
+                        self.assertEqual(inflection.stem, "uir")
                         self.assertEqual(inflection.affix, "um")
                         self.assertEqual(inflection.wordType, WordType.N)
                         self.assertTrue(inflection.has_feature(Number.S))
@@ -81,13 +81,13 @@ class VergiliusTest(unittest.TestCase):
                     self.assertTrue([Case.NOM] in other_features)
                     self.assertTrue([Case.ACC] in other_features)
                     self.assertTrue([Case.VOC] in other_features)
-            elif analysis.lexeme.roots[0] == "vis":
+            elif analysis.lexeme.roots[0] == "uis":
                 self.assertEqual(analysis.lexeme.wordType, WordType.N)
 
                 self.assertEqual(len(analysis.inflections), 1)
                 inflection = analysis.inflections[0]
 
-                self.assertEqual(inflection.stem, "vir")
+                self.assertEqual(inflection.stem, "uir")
                 self.assertEqual(inflection.affix, "um")
                 self.assertEqual(inflection.wordType, WordType.N)
                 self.assertTrue(inflection.has_feature(Case.GEN))

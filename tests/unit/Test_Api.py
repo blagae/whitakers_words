@@ -84,6 +84,21 @@ class MinimalDictionaryParseTest(unittest.TestCase):
         self.assertEqual(result.forms[0].analyses[0].lexeme.category, [])
         self.assertEqual(result.forms[0].analyses[0].lexeme.wordType, WordType.PREP)
 
+    def test_minimal_unique_canonical_orthography(self):
+        """ queries in j/v orthography find entries stored with canonical i/u keys """
+        word: Unique = {
+            "orth": "uiam",
+            "pos": "PREP",
+            "n": [],
+            "form": "a cdef",
+            "senses": [],
+        }
+        self.prs.data.uniques["uiam"] = [word]
+        for query in ("uiam", "viam", "vjam", "Viam"):
+            result = self.prs.parse(query)
+            self.assertEqual(len(result.forms), 1, query)
+            self.assertEqual(result.forms[0].text, "uiam", query)
+
     def test_minimal_unique_with_addon(self):
         word = {"orth": "wor", "pos": "PREP", "form": "abc", "senses": []}
         self.prs.data.uniques["wor"] = [word]

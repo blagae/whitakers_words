@@ -5,6 +5,7 @@ from .datalayer import DataLayer
 from .datatypes import Addon, DictEntry, Inflect, Stem, Unique
 from .enums import Gender, WordType, get_enum_value, prop_classes
 from .matcher import Matcher
+from .util import canonicalize_orth
 
 
 class WordsException(Exception):
@@ -216,7 +217,7 @@ class Form:
 
 class Word:
     def __init__(self, text: str):
-        self.text = text.lower()
+        self.text = canonicalize_orth(text.lower())
         self.forms: Sequence[Form] = []
 
     def __repr__(self) -> str:
