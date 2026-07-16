@@ -101,6 +101,23 @@ class Generator:
                         stems[part].append(stem)
                     else:
                         stems[part] = [stem]
+                # contracted -ivi perfects (iit, petiit, abiisse, audierat):
+                # a perfect stem in -iu (= -iv) also occurs without the u
+                # before its endings, which all start with i or e
+                if pos == "V" and len(parts) > 2 and parts[2].endswith("iu"):
+                    contracted: Stem = {
+                        "orth": parts[2][:-1],
+                        "pos": pos,
+                        "form": form,
+                        "n": n,
+                        "wid": i + 1,
+                        "props": properties,
+                        "stem_number": 2,
+                    }
+                    if contracted["orth"] in stems:
+                        stems[contracted["orth"]].append(contracted)
+                    else:
+                        stems[contracted["orth"]] = [contracted]
                 if senses[0].startswith("|"):
                     senses[0] = senses[0].replace("|", "")
                     previous_item["senses"].extend(senses)
