@@ -1,6 +1,7 @@
 import json
 import os
 import sqlite3
+import threading
 from typing import Any, Optional, Sequence, Tuple
 
 from .datatypes import Addon, DictEntry, Inflect, Stem, Unique
@@ -245,15 +246,20 @@ class MySqlDataLayer(DataLayer):
     in a database shared with a consuming application. Construct with
     database="mysql://user:password@host:port/dbname" (requires the [mysql] extra).
 
-    Holds a single connection: instances are not safe for concurrent use from
-    multiple threads. ORDER BY id reproduces the sqlite layer's rowid ordering.
+    A single pymysql connection is not safe for concurrent use from multiple
+    threads (interleaved queries corrupt its protocol state), but ONE
+    instance of this layer commonly IS shared across threads: elisio caches
+    one module-level default Parser (elisio.word._get_default_parser),
+    which a threaded ASGI server's threadpool then calls from a different
+    worker thread per request. So each thread lazily opens and keeps its
+    OWN connection, in thread-local storage, transparent to callers.
+    ORDER BY id reproduces the sqlite layer's rowid ordering.
     """
 
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
-        from .datagenerator import connect_mysql
-
-        self.conn = connect_mysql(kwargs["database"])
+        self._database_url: str = kwargs["database"]
+        self._local = threading.local()
         try:
             # the empty inflections are a handful of rows, so keep them in memory
             self.empty: dict[str, Sequence[Inflect]] = {
@@ -267,6 +273,16 @@ class MySqlDataLayer(DataLayer):
                 "MySQL dictionary tables not found or unreadable; run"
                 " whitakers_words.datagenerator.generate_mysql_database(url) first"
             ) from exc
+
+    @property
+    def conn(self) -> Any:
+        connection = getattr(self._local, "conn", None)
+        if connection is None:
+            from .datagenerator import connect_mysql
+
+            connection = connect_mysql(self._database_url)
+            self._local.conn = connection
+        return connection
 
     def _fetchall(self, query: str, args: Tuple[Any, ...] = ()) -> list:
         with self.conn.cursor() as cursor:

@@ -1,3 +1,4 @@
+import concurrent.futures
 import os
 import unittest
 
@@ -91,3 +92,18 @@ class MySqlLayerTest(unittest.TestCase):
                 expected = self.formatter.format_result(dict_parser.parse(word))
                 actual = self.formatter.format_result(db_parser.parse(word))
                 self.assertEqual(expected, actual)
+
+    def test_concurrent_use_from_multiple_threads(self):
+        """ one MySqlDataLayer instance is shared across requests by callers
+        that cache a default parser (elisio.word._get_default_parser), which
+        a threaded ASGI server then calls from a different worker thread per
+        request; a single shared pymysql connection corrupts under that
+        (regression: versescanner's review UI 500ing on the second/third
+        verse loaded in a row) """
+        layer = self.db_parser.data
+        self.assertIsInstance(layer, MySqlDataLayer)
+        repeated = words * 5
+        with concurrent.futures.ThreadPoolExecutor(max_workers=16) as pool:
+            futures = [pool.submit(layer.get_uniques, word) for word in repeated]
+            errors = [future.exception() for future in futures if future.exception()]
+        self.assertEqual(errors, [])
