@@ -25,7 +25,7 @@ bookenv/
 jyenv/
 pypyenv/
 env*/
-venv/
+.venv/
 __pycache__
 whitakers_words/generated/
 .vscode
